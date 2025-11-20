@@ -24,7 +24,7 @@ param(
     [string]$GstGir = 'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0',
     [string]$OpenobArgs = '127.0.0.1 emetteur transmission tx 192.168.18.37 -e pcm -r 48000 -j 60 -a auto',
     [switch]$Background,
-    [string]$LogDir = '.\logs'
+    [string]$LogDir = '.\logs',
     [switch]$ForceRun
 )
 
