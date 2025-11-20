@@ -22,6 +22,7 @@ import shlex
 import shutil
 import sys
 import time
+import re
 from pathlib import Path
 
 
@@ -144,6 +145,19 @@ class OpenOBGUI(tk.Tk):
         ttk.Button(subctl, text='Stop Redis', command=self.stop_redis).pack(side='left', padx=4)
         ttk.Button(subctl, text='Start OpenOB', command=self.start_openob).pack(side='left', padx=4)
         ttk.Button(subctl, text='Stop OpenOB', command=self.stop_openob).pack(side='left', padx=4)
+
+        # VU Meter area (stereo: Left / Right)
+        vu_frame = ttk.LabelFrame(frm, text='VU Meter')
+        vu_frame.pack(fill='x', pady=(6, 0))
+        self.vu_canvas = tk.Canvas(vu_frame, height=36)
+        self.vu_canvas.pack(fill='x', padx=6, pady=6)
+        # parameters for drawing
+        self._vu_max_width = 300
+        self._vu_left_rect = self.vu_canvas.create_rectangle(6, 6, 6, 14, fill='green', outline='black')
+        self._vu_right_rect = self.vu_canvas.create_rectangle(6, 20, 6, 28, fill='green', outline='black')
+        # labels
+        self.vu_canvas.create_text(0, 10, anchor='w', text='L', font=('TkDefaultFont', 9))
+        self.vu_canvas.create_text(0, 24, anchor='w', text='R', font=('TkDefaultFont', 9))
 
         # Log area
         log_frame = ttk.LabelFrame(frm, text='Logs')
@@ -376,6 +390,33 @@ class OpenOBGUI(tk.Tk):
                     continue
                 ts = time.strftime('%Y-%m-%d %H:%M:%S')
                 self.append_log(f'[{tag} {ts}] {line}')
+                # If this is OpenOB output, try to parse numeric level values (0..124)
+                if tag == 'OPENOB':
+                    try:
+                        # find numbers (allow optional negative sign and decimals)
+                        found = re.findall(r"(-?\d{1,3}(?:\.\d+)?)", line)
+                        vals = []
+                        for s in found:
+                            try:
+                                v = float(s)
+                                # keep plausible audio numbers
+                                if -200.0 <= v <= 1000.0:
+                                    vals.append(v)
+                            except Exception:
+                                continue
+                        if vals:
+                            # interpret as stereo if two or more numbers, else use one value for both
+                            if len(vals) >= 2:
+                                lval, rval = vals[-2], vals[-1]
+                            else:
+                                lval = rval = vals[-1]
+                            # schedule UI update (pass floats)
+                            try:
+                                self.after(0, lambda L=lval, R=rval: self._set_vu(L, R))
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
         except Exception:
             pass
 
@@ -394,6 +435,71 @@ class OpenOBGUI(tk.Tk):
                     self.openob_canvas.itemconfig('dot', fill=o_color)
                 except Exception:
                     pass
+        except Exception:
+            pass
+
+    def _set_vu(self, left_val, right_val):
+        """Render VU bars from raw numeric levels.
+
+        The function accepts two numeric inputs which may be:
+        - dB-like negatives (e.g. -65 .. 0) where -65 -> silence and 0 -> max
+        - legacy positive scale (0 .. 124) where 0 -> max and 124 -> silence
+
+        The function auto-detects negative values and maps accordingly.
+        """
+        try:
+            # convert to floats
+            lv_raw = float(left_val)
+            rv_raw = float(right_val)
+
+            # Detect dB-style negatives: if either is negative, map from [-65..0]
+            if lv_raw < 0 or rv_raw < 0:
+                # dB scale mapping: clamp to [-65, 0]
+                min_db = -65.0
+                lv = max(min_db, min(0.0, lv_raw))
+                rv = max(min_db, min(0.0, rv_raw))
+                lam = (lv - min_db) / (0.0 - min_db)
+                ram = (rv - min_db) / (0.0 - min_db)
+            else:
+                # legacy mapping 0..124 where 0 = loud, 124 = silent
+                lv = max(0.0, min(124.0, lv_raw))
+                rv = max(0.0, min(124.0, rv_raw))
+                lam = 1.0 - (lv / 124.0)
+                ram = 1.0 - (rv / 124.0)
+
+            # clamp amplitudes 0..1
+            lam = max(0.0, min(1.0, lam))
+            ram = max(0.0, min(1.0, ram))
+
+            # pixel width (leave padding)
+            canvas_w = max(50, self.vu_canvas.winfo_width() or self._vu_max_width)
+            max_w = canvas_w - 40
+            lpx = int(24 + lam * max_w)
+            rpx = int(24 + ram * max_w)
+
+            # decide colors by amplitude
+            def color_for(a):
+                if a >= 0.75:
+                    return '#33cc33'  # green
+                if a >= 0.4:
+                    return '#ebd02b'  # yellow
+                return '#e03b3b'     # red
+
+            lcol = color_for(lam)
+            rcol = color_for(ram)
+
+            # update left rect (y 6..14)
+            try:
+                self.vu_canvas.coords(self._vu_left_rect, 24, 6, lpx, 14)
+                self.vu_canvas.itemconfig(self._vu_left_rect, fill=lcol)
+            except Exception:
+                pass
+            # update right rect (y 20..28)
+            try:
+                self.vu_canvas.coords(self._vu_right_rect, 24, 20, rpx, 28)
+                self.vu_canvas.itemconfig(self._vu_right_rect, fill=rcol)
+            except Exception:
+                pass
         except Exception:
             pass
 
