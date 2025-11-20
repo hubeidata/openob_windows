@@ -77,6 +77,7 @@ class OpenOBGUI(tk.Tk):
         self.redis_proc = None
         self.openob_proc = None
         self.openob_thread = None
+        self.redis_running = False
         # tray icon state
         self.tray_icon = None
         self.tray_thread = None
@@ -116,8 +117,21 @@ class OpenOBGUI(tk.Tk):
         self.redis_status = tk.StringVar(value='Redis: unknown')
         self.openob_status = tk.StringVar(value='OpenOB: stopped')
 
-        ttk.Label(ctl, textvariable=self.redis_status).pack(side='left', padx=6)
-        ttk.Label(ctl, textvariable=self.openob_status).pack(side='left', padx=6)
+        # Status indicators: a small colored circle and the textual status
+        status_frame = ttk.Frame(ctl)
+        status_frame.pack(side='left', padx=6)
+
+        # Redis indicator
+        self.redis_canvas = tk.Canvas(status_frame, width=16, height=16, highlightthickness=0)
+        self.redis_canvas.create_oval(2, 2, 14, 14, fill='grey', outline='black', tags='dot')
+        self.redis_canvas.pack(side='left')
+        ttk.Label(status_frame, textvariable=self.redis_status).pack(side='left', padx=(4, 12))
+
+        # OpenOB indicator
+        self.openob_canvas = tk.Canvas(status_frame, width=16, height=16, highlightthickness=0)
+        self.openob_canvas.create_oval(2, 2, 14, 14, fill='grey', outline='black', tags='dot')
+        self.openob_canvas.pack(side='left')
+        ttk.Label(status_frame, textvariable=self.openob_status).pack(side='left', padx=(4, 6))
 
         btn_start_all = ttk.Button(ctl, text='Start All', command=self.start_all)
         btn_start_all.pack(side='right', padx=4)
@@ -168,6 +182,7 @@ class OpenOBGUI(tk.Tk):
             msgs.append(f'GStreamer bins not found at {GSTREAMER_BIN}')
 
         # Redis service status (Windows)
+        redis_running = False
         try:
             res = subprocess.run([
                 'powershell', '-NoProfile', '-Command',
@@ -177,18 +192,29 @@ class OpenOBGUI(tk.Tk):
             if svc:
                 msgs.append(f'Redis service: {svc}')
                 self.redis_status.set(f'Redis: {svc.lower()}')
+                redis_running = (svc == 'Running')
             else:
                 msgs.append('Redis service: NOT INSTALLED')
                 self.redis_status.set('Redis: not installed')
+                redis_running = False
         except Exception:
             msgs.append('Redis service: UNKNOWN')
             self.redis_status.set('Redis: unknown')
+            redis_running = False
 
         self.req_label.config(text=' | '.join(msgs))
 
-        # Also update OpenOB status
-        openob_running = self.openob_proc and self.openob_proc.poll() is None
+        # Store redis running flag for other callers
+        self.redis_running = bool(redis_running)
+
+        # Also update OpenOB status and visual indicators
+        openob_running = bool(self.openob_proc and self.openob_proc.poll() is None)
         self.openob_status.set('OpenOB: running' if openob_running else 'OpenOB: stopped')
+        # Update colored indicators
+        try:
+            self._update_indicators(self.redis_running, openob_running)
+        except Exception:
+            pass
 
     def start_redis(self):
         # Start the Redis Windows service (requires service to be installed)
@@ -196,6 +222,11 @@ class OpenOBGUI(tk.Tk):
             res = subprocess.run(['powershell', '-NoProfile', '-Command', 'Start-Service -Name Redis'], capture_output=True, text=True, cwd=str(REPO_ROOT), creationflags=creationflags)
             if res.returncode == 0:
                 self.append_log('Requested Start-Service Redis\n')
+                # refresh known status and indicators
+                try:
+                    self.check_requirements()
+                except Exception:
+                    pass
             else:
                 self.append_log(f'Start-Service exit: {res.returncode} stderr={res.stderr}\n')
                 messagebox.showerror('Error', f'Failed to start Redis service: {res.stderr}')
@@ -207,6 +238,10 @@ class OpenOBGUI(tk.Tk):
             res = subprocess.run(['powershell', '-NoProfile', '-Command', 'Stop-Service -Name Redis -Force'], capture_output=True, text=True, cwd=str(REPO_ROOT), creationflags=creationflags)
             if res.returncode == 0:
                 self.append_log('Requested Stop-Service Redis\n')
+                try:
+                    self.check_requirements()
+                except Exception:
+                    pass
             else:
                 self.append_log(f'Stop-Service exit: {res.returncode} stderr={res.stderr}\n')
                 messagebox.showerror('Error', f'Failed to stop Redis service: {res.stderr}')
@@ -271,6 +306,11 @@ class OpenOBGUI(tk.Tk):
             threading.Thread(target=self._stream_process_output, args=(self.openob_proc, 'OPENOB'), daemon=True).start()
             self.append_log('Started OpenOB (direct venv python)\n')
             self.openob_status.set('OpenOB: running')
+            # update indicator immediately
+            try:
+                self._update_indicators(self.redis_running, True)
+            except Exception:
+                pass
         except Exception as e:
             # As a last resort, offer to run the helper script if present
             if SCRIPT_START_OPENOB.exists():
@@ -281,6 +321,10 @@ class OpenOBGUI(tk.Tk):
                         threading.Thread(target=self._stream_process_output, args=(self.openob_proc, 'OPENOB'), daemon=True).start()
                         self.append_log('Started OpenOB (via start_openob.ps1 fallback)\n')
                         self.openob_status.set('OpenOB: running')
+                        try:
+                            self._update_indicators(self.redis_running, True)
+                        except Exception:
+                            pass
                         return
                     except Exception as e2:
                         messagebox.showerror('Error', f'Fallback also failed: {e2}')
@@ -308,6 +352,10 @@ class OpenOBGUI(tk.Tk):
             finally:
                 self.openob_proc = None
                 self.openob_status.set('OpenOB: stopped')
+                try:
+                    self._update_indicators(self.redis_running, False)
+                except Exception:
+                    pass
         else:
             messagebox.showinfo('Info', 'OpenOB not running')
 
@@ -328,6 +376,24 @@ class OpenOBGUI(tk.Tk):
                     continue
                 ts = time.strftime('%Y-%m-%d %H:%M:%S')
                 self.append_log(f'[{tag} {ts}] {line}')
+        except Exception:
+            pass
+
+    def _update_indicators(self, redis_running: bool, openob_running: bool):
+        """Update the canvas indicators: green (running) or red (stopped)."""
+        try:
+            r_color = 'green' if redis_running else 'red'
+            o_color = 'green' if openob_running else 'red'
+            if hasattr(self, 'redis_canvas'):
+                try:
+                    self.redis_canvas.itemconfig('dot', fill=r_color)
+                except Exception:
+                    pass
+            if hasattr(self, 'openob_canvas'):
+                try:
+                    self.openob_canvas.itemconfig('dot', fill=o_color)
+                except Exception:
+                    pass
         except Exception:
             pass
 
@@ -501,10 +567,18 @@ class OpenOBGUI(tk.Tk):
             redis_running = (svc == 'Running')
         except Exception:
             redis_running = False
-        openob_running = self.openob_proc and self.openob_proc.poll() is None
+        openob_running = bool(self.openob_proc and self.openob_proc.poll() is None)
         self.redis_status.set('Redis: running' if redis_running else 'Redis: stopped')
         self.openob_status.set('OpenOB: running' if openob_running else 'OpenOB: stopped')
-        # No recursive call to avoid constant loop
+        try:
+            self._update_indicators(redis_running, openob_running)
+        except Exception:
+            pass
+        # Schedule next status check (poll every 2 seconds)
+        try:
+            self.after(2000, self.update_status_loop)
+        except Exception:
+            pass
 
 
 def main():
