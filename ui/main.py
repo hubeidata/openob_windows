@@ -37,7 +37,7 @@ SCRIPT_START_OPENOB = REPO_ROOT / 'scripts' / 'start_openob.ps1'
 GSTREAMER_BIN = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\bin')
 GSTREAMER_GIR = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0')
 
-DEFAULT_OPENOB_ARGS = '127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto'
+DEFAULT_OPENOB_ARGS = '-v 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto'
 
 # Optional system tray support
 try:
@@ -146,6 +146,13 @@ class OpenOBGUI(tk.Tk):
         ttk.Button(subctl, text='Start OpenOB', command=self.start_openob).pack(side='left', padx=4)
         ttk.Button(subctl, text='Stop OpenOB', command=self.stop_openob).pack(side='left', padx=4)
 
+        # Autostart checkbox (default enabled)
+        self.autostart_var = tk.BooleanVar(value=True)
+        autostart_frame = ttk.Frame(frm)
+        autostart_frame.pack(fill='x', pady=6)
+        autostart_checkbox = ttk.Checkbutton(autostart_frame, text='Autostart OpenOB', variable=self.autostart_var)
+        autostart_checkbox.pack(side='left', padx=4)
+
         # VU Meter area (stereo: Left / Right)
         vu_frame = ttk.LabelFrame(frm, text='VU Meter')
         vu_frame.pack(fill='x', pady=(6, 0))
@@ -164,6 +171,19 @@ class OpenOBGUI(tk.Tk):
         log_frame.pack(fill='both', expand=True, pady=6)
         self.log_widget = scrolledtext.ScrolledText(log_frame, state='disabled', wrap='none')
         self.log_widget.pack(fill='both', expand=True, padx=4, pady=4)
+
+        # Load saved autostart state (defaults to enabled if no saved file)
+        self.autostart_var.set(self.load_autostart_state())
+
+        # Bind save_autostart_state to checkbox toggle
+        try:
+            self.autostart_var.trace_add('write', lambda *args: self.save_autostart_state())
+        except Exception:
+            pass
+
+        # If autostart enabled, start OpenOB automatically
+        if self.autostart_var.get():
+            self.after(100, self.start_openob)
 
     def append_log(self, text):
         self.log_widget.configure(state='normal')
@@ -685,6 +705,29 @@ class OpenOBGUI(tk.Tk):
             self.after(2000, self.update_status_loop)
         except Exception:
             pass
+
+    def load_autostart_state(self):
+        """Load the saved autostart state from a file."""
+        try:
+            state_file = REPO_ROOT / 'ui' / 'autostart_state.txt'
+            if state_file.exists():
+                with open(state_file, 'r') as f:
+                    return f.read().strip().lower() == 'true'
+            # default: enabled when no saved state exists
+            return True
+        except Exception as e:
+            self.append_log(f'Error loading autostart state: {e}\n')
+        return True
+
+    def save_autostart_state(self):
+        """Save the current autostart state to a file."""
+        try:
+            state_file = REPO_ROOT / 'ui' / 'autostart_state.txt'
+            with open(state_file, 'w') as f:
+                f.write('true' if self.autostart_var.get() else 'false')
+        except Exception as e:
+            self.append_log(f'Error saving autostart state: {e}\n')
+        
 
 
 def main():
