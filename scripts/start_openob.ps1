@@ -33,6 +33,20 @@ $ErrorActionPreference = 'Stop'
 
 Write-Host "Starting OpenOB (assumes Redis already running). Working directory: $(Get-Location)"
 
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$bundleGstBin = Join-Path $repoRoot 'dependencias\GTK3_Gvsbuild\bin'
+$bundleGstGir = Join-Path $repoRoot 'dependencias\GTK3_Gvsbuild\lib\girepository-1.0'
+
+if (-not (Test-Path $GstBin) -and (Test-Path $bundleGstBin)) {
+    Write-Host "System GStreamer bin not found. Using bundled runtime: $bundleGstBin"
+    $GstBin = $bundleGstBin
+}
+
+if (-not (Test-Path $GstGir) -and (Test-Path $bundleGstGir)) {
+    Write-Host "System GI repository path not found. Using bundled runtime: $bundleGstGir"
+    $GstGir = $bundleGstGir
+}
+
 function Check-Redis {
     $t = Test-NetConnection -ComputerName 127.0.0.1 -Port 6379 -WarningAction SilentlyContinue
     if ($t.TcpTestSucceeded) {

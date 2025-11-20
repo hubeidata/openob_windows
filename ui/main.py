@@ -23,7 +23,15 @@ import shutil
 import sys
 import time
 import re
+import logging
 from pathlib import Path
+
+try:
+    import redis
+    HAS_REDIS_LIB = True
+except Exception:
+    redis = None
+    HAS_REDIS_LIB = False
 
 
 # Hide PowerShell windows on Windows
@@ -36,6 +44,9 @@ OPENOB_SCRIPT = REPO_ROOT / '.venv' / 'Scripts' / 'openob'
 SCRIPT_START_OPENOB = REPO_ROOT / 'scripts' / 'start_openob.ps1'
 GSTREAMER_BIN = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\bin')
 GSTREAMER_GIR = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0')
+LOG_DIR = REPO_ROOT / 'logs'
+LOG_DIR.mkdir(exist_ok=True)
+UI_LOG_FILE = LOG_DIR / 'ui.log'
 
 DEFAULT_OPENOB_ARGS = '127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto'
 
@@ -51,6 +62,10 @@ except Exception:
 class OpenOBGUI(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.logger = logging.getLogger('openob.ui')
+        self.logger.setLevel(logging.INFO)
+        self._ensure_log_handler()
+
         self.title('OpenOB Controller')
         self.geometry('900x600')
         # Set application icon (prefer PNG for window, ICO for taskbar/shortcut)
@@ -79,16 +94,31 @@ class OpenOBGUI(tk.Tk):
         self.openob_proc = None
         self.openob_thread = None
         self.redis_running = False
+        self.redis_client = None
+        self.redis_client = None
+        self.redis_host = None
+        self.redis_port = 6379
+        self.vu_diag_state = {'local': None, 'remote': None}
+        self.auto_start_var = tk.BooleanVar(value=True)
+        self._auto_started = False
+        self.redis_host = None
+        self.redis_port = 6379
+        self.config_host = None
+        self.link_name = None
+        self.node_id = None
+        self.link_mode = None
         # tray icon state
         self.tray_icon = None
         self.tray_thread = None
 
         # Handle window close
+        self.after(1500, self._auto_start_if_enabled)
         self.protocol('WM_DELETE_WINDOW', self.on_close)
 
         self.create_widgets()
         self.check_requirements()
         self.update_status_loop()
+        self.update_vu_loop()
 
     def create_widgets(self):
         frm = ttk.Frame(self)
@@ -108,6 +138,8 @@ class OpenOBGUI(tk.Tk):
         args_frame = ttk.LabelFrame(frm, text='OpenOB launch args')
         args_frame.pack(fill='x', pady=6)
         self.args_var = tk.StringVar(value=DEFAULT_OPENOB_ARGS)
+        self.args_var.trace_add('write', lambda *_: self._on_args_change())
+        self._update_link_details_from_args()
         args_entry = ttk.Entry(args_frame, textvariable=self.args_var)
         args_entry.pack(fill='x', padx=6, pady=6)
 
@@ -145,19 +177,18 @@ class OpenOBGUI(tk.Tk):
         ttk.Button(subctl, text='Stop Redis', command=self.stop_redis).pack(side='left', padx=4)
         ttk.Button(subctl, text='Start OpenOB', command=self.start_openob).pack(side='left', padx=4)
         ttk.Button(subctl, text='Stop OpenOB', command=self.stop_openob).pack(side='left', padx=4)
+        ttk.Checkbutton(subctl, text='Auto iniciar OpenOB al abrir', variable=self.auto_start_var).pack(side='left', padx=8)
 
-        # VU Meter area (stereo: Left / Right)
-        vu_frame = ttk.LabelFrame(frm, text='VU Meter')
+        # VU Meter area (two stacked meters)
+        vu_frame = ttk.LabelFrame(frm, text='Audio Levels')
         vu_frame.pack(fill='x', pady=(6, 0))
-        self.vu_canvas = tk.Canvas(vu_frame, height=36)
-        self.vu_canvas.pack(fill='x', padx=6, pady=6)
-        # parameters for drawing
-        self._vu_max_width = 300
-        self._vu_left_rect = self.vu_canvas.create_rectangle(6, 6, 6, 14, fill='green', outline='black')
-        self._vu_right_rect = self.vu_canvas.create_rectangle(6, 20, 6, 28, fill='green', outline='black')
-        # labels
-        self.vu_canvas.create_text(0, 10, anchor='w', text='L', font=('TkDefaultFont', 9))
-        self.vu_canvas.create_text(0, 24, anchor='w', text='R', font=('TkDefaultFont', 9))
+        self._vu_max_width = 360
+        (self.local_vu_canvas,
+         self._local_left_rect,
+         self._local_right_rect) = self._create_vu_section(vu_frame, 'Audio Input (Local)')
+        (self.remote_vu_canvas,
+         self._remote_left_rect,
+         self._remote_right_rect) = self._create_vu_section(vu_frame, 'Audio Output (Receiver)')
 
         # Log area
         log_frame = ttk.LabelFrame(frm, text='Logs')
@@ -171,13 +202,31 @@ class OpenOBGUI(tk.Tk):
         self.log_widget.see('end')
         self.log_widget.configure(state='disabled')
 
+    # Logging helpers
+    _log_handler_set = False
+
+    def _ensure_log_handler(self):
+        if OpenOBGUI._log_handler_set:
+            return
+        handler = logging.FileHandler(UI_LOG_FILE, encoding='utf-8')
+        handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s'))
+        self.logger.addHandler(handler)
+        self.logger.propagate = False
+        OpenOBGUI._log_handler_set = True
+
+    def _log_status(self, message, level='info', to_ui=False):
+        log_fn = getattr(self.logger, level, self.logger.info)
+        log_fn(message)
+        if to_ui:
+            self.append_log(message + '\n')
+
     def check_requirements(self):
         msgs = []
+        self._update_link_details_from_args()
         # python module redis
-        try:
-            import redis as _
+        if HAS_REDIS_LIB:
             msgs.append('redis: OK')
-        except Exception:
+        else:
             msgs.append('redis: MISSING')
 
         # gi/Gst
@@ -390,35 +439,20 @@ class OpenOBGUI(tk.Tk):
                     continue
                 ts = time.strftime('%Y-%m-%d %H:%M:%S')
                 self.append_log(f'[{tag} {ts}] {line}')
-                # If this is OpenOB output, try to parse numeric level values (0..124)
-                if tag == 'OPENOB':
-                    try:
-                        # find numbers (allow optional negative sign and decimals)
-                        found = re.findall(r"(-?\d{1,3}(?:\.\d+)?)", line)
-                        vals = []
-                        for s in found:
-                            try:
-                                v = float(s)
-                                # keep plausible audio numbers
-                                if -200.0 <= v <= 1000.0:
-                                    vals.append(v)
-                            except Exception:
-                                continue
-                        if vals:
-                            # interpret as stereo if two or more numbers, else use one value for both
-                            if len(vals) >= 2:
-                                lval, rval = vals[-2], vals[-1]
-                            else:
-                                lval = rval = vals[-1]
-                            # schedule UI update (pass floats)
-                            try:
-                                self.after(0, lambda L=lval, R=rval: self._set_vu(L, R))
-                            except Exception:
-                                pass
-                    except Exception:
-                        pass
         except Exception:
             pass
+
+    def _create_vu_section(self, parent, title):
+        section = ttk.Frame(parent)
+        section.pack(fill='x', padx=6, pady=4)
+        ttk.Label(section, text=title).pack(anchor='w')
+        canvas = tk.Canvas(section, height=32)
+        canvas.pack(fill='x', pady=2)
+        canvas.create_text(6, 10, anchor='w', text='L', font=('TkDefaultFont', 9))
+        canvas.create_text(6, 24, anchor='w', text='R', font=('TkDefaultFont', 9))
+        left_rect = canvas.create_rectangle(24, 6, 24, 14, fill='grey', outline='black')
+        right_rect = canvas.create_rectangle(24, 18, 24, 26, fill='grey', outline='black')
+        return canvas, left_rect, right_rect
 
     def _update_indicators(self, redis_running: bool, openob_running: bool):
         """Update the canvas indicators: green (running) or red (stopped)."""
@@ -438,68 +472,214 @@ class OpenOBGUI(tk.Tk):
         except Exception:
             pass
 
-    def _set_vu(self, left_val, right_val):
-        """Render VU bars from raw numeric levels.
-
-        The function accepts two numeric inputs which may be:
-        - dB-like negatives (e.g. -65 .. 0) where -65 -> silence and 0 -> max
-        - legacy positive scale (0 .. 124) where 0 -> max and 124 -> silence
-
-        The function auto-detects negative values and maps accordingly.
-        """
+    def _set_vu_canvas(self, canvas, left_rect, right_rect, left_val, right_val):
+        """Render VU bars on the provided canvas using shared mapping logic."""
         try:
-            # convert to floats
             lv_raw = float(left_val)
             rv_raw = float(right_val)
 
-            # Detect dB-style negatives: if either is negative, map from [-65..0]
             if lv_raw < 0 or rv_raw < 0:
-                # dB scale mapping: clamp to [-65, 0]
                 min_db = -65.0
                 lv = max(min_db, min(0.0, lv_raw))
                 rv = max(min_db, min(0.0, rv_raw))
                 lam = (lv - min_db) / (0.0 - min_db)
                 ram = (rv - min_db) / (0.0 - min_db)
             else:
-                # legacy mapping 0..124 where 0 = loud, 124 = silent
                 lv = max(0.0, min(124.0, lv_raw))
                 rv = max(0.0, min(124.0, rv_raw))
                 lam = 1.0 - (lv / 124.0)
                 ram = 1.0 - (rv / 124.0)
 
-            # clamp amplitudes 0..1
             lam = max(0.0, min(1.0, lam))
             ram = max(0.0, min(1.0, ram))
 
-            # pixel width (leave padding)
-            canvas_w = max(50, self.vu_canvas.winfo_width() or self._vu_max_width)
+            canvas_w = max(50, canvas.winfo_width() or self._vu_max_width)
             max_w = canvas_w - 40
             lpx = int(24 + lam * max_w)
             rpx = int(24 + ram * max_w)
 
-            # decide colors by amplitude
             def color_for(a):
                 if a >= 0.75:
-                    return '#33cc33'  # green
+                    return '#33cc33'
                 if a >= 0.4:
-                    return '#ebd02b'  # yellow
-                return '#e03b3b'     # red
+                    return '#ebd02b'
+                return '#e03b3b'
 
             lcol = color_for(lam)
             rcol = color_for(ram)
 
-            # update left rect (y 6..14)
+            canvas.coords(left_rect, 24, 6, lpx, 14)
+            canvas.itemconfig(left_rect, fill=lcol)
+            canvas.coords(right_rect, 24, 18, rpx, 26)
+            canvas.itemconfig(right_rect, fill=rcol)
+        except Exception:
+            pass
+
+    def _apply_vu_values(self, target, left, right):
+        if target == 'local':
+            canvas = getattr(self, 'local_vu_canvas', None)
+            lrect = getattr(self, '_local_left_rect', None)
+            rrect = getattr(self, '_local_right_rect', None)
+        else:
+            canvas = getattr(self, 'remote_vu_canvas', None)
+            lrect = getattr(self, '_remote_left_rect', None)
+            rrect = getattr(self, '_remote_right_rect', None)
+        if canvas and lrect and rrect:
+            self._set_vu_canvas(canvas, lrect, rrect, left, right)
+
+    def _set_vu_silence(self, target):
+        self._apply_vu_values(target, -65.0, -65.0)
+
+    def _auto_start_if_enabled(self):
+        if self._auto_started:
+            return
+        try:
+            if self.auto_start_var.get():
+                if not (self.openob_proc and self.openob_proc.poll() is None):
+                    self._log_status('Auto-starting OpenOB (auto option enabled)', 'info', to_ui=True)
+                    try:
+                        self.start_openob()
+                    except Exception as exc:
+                        self._log_status(f'Auto-start attempt failed: {exc}', 'error', to_ui=True)
+                else:
+                    self._log_status('Auto-start skipped: OpenOB already running', 'info')
+            else:
+                self._log_status('Auto-start disabled by user; skipping automatic launch', 'info')
+        finally:
+            # Only run once per app launch; user can manually start later
+            self._auto_started = True
+
+    def _record_vu_status(self, target, status, detail=None):
+        prev = self.vu_diag_state.get(target)
+        if prev == status:
+            return
+        self.vu_diag_state[target] = status
+        msg = f'{target.upper()} VU status: {status}'
+        if detail:
+            msg = f'{msg} ({detail})'
+        level = 'info' if status == 'ok' else 'warning'
+        self._log_status(msg, level=level, to_ui=(status != 'ok'))
+
+    def _on_args_change(self, *args):
+        self._update_link_details_from_args()
+
+    def _update_link_details_from_args(self):
+        raw = self.args_var.get() if hasattr(self, 'args_var') else ''
+        try:
+            parts = shlex.split(raw)
+        except Exception:
+            parts = raw.split()
+
+        prev_host = self.config_host
+        self.config_host = parts[0] if len(parts) >= 1 else None
+        self.node_id = parts[1] if len(parts) >= 2 else None
+        self.link_name = parts[2] if len(parts) >= 3 else None
+        self.link_mode = parts[3] if len(parts) >= 4 else None
+
+        if prev_host != self.config_host:
+            self._reset_redis_connection()
+
+    def _reset_redis_connection(self):
+        self.redis_client = None
+        self.redis_host = None
+        self.redis_port = 6379
+
+    def _split_host_port(self, raw_host):
+        if not raw_host:
+            return None, None
+        if ':' in raw_host:
+            host, port = raw_host.split(':', 1)
             try:
-                self.vu_canvas.coords(self._vu_left_rect, 24, 6, lpx, 14)
-                self.vu_canvas.itemconfig(self._vu_left_rect, fill=lcol)
-            except Exception:
-                pass
-            # update right rect (y 20..28)
+                return host, int(port)
+            except ValueError:
+                return host, 6379
+        return raw_host, 6379
+
+    def _get_redis_client(self):
+        if not HAS_REDIS_LIB:
+            return None
+        host = self.config_host
+        if not host:
+            return None
+        host_only, port = self._split_host_port(host)
+        if not host_only:
+            return None
+        if self.redis_client and host_only == self.redis_host and port == self.redis_port:
+            return self.redis_client
+        try:
+            client = redis.StrictRedis(host=host_only, port=port, db=0, charset='utf-8', decode_responses=True)
+            client.ping()
+            self.redis_client = client
+            self.redis_host = host_only
+            self.redis_port = port
+        except Exception:
+            self.redis_client = None
+        return self.redis_client
+
+    def _fetch_and_apply_vu(self, client, role, target):
+        link = self.link_name
+        if not link:
+            self._set_vu_silence(target)
+            self._record_vu_status(target, 'no-link', 'Link name missing in args')
+            return
+        key = f'openob:{link}:vu:{role}'
+        try:
+            data = client.hgetall(key)
+        except Exception:
+            data = {}
+        if not data:
+            self._set_vu_silence(target)
+            self._record_vu_status(target, 'no-data', f'Sin datos para clave {key}')
+            return
+        left = data.get('left_db') or data.get('left') or data.get('l')
+        right = data.get('right_db') or data.get('right') or data.get('r')
+        if left is None and right is None:
+            combined = data.get('audio_level_db') or data.get('audio_level') or data.get('level')
+            if combined:
+                nums = re.findall(r'-?\d+(?:\.\d+)?', str(combined))
+                if len(nums) >= 2:
+                    left, right = nums[-2], nums[-1]
+                elif len(nums) == 1:
+                    left = right = nums[0]
+        try:
+            left_val = float(left) if left is not None else None
+            right_val = float(right) if right is not None else left_val
+        except Exception:
+            left_val = right_val = None
+        if left_val is None or right_val is None:
+            self._set_vu_silence(target)
+            self._record_vu_status(target, 'invalid-data', f'Datos sin valores numéricos en {key}')
+            return
+        updated = data.get('updated_ts') or data.get('ts')
+        if updated is not None:
             try:
-                self.vu_canvas.coords(self._vu_right_rect, 24, 20, rpx, 28)
-                self.vu_canvas.itemconfig(self._vu_right_rect, fill=rcol)
+                updated = float(updated)
             except Exception:
-                pass
+                updated = None
+            if updated is not None and (time.time() - updated) > 5:
+                self._set_vu_silence(target)
+                self._record_vu_status(target, 'stale', f'Datos viejos ({time.time()-updated:.1f}s) en {key}')
+                return
+        self._apply_vu_values(target, left_val, right_val)
+        self._record_vu_status(target, 'ok', None)
+
+    def update_vu_loop(self):
+        try:
+            self._update_link_details_from_args()
+            client = self._get_redis_client()
+            if client and self.link_name:
+                self._fetch_and_apply_vu(client, 'tx', 'local')
+                self._fetch_and_apply_vu(client, 'rx', 'remote')
+            else:
+                reason = 'Sin Redis' if not client else 'Link no definido'
+                self._set_vu_silence('local')
+                self._set_vu_silence('remote')
+                self._record_vu_status('local', 'blocked', reason)
+                self._record_vu_status('remote', 'blocked', reason)
+        except Exception:
+            pass
+        try:
+            self.after(1000, self.update_vu_loop)
         except Exception:
             pass
 
