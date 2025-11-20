@@ -230,33 +230,70 @@ class OpenOBGUI(tk.Tk):
             if not messagebox.askyesno('Redis unknown', 'Could not determine Redis service state. Continue?'):
                 return
 
-        # Call the PowerShell helper script that configures GStreamer env and runs OpenOB
-        if not SCRIPT_START_OPENOB.exists():
-            messagebox.showerror('Error', f'start_openob script not found at {SCRIPT_START_OPENOB}')
+        # Prefer launching OpenOB directly with the venv python so the UI keeps
+        # the real process handle. This makes stop_openob() reliable.
+        if not VENV_PY.exists():
+            messagebox.showerror('Error', f'Venv python not found at {VENV_PY}')
             return
+        if not OPENOB_SCRIPT.exists():
+            # Fallback: if the helper script exists, warn but still allow user to continue
+            if SCRIPT_START_OPENOB.exists():
+                if not messagebox.askyesno('Warning', f'OpenOB entry script not found at {OPENOB_SCRIPT}. Use helper script instead?'):
+                    return
+            else:
+                messagebox.showerror('Error', f'OpenOB entry script not found at {OPENOB_SCRIPT} and helper missing at {SCRIPT_START_OPENOB}')
+                return
 
-        cmd = [
-            'powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(SCRIPT_START_OPENOB),
-            '-OpenobArgs', args
-        ]
+        # Build direct command: <venv_python> <openob_script> <args...>
         try:
-            # Launch the PowerShell script in the repo root so relative paths inside it resolve correctly
+            split_args = shlex.split(args)
+        except Exception:
+            split_args = args.split()
+
+        cmd = [str(VENV_PY), str(OPENOB_SCRIPT)] + split_args
+        try:
+            # Start the real OpenOB process and stream output into the UI
             self.openob_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=str(REPO_ROOT), creationflags=creationflags)
             threading.Thread(target=self._stream_process_output, args=(self.openob_proc, 'OPENOB'), daemon=True).start()
-            self.append_log('Started OpenOB (via start_openob.ps1)\n')
+            self.append_log('Started OpenOB (direct venv python)\n')
             self.openob_status.set('OpenOB: running')
         except Exception as e:
-            messagebox.showerror('Error', f'Failed to start OpenOB helper: {e}')
+            # As a last resort, offer to run the helper script if present
+            if SCRIPT_START_OPENOB.exists():
+                if messagebox.askyesno('Start fallback', f'Failed to start directly: {e}\nTry helper script instead?'):
+                    try:
+                        cmd2 = ['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(SCRIPT_START_OPENOB), '-OpenobArgs', args]
+                        self.openob_proc = subprocess.Popen(cmd2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=str(REPO_ROOT), creationflags=creationflags)
+                        threading.Thread(target=self._stream_process_output, args=(self.openob_proc, 'OPENOB'), daemon=True).start()
+                        self.append_log('Started OpenOB (via start_openob.ps1 fallback)\n')
+                        self.openob_status.set('OpenOB: running')
+                        return
+                    except Exception as e2:
+                        messagebox.showerror('Error', f'Fallback also failed: {e2}')
+                        return
+            messagebox.showerror('Error', f'Failed to start OpenOB: {e}')
 
     def stop_openob(self):
         if self.openob_proc and self.openob_proc.poll() is None:
             try:
+                # Ask the process to terminate gracefully
                 self.openob_proc.terminate()
-                self.append_log('Terminated OpenOB helper process\n')
-            except Exception:
-                pass
-            self.openob_proc = None
-            self.openob_status.set('OpenOB: stopped')
+                self.append_log('Sent terminate to OpenOB process\n')
+                # wait shortly for graceful exit
+                try:
+                    self.openob_proc.wait(timeout=3)
+                except Exception:
+                    # still running: force kill
+                    try:
+                        self.openob_proc.kill()
+                        self.append_log('Killed OpenOB process\n')
+                    except Exception:
+                        self.append_log('Failed to kill OpenOB process\n')
+            except Exception as e:
+                self.append_log(f'Error stopping OpenOB: {e}\n')
+            finally:
+                self.openob_proc = None
+                self.openob_status.set('OpenOB: stopped')
         else:
             messagebox.showinfo('Info', 'OpenOB not running')
 
