@@ -22,6 +22,7 @@ Requisitos previos
 
 3) Instalar OpenOB en el venv y dependencias compatibles
 	Nada de errores
+    pip install pystray pillow
     pip install --upgrade pip setuptools wheel
     pip install 'redis<4.0,>=3.5.3'
     cd .\openob\

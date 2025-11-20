@@ -24,3 +24,13 @@
 2025-11-19 22:43:43,148 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
 2025-11-19 22:43:44,142 [INFO] Auto-starting OpenOB (auto option enabled)
 2025-11-19 22:43:47,499 [INFO] LOCAL VU status: ok
+2025-11-20 16:04:18,047 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-11-20 16:04:18,047 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-11-20 16:04:18,382 [INFO] Auto-starting OpenOB (auto option enabled)
+2025-11-20 16:04:22,389 [INFO] LOCAL VU status: ok
+2025-11-20 18:14:50,356 [INFO] REMOTE VU status: ok
+2025-11-20 18:14:58,944 [WARNING] REMOTE VU status: stale (Datos viejos (5.0s) en openob:transmission:vu:rx)
+2025-11-20 18:14:59,956 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-11-20 18:15:01,323 [INFO] REMOTE VU status: ok
+2025-11-20 18:15:10,736 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-11-20 18:16:32,747 [INFO] REMOTE VU status: ok
