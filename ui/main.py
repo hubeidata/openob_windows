@@ -38,6 +38,14 @@ GSTREAMER_GIR = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\gireposito
 
 DEFAULT_OPENOB_ARGS = '127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto'
 
+# Optional system tray support
+try:
+    import pystray
+    from PIL import Image
+    HAS_TRAY = True
+except Exception:
+    HAS_TRAY = False
+
 
 class OpenOBGUI(tk.Tk):
     def __init__(self):
@@ -69,6 +77,12 @@ class OpenOBGUI(tk.Tk):
         self.redis_proc = None
         self.openob_proc = None
         self.openob_thread = None
+        # tray icon state
+        self.tray_icon = None
+        self.tray_thread = None
+
+        # Handle window close
+        self.protocol('WM_DELETE_WINDOW', self.on_close)
 
         self.create_widgets()
         self.check_requirements()
@@ -316,6 +330,163 @@ class OpenOBGUI(tk.Tk):
                 self.append_log(f'[{tag} {ts}] {line}')
         except Exception:
             pass
+
+    # ---------------------------
+    # Close / tray behavior
+    # ---------------------------
+    def on_close(self):
+        """Handle window close (X): prompt user to stop OpenOB, run in background, or cancel."""
+        # If OpenOB not running, just close
+        if not (self.openob_proc and self.openob_proc.poll() is None):
+            self.destroy()
+            return
+
+        # OpenOB is running: show choice dialog
+        choice = self._show_close_dialog()
+        if choice == 'stop':
+            # stop OpenOB then exit
+            try:
+                self.stop_openob()
+            except Exception:
+                pass
+            self.destroy()
+        elif choice == 'background':
+            # Minimize to tray and keep OpenOB running
+            if not HAS_TRAY:
+                messagebox.showerror('Error', 'Tray support not available. Install: pip install pystray pillow')
+                return
+            self.withdraw()
+            self._start_tray()
+        else:
+            # cancel -> do nothing
+            return
+
+    def _show_close_dialog(self):
+        """Show a modal dialog with three options:
+        'Detener OpenOB antes de cerrar' -> returns 'stop'
+        'Continuar ejecutando en segundo plano' -> returns 'background'
+        'Cancelar' -> returns 'cancel'
+        """
+        dlg = tk.Toplevel(self)
+        dlg.title('Cerrar')
+        dlg.transient(self)
+        dlg.grab_set()
+        dlg.resizable(False, False)
+
+        frm = ttk.Frame(dlg, padding=12)
+        frm.pack(fill='both', expand=True)
+        ttk.Label(frm, text='OpenOB está en ejecución. ¿Qué desea hacer al cerrar la interfaz?').pack(padx=6, pady=(0,10))
+
+        result = {'choice': 'cancel'}
+
+        def do_stop():
+            result['choice'] = 'stop'
+            dlg.destroy()
+
+        def do_background():
+            result['choice'] = 'background'
+            dlg.destroy()
+
+        def do_cancel():
+            result['choice'] = 'cancel'
+            dlg.destroy()
+
+        btns = ttk.Frame(frm)
+        btns.pack(fill='x')
+        ttk.Button(btns, text='Detener OpenOB antes de cerrar', command=do_stop).pack(side='left', padx=4)
+        ttk.Button(btns, text='Continuar ejecutando en segundo plano', command=do_background).pack(side='left', padx=4)
+        ttk.Button(btns, text='Cancelar', command=do_cancel).pack(side='right', padx=4)
+
+        # center dialog over parent
+        self.update_idletasks()
+        dlg.update_idletasks()
+        x = self.winfo_rootx() + (self.winfo_width() // 2) - (dlg.winfo_width() // 2)
+        y = self.winfo_rooty() + (self.winfo_height() // 2) - (dlg.winfo_height() // 2)
+        dlg.geometry(f'+{x}+{y}')
+
+        self.wait_window(dlg)
+        return result['choice']
+
+    def _create_tray_image(self):
+        # Prefer app PNG icon if present
+        img_path = REPO_ROOT / 'ui' / 'images' / 'ob-logo.png'
+        try:
+            if img_path.exists():
+                img = Image.open(str(img_path)).convert('RGBA')
+                return img
+        except Exception:
+            pass
+        # fallback: create a simple blank image
+        try:
+            img = Image.new('RGBA', (64, 64), (50, 50, 50, 255))
+            return img
+        except Exception:
+            return None
+
+    def _start_tray(self):
+        """Create and run the pystray icon in a background thread."""
+        if not HAS_TRAY:
+            return
+        if self.tray_icon is not None:
+            return
+
+        image = self._create_tray_image()
+        if image is None:
+            messagebox.showerror('Error', 'No tray icon image available')
+            return
+
+        menu = pystray.Menu(
+            pystray.MenuItem('Restaurar', lambda _: self.after(0, self._tray_restore)),
+            pystray.MenuItem('Detener OpenOB', lambda _: self.after(0, self.stop_openob)),
+            pystray.MenuItem('Salir', lambda _: self.after(0, self._tray_exit))
+        )
+
+        self.tray_icon = pystray.Icon('openob', image, 'OpenOB', menu)
+
+        def run_icon():
+            try:
+                self.tray_icon.run()
+            except Exception:
+                pass
+
+        self.tray_thread = threading.Thread(target=run_icon, daemon=True)
+        self.tray_thread.start()
+
+    def _stop_tray(self):
+        try:
+            if self.tray_icon:
+                self.tray_icon.stop()
+                self.tray_icon = None
+        except Exception:
+            pass
+
+    def _tray_restore(self):
+        # Restore window from tray
+        try:
+            self.deiconify()
+            self.after(100, lambda: self.lift())
+        except Exception:
+            pass
+        self._stop_tray()
+
+    def _tray_exit(self):
+        # Stop OpenOB if running, then stop tray and exit
+        try:
+            if self.openob_proc and self.openob_proc.poll() is None:
+                # Attempt graceful stop, then force
+                try:
+                    self.stop_openob()
+                except Exception:
+                    pass
+        finally:
+            try:
+                self._stop_tray()
+            except Exception:
+                pass
+            try:
+                self.destroy()
+            except Exception:
+                sys.exit(0)
 
     def update_status_loop(self):
         # Update statuses (called once at startup)
