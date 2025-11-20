@@ -34,3 +34,7 @@
 2025-11-20 18:15:01,323 [INFO] REMOTE VU status: ok
 2025-11-20 18:15:10,736 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
 2025-11-20 18:16:32,747 [INFO] REMOTE VU status: ok
+2025-11-20 18:20:57,872 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-11-20 18:21:18,721 [INFO] REMOTE VU status: ok
+2025-11-20 18:21:28,436 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-11-20 18:21:31,797 [INFO] REMOTE VU status: ok
