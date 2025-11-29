@@ -22,9 +22,11 @@ Requisitos previos
 
 3) Instalar OpenOB en el venv y dependencias compatibles
 	Nada de errores
-    pip install pystray pillow
-    pip install --upgrade pip setuptools wheel
-    pip install 'redis<4.0,>=3.5.3'
+    
+    python -m pip install --upgrade pip
+    pip install 'redis<4.0,>=3.5.3' pystray pillow setuptools wheel
+
+
     cd .\openob\
     pip install .
 
@@ -42,7 +44,7 @@ Además, para la sesión PowerShell en la que lances OpenOB añade:
 
 Comprueba desde el venv que `gi`/`Gst` importan:
 
-    .\.venv\Scripts\python.exe -c "import gi; from gi.repository import Gst; print('GStreamer OK')
+    .\.venv\Scripts\python.exe -c "import gi; from gi.repository import Gst; print('GStreamer OK')"
 
 
 5) Iniciar Redis (temporalmente manual)
@@ -66,7 +68,7 @@ Este documento contiene los comandos mínimos y reproducibles para preparar el e
 Ejecuta los pasos desde la carpeta raíz del workspace (por ejemplo: `C:\Users\vamanuel\Documents\openob_windows`).
 
 Requisitos previos
-- Python 3.12 x64 instalado.
+- Python 3.13 x64 instalado.
 - GStreamer runtime MSVC x86_64 instalado (por defecto: `C:\Program Files\gstreamer\1.0\msvc_x86_64`).
 - Redis instalado como servicio Windows y en ejecución (si no lo está, hay scripts en `scripts\` para instalarlo).
 
