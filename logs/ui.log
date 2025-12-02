@@ -189,3 +189,73 @@
 2025-12-02 18:03:24,791 [INFO] Auto-starting OBBroadcast (auto option enabled)
 2025-12-02 18:03:27,798 [INFO] LOCAL VU status: ok
 2025-12-02 18:03:27,800 [INFO] REMOTE VU status: ok
+2025-12-02 18:20:10,177 [INFO] LOCAL VU status: ok
+2025-12-02 18:20:10,177 [INFO] REMOTE VU status: ok
+2025-12-02 18:20:11,508 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-02 18:20:38,777 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:20:38,777 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:20:40,122 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-02 18:20:43,105 [INFO] LOCAL VU status: ok
+2025-12-02 18:20:43,105 [INFO] REMOTE VU status: ok
+2025-12-02 18:22:30,604 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:22:30,604 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:22:31,937 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-02 18:23:19,766 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:23:19,770 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:23:21,101 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-02 18:23:24,161 [INFO] LOCAL VU status: ok
+2025-12-02 18:23:24,161 [INFO] REMOTE VU status: ok
+2025-12-02 18:25:22,393 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:25:22,409 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:25:23,747 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-02 18:25:26,756 [INFO] LOCAL VU status: ok
+2025-12-02 18:25:26,756 [INFO] REMOTE VU status: ok
+2025-12-02 18:28:37,743 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:28:37,747 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:28:39,104 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-02 18:28:42,081 [INFO] LOCAL VU status: ok
+2025-12-02 18:28:42,081 [INFO] REMOTE VU status: ok
+2025-12-02 18:28:46,440 [WARNING] REMOTE VU status: stale (Datos viejos (5.6s) en openob:transmission:vu:rx)
+2025-12-02 18:28:47,452 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:28:47,458 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:30:25,658 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:30:25,670 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:30:26,999 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-02 18:30:35,384 [INFO] LOCAL VU status: ok
+2025-12-02 18:30:35,386 [INFO] REMOTE VU status: ok
+2025-12-02 18:31:21,113 [WARNING] REMOTE VU status: stale (Datos viejos (5.7s) en openob:transmission:vu:rx)
+2025-12-02 18:31:22,277 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:31:22,281 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:31:28,819 [INFO] LOCAL VU status: ok
+2025-12-02 18:31:28,819 [INFO] REMOTE VU status: ok
+2025-12-02 18:32:46,195 [WARNING] REMOTE VU status: stale (Datos viejos (5.1s) en openob:transmission:vu:rx)
+2025-12-02 18:32:47,356 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:32:58,237 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:33:16,807 [INFO] LOCAL VU status: ok
+2025-12-02 18:33:28,852 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:33:45,144 [INFO] LOCAL VU status: ok
+2025-12-02 18:33:45,144 [INFO] REMOTE VU status: ok
+2025-12-02 18:33:59,393 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:33:59,393 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:34:06,938 [INFO] LOCAL VU status: ok
+2025-12-02 18:34:06,940 [INFO] REMOTE VU status: ok
+2025-12-02 18:35:55,245 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:35:55,245 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:35:56,582 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-02 18:35:59,613 [INFO] LOCAL VU status: ok
+2025-12-02 18:35:59,613 [INFO] REMOTE VU status: ok
+2025-12-02 18:36:07,149 [WARNING] LOCAL VU status: stale (Datos viejos (5.0s) en openob:transmission:vu:tx)
+2025-12-02 18:36:07,155 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:36:08,306 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:36:13,644 [INFO] LOCAL VU status: ok
+2025-12-02 18:36:13,644 [INFO] REMOTE VU status: ok
+2025-12-02 18:36:26,732 [WARNING] REMOTE VU status: stale (Datos viejos (5.1s) en openob:transmission:vu:rx)
+2025-12-02 18:36:27,895 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:36:27,899 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:36:34,419 [INFO] LOCAL VU status: ok
+2025-12-02 18:36:34,419 [INFO] REMOTE VU status: ok
+2025-12-02 18:39:06,106 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-02 18:39:06,106 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-02 18:39:07,455 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-02 18:39:10,469 [INFO] LOCAL VU status: ok
+2025-12-02 18:39:10,469 [INFO] REMOTE VU status: ok

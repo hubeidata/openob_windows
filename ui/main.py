@@ -388,95 +388,40 @@ class OpenOBGUI(tk.Tk):
         )
 
     def _draw_status_cards(self):
-        """Draw status indicator cards for Redis and OpenOB."""
+        """Draw link info text (status cards removed)."""
         card_y = 520
-        card_w = 180
-        card_h = 40
-        spacing = 20
         
-        # Redis card
-        redis_x = CENTER_X - card_w - spacing // 2
-        self._redis_card_bg = self.main_canvas.create_rectangle(
-            redis_x, card_y, redis_x + card_w, card_y + card_h,
-            fill="#e0e0e0", outline="#c0c0c0", width=1,
-            tags='status_card'
-        )
-        
-        # Redis indicator dot
-        dot_x = redis_x + 20
-        dot_y = card_y + card_h // 2
-        self.redis_canvas_dot = self.main_canvas.create_oval(
-            dot_x - 8, dot_y - 8, dot_x + 8, dot_y + 8,
-            fill="grey", outline="#888888", tags='redis_dot'
-        )
-        
-        # Redis text
-        self._redis_text_id = self.main_canvas.create_text(
-            redis_x + 45, card_y + card_h // 2,
-            text="Redis: Unknown",
-            font=("Segoe UI", 10),
-            fill="#333333",
-            anchor='w',
-            tags='status_text'
-        )
-        
-        # OpenOB card
-        openob_x = CENTER_X + spacing // 2
-        self._openob_card_bg = self.main_canvas.create_rectangle(
-            openob_x, card_y, openob_x + card_w, card_y + card_h,
-            fill="#e0e0e0", outline="#c0c0c0", width=1,
-            tags='status_card'
-        )
-        
-        # OpenOB indicator dot
-        dot_x2 = openob_x + 20
-        self.openob_canvas_dot = self.main_canvas.create_oval(
-            dot_x2 - 8, dot_y - 8, dot_x2 + 8, dot_y + 8,
-            fill="grey", outline="#888888", tags='openob_dot'
-        )
-        
-        # OpenOB text
-        self._openob_text_id = self.main_canvas.create_text(
-            openob_x + 45, card_y + card_h // 2,
-            text="OpenOB: Stopped",
-            font=("Segoe UI", 10),
-            fill="#333333",
-            anchor='w',
-            tags='status_text'
-        )
-        
-        # Link info text (below cards)
+        # Link info text
         self._link_info_id = self.main_canvas.create_text(
-            CENTER_X, card_y + card_h + 18,
+            CENTER_X, card_y + 20,
             text="",
-            font=("Segoe UI", 9),
+            font=("Segoe UI", 10),
             fill="#666666",
             anchor='center',
             tags='link_info'
         )
+        
+        # Create dummy references for compatibility
+        self._redis_card_bg = None
+        self._openob_card_bg = None
+        self.redis_canvas_dot = None
+        self.openob_canvas_dot = None
+        self._redis_text_id = None
+        self._openob_text_id = None
 
     def _draw_control_buttons(self):
         """Draw control buttons on the canvas."""
         btn_y = 580
         
-        # Stop button (main action when running)
+        # Main action button (toggles between Start/Stop based on OpenOB state)
         style = ttk.Style(self)
         style.configure('Stop.TButton', font=("Segoe UI", 16), padding=(12, 8))
-        self.stop_btn = ttk.Button(self, text="Stop", command=self.stop_all, style='Stop.TButton')
-        self.main_canvas.create_window(CENTER_X, btn_y, window=self.stop_btn, width=140, height=50)
+        style.configure('Start.TButton', font=("Segoe UI", 16), padding=(12, 8))
+        self.main_action_btn = ttk.Button(self, text="Start", command=self._toggle_openob, style='Start.TButton')
+        self.main_canvas.create_window(CENTER_X, btn_y, window=self.main_action_btn, width=140, height=50)
         
-        # Start All button (left side)
-        style.configure('Start.TButton', font=("Segoe UI", 12), padding=(8, 4))
-        self.start_btn = ttk.Button(self, text="▶ Start All", command=self.start_all, style='Start.TButton')
-        self.main_canvas.create_window(CENTER_X - 180, btn_y, window=self.start_btn, width=120, height=40)
-        
-        # Settings button (right side)
-        self.settings_btn = ttk.Button(self, text="⚙ Settings", command=self._open_settings_dialog, style='Settings.TButton')
-        self.main_canvas.create_window(CENTER_X + 180, btn_y, window=self.settings_btn, width=120, height=40)
-        
-        # Toggle logs button (bottom right)
-        self.btn_toggle_logs = ttk.Button(self, text="📋 Logs", command=self._toggle_logs, style='Toggle.TButton')
-        self.main_canvas.create_window(WIDTH - 60, HEIGHT - 40, window=self.btn_toggle_logs, width=80, height=30)
+        # Toggle logs button (reference for compatibility, actual button in settings dialog)
+        self.btn_toggle_logs = None
         
         # Auto-start checkbox (bottom left)
         self.auto_chk = ttk.Checkbutton(
@@ -484,6 +429,10 @@ class OpenOBGUI(tk.Tk):
             variable=self.auto_start_var
         )
         self.main_canvas.create_window(140, HEIGHT - 40, window=self.auto_chk, anchor='w')
+        
+        # Settings button (bottom right, symmetric with auto-start checkbox)
+        self.settings_btn = ttk.Button(self, text="⚙ Settings", command=self._open_settings_dialog, style='Settings.TButton')
+        self.main_canvas.create_window(WIDTH - 140, HEIGHT - 40, window=self.settings_btn, anchor='e', width=120, height=32)
         
         # Requirements status label (bottom center)
         self.req_label = ttk.Label(self, text='Checking requirements...', font=('Segoe UI', 8))
@@ -628,31 +577,19 @@ class OpenOBGUI(tk.Tk):
         self.main_canvas.itemconfigure(self.receiver_right_cap, fill=color)
 
     def _update_indicators(self, redis_running: bool, openob_running: bool):
-        """Update status card colors and text."""
-        r_color = '#4caf50' if redis_running else '#f44336'
-        o_color = '#4caf50' if openob_running else '#f44336'
-        card_running = '#e8f5e9'
-        card_stopped = '#ffebee'
-        
-        # Update dots
-        self.main_canvas.itemconfigure(self.redis_canvas_dot, fill=r_color)
-        self.main_canvas.itemconfigure(self.openob_canvas_dot, fill=o_color)
-        
-        # Update card backgrounds
-        self.main_canvas.itemconfigure(self._redis_card_bg, fill=card_running if redis_running else card_stopped)
-        self.main_canvas.itemconfigure(self._openob_card_bg, fill=card_running if openob_running else card_stopped)
-        
-        # Update text
-        redis_txt = "Redis: Running" if redis_running else "Redis: Stopped"
-        openob_txt = "OpenOB: Running" if openob_running else "OpenOB: Stopped"
-        self.main_canvas.itemconfigure(self._redis_text_id, text=redis_txt)
-        self.main_canvas.itemconfigure(self._openob_text_id, text=openob_txt)
-        
+        """Update header status text, link info, and main action button."""
         # Update header status text
         if openob_running:
             self.main_canvas.itemconfigure(self._status_text_id, text="Transmitting", fill="#2e7d32")
         else:
             self.main_canvas.itemconfigure(self._status_text_id, text="Stopped", fill="#c62828")
+        
+        # Update main action button (Start/Stop)
+        if hasattr(self, 'main_action_btn'):
+            if openob_running:
+                self.main_action_btn.configure(text="Stop", style='Stop.TButton')
+            else:
+                self.main_action_btn.configure(text="Start", style='Start.TButton')
         
         # Update link info
         info_parts = []
@@ -918,7 +855,43 @@ class OpenOBGUI(tk.Tk):
 
     def stop_all(self):
         self.stop_openob()
-        self.stop_redis()
+
+    def _toggle_openob(self):
+        """Toggle OpenOB: start if stopped, stop if running."""
+        if self.openob_proc and self.openob_proc.poll() is None:
+            # OpenOB is running, stop it
+            self.stop_openob()
+            # Disable button for 5 seconds cooldown
+            self._start_cooldown()
+        else:
+            # OpenOB is stopped, start it (if not in cooldown)
+            if hasattr(self, '_cooldown_active') and self._cooldown_active:
+                return  # Still in cooldown, ignore
+            self.start_openob()
+
+    def _start_cooldown(self):
+        """Start a 5-second cooldown before allowing Start again."""
+        self._cooldown_active = True
+        self._cooldown_remaining = 5
+        if hasattr(self, 'main_action_btn'):
+            self.main_action_btn.configure(state='disabled', text=f'Espera {self._cooldown_remaining}s')
+        self._cooldown_tick()
+
+    def _cooldown_tick(self):
+        """Update cooldown countdown each second."""
+        if self._cooldown_remaining > 0:
+            self._cooldown_remaining -= 1
+            if hasattr(self, 'main_action_btn'):
+                if self._cooldown_remaining > 0:
+                    self.main_action_btn.configure(text=f'Espera {self._cooldown_remaining}s')
+                else:
+                    self.main_action_btn.configure(text='Start', state='normal')
+                    self._cooldown_active = False
+            self.after(1000, self._cooldown_tick)
+        else:
+            self._cooldown_active = False
+            if hasattr(self, 'main_action_btn'):
+                self.main_action_btn.configure(text='Start', state='normal')
 
     def _stream_process_output(self, proc, tag):
         try:
@@ -1050,6 +1023,16 @@ class OpenOBGUI(tk.Tk):
         cb_audio.set(opts.get('-a') or 'auto')
         cb_audio.pack(side='left')
 
+        # Separator before buttons
+        ttk.Separator(frm, orient='horizontal').pack(fill='x', pady=(12, 8))
+        
+        # Logs button
+        logs_frame = ttk.Frame(frm)
+        logs_frame.pack(fill='x', pady=(0, 8))
+        self.btn_toggle_logs = ttk.Button(logs_frame, text="📋 Ver Logs", command=self._toggle_logs_from_settings)
+        self.btn_toggle_logs.pack(side='left')
+        ttk.Label(logs_frame, text="Ver registro de actividad", font=('Segoe UI', 8), foreground='#666666').pack(side='left', padx=(8, 0))
+        
         # Buttons
         btns = ttk.Frame(frm)
         btns.pack(fill='x', pady=(8, 0))
@@ -1105,13 +1088,21 @@ class OpenOBGUI(tk.Tk):
         if self._logs_visible:
             self.log_frame.place_forget()
             self._logs_visible = False
-            self.btn_toggle_logs.config(text='📋 Logs')
         else:
             # Place logs panel as overlay at bottom
             self.log_frame.place(x=20, y=HEIGHT - 220, width=WIDTH - 40, height=200)
             self.log_frame.lift()
             self._logs_visible = True
-            self.btn_toggle_logs.config(text='✕ Hide Logs')
+
+    def _toggle_logs_from_settings(self):
+        """Toggle logs and close settings dialog if open."""
+        # Find and close any open settings dialog
+        for widget in self.winfo_children():
+            if isinstance(widget, tk.Toplevel) and widget.title() == 'Configuraciones de OBBroadcast':
+                widget.destroy()
+                break
+        # Toggle logs visibility
+        self._toggle_logs()
 
     def _update_link_details_from_args(self):
         raw = self.args_var.get() if hasattr(self, 'args_var') else ''
