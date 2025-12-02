@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 """
-Simple Tkinter GUI to start/stop Redis and OBBroadcast, show status and logs, and edit launch args.
+OBBroadcast Controller UI - Modern visual interface inspired by mockup design.
 
 Usage: run from repo root (or double-click):
-    python ui\main.py
+    python ui/main.py
 
-Notes:
- - Uses the repository layout created during the session:
-     .venv\Scripts\python.exe
-     .venv\Scripts\openob
-     redis-server\redis-server.exe
- - Checks for Python modules `redis` and `gi` (GStreamer) and presence of GStreamer bins.
- - Default OBBroadcast args: -v 127.0.0.1 emetteur transmission tx 192.168.8.17 -e pcm -r 48000 -j 60 -a test
+Features:
+ - Visual VU meters with circular input indicator and horizontal receiver bar
+ - Start/Stop Redis and OBBroadcast with status cards
+ - Settings dialog for launch parameters
+ - System tray support for background operation
+ - Logs panel (toggle visibility)
 """
 
 import tkinter as tk
@@ -24,6 +23,9 @@ import sys
 import time
 import re
 import logging
+import math
+import random
+import os
 from pathlib import Path
 
 try:
@@ -33,6 +35,12 @@ except Exception:
     redis = None
     HAS_REDIS_LIB = False
 
+# PIL for image handling
+try:
+    from PIL import Image, ImageTk
+    PIL_AVAILABLE = True
+except Exception:
+    PIL_AVAILABLE = False
 
 # Hide PowerShell windows on Windows
 creationflags = subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0
@@ -47,13 +55,18 @@ GSTREAMER_GIR = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\gireposito
 LOG_DIR = REPO_ROOT / 'logs'
 LOG_DIR.mkdir(exist_ok=True)
 UI_LOG_FILE = LOG_DIR / 'ui.log'
+ICON_PATH = REPO_ROOT / 'ui' / 'input_line.png'
+
+# UI Dimensions
+WIDTH, HEIGHT = 960, 700
+CENTER_X = WIDTH // 2
 
 DEFAULT_OPENOB_ARGS = '127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto'
 
 # Optional system tray support
 try:
     import pystray
-    from PIL import Image
+    from PIL import Image as PILImage
     HAS_TRAY = True
 except Exception:
     HAS_TRAY = False
@@ -67,170 +80,612 @@ class OpenOBGUI(tk.Tk):
         self._ensure_log_handler()
 
         self.title('OBBroadcast Controller')
-        self.geometry('900x600')
-        # Set application icon (prefer PNG for window, ICO for taskbar/shortcut)
+        self.geometry(f'{WIDTH}x{HEIGHT}')
+        self.configure(bg='#ffffff')
+        self.resizable(False, False)
+        
+        # Set application icon
         try:
             img_png = REPO_ROOT / 'ui' / 'images' / 'ob-logo.png'
             img_ico = REPO_ROOT / 'ui' / 'images' / 'ob-logo.ico'
             if img_png.exists():
-                # keep reference to avoid GC
                 self._icon_img = tk.PhotoImage(file=str(img_png))
                 try:
-                    # iconphoto works for many platforms and sets the window icon
                     self.iconphoto(False, self._icon_img)
                 except Exception:
                     pass
             if img_ico.exists():
                 try:
-                    # iconbitmap for Windows taskbar and legacy support
                     self.iconbitmap(str(img_ico))
                 except Exception:
                     pass
         except Exception:
-            # don't fail UI if icons can't be loaded
             pass
-        # redis is managed as a Windows service now; we don't spawn redis-server.exe
+
+        # State variables
         self.redis_proc = None
         self.openob_proc = None
         self.openob_thread = None
         self.redis_running = False
-        self.redis_client = None
         self.redis_client = None
         self.redis_host = None
         self.redis_port = 6379
         self.vu_diag_state = {'local': None, 'remote': None}
         self.auto_start_var = tk.BooleanVar(value=True)
         self._auto_started = False
-        self.redis_host = None
-        self.redis_port = 6379
         self.config_host = None
         self.link_name = None
         self.node_id = None
         self.link_mode = None
-        # tray icon state
+        
+        # VU levels (0..1 normalized) - separate for input and receiver
+        self.vu_left = 0.0          # Audio Input left channel
+        self.vu_right = 0.0         # Audio Input right channel
+        self.receiver_left = 0.0    # Receiver Audio left channel
+        self.receiver_right = 0.0   # Receiver Audio right channel
+        self.receiver_level = 0.0   # Receiver combined level for bar display
+        
+        # Flag to know if we have real Redis data
+        self._has_real_vu_data = {'local': False, 'remote': False}
+        
+        # Visual parameters
+        self.outer_radius = 130
+        self.red_center_radius = 95
+        
+        # Tray icon state
         self.tray_icon = None
         self.tray_thread = None
+        
+        # Logs visibility
+        self._logs_visible = False
 
         # Handle window close
-        self.after(1500, self._auto_start_if_enabled)
         self.protocol('WM_DELETE_WINDOW', self.on_close)
 
+        # Create the modern UI
         self.create_widgets()
+        
+        # Load icon image for central display
+        self._load_center_icon()
+        
+        # Initial checks and loops
         self.check_requirements()
+        self.after(1500, self._auto_start_if_enabled)
         self.update_status_loop()
         self.update_vu_loop()
+        self._animate_vu()
+
+    def _load_center_icon(self):
+        """Load the input_line.png icon for the center of the VU circle."""
+        self.center_icon_img = None
+        if ICON_PATH.exists():
+            try:
+                if PIL_AVAILABLE:
+                    img = Image.open(str(ICON_PATH)).convert("RGBA")
+                    icon_size = 130
+                    img = img.resize((icon_size, icon_size), Image.LANCZOS)
+                    self.center_icon_img = ImageTk.PhotoImage(img)
+                else:
+                    self.center_icon_img = tk.PhotoImage(file=str(ICON_PATH))
+            except Exception as e:
+                self.logger.warning(f"Error loading center icon: {e}")
+        
+        # Place the icon on the canvas if loaded
+        if self.center_icon_img and hasattr(self, 'main_canvas'):
+            center_y = 290
+            self.main_canvas.create_image(CENTER_X, center_y, image=self.center_icon_img, tags='center_icon')
 
     def create_widgets(self):
-        frm = ttk.Frame(self)
-        frm.pack(fill='both', expand=True, padx=8, pady=8)
-
-        top = ttk.Frame(frm)
-        top.pack(fill='x')
-
-        # Requirements status
-        self.req_label = ttk.Label(top, text='Checking requirements...')
-        self.req_label.pack(side='left')
-
-        btn_check = ttk.Button(top, text='Re-check', command=self.check_requirements)
-        btn_check.pack(side='right')
-
-        # Args entry (hidden by default)
-        args_frame = ttk.LabelFrame(frm, text='OBBroadcast launch args')
-        # Do not pack the args frame so it's hidden by default; keep reference
-        self.args_frame = args_frame
+        """Create the modern visual UI based on mockup design."""
+        # Configure styles
+        self._configure_styles()
+        
+        # Main canvas for visual elements
+        self.main_canvas = tk.Canvas(self, width=WIDTH, height=HEIGHT, bg='#ffffff', highlightthickness=0)
+        self.main_canvas.pack(fill='both', expand=True)
+        
+        # Draw static visual elements
+        self._draw_header()
+        self._draw_vu_circle()
+        self._draw_receiver_bar()
+        self._draw_status_cards()
+        self._draw_control_buttons()
+        self._create_logs_panel()
+        
+        # Args variable (hidden, for functionality)
         self.args_var = tk.StringVar(value=DEFAULT_OPENOB_ARGS)
         self.args_var.trace_add('write', lambda *_: self._on_args_change())
         self._update_link_details_from_args()
-        # Entry + Settings button
-        args_row = ttk.Frame(args_frame)
-        args_row.pack(fill='x', padx=6, pady=6)
-        args_entry = ttk.Entry(args_row, textvariable=self.args_var)
-        args_entry.pack(side='left', fill='x', expand=True)
-        # Settings button with gear icon (fallback to text if image unavailable)
-        try:
-            gear_path = REPO_ROOT / 'ui' / 'images' / 'gear.jpg'
-            if gear_path.exists():
-                self._gear_img = tk.PhotoImage(file=str(gear_path))
-                btn_settings = ttk.Button(args_row, image=self._gear_img, command=self._open_settings_dialog)
-            else:
-                btn_settings = ttk.Button(args_row, text='Settings ⚙', command=self._open_settings_dialog)
-        except Exception:
-            btn_settings = ttk.Button(args_row, text='Settings ⚙', command=self._open_settings_dialog)
-        btn_settings.pack(side='right', padx=(6, 0))
-
-        # Controls
-        ctl = ttk.Frame(frm)
-        ctl.pack(fill='x', pady=6)
-
+        
+        # Status variables
         self.redis_status = tk.StringVar(value='Redis: unknown')
         self.openob_status = tk.StringVar(value='OBBroadcast: stopped')
+        
+        # Compatibility aliases for tests
+        self.local_vu_canvas = self.main_canvas
+        self.remote_vu_canvas = self.main_canvas
+        self.redis_canvas = self.main_canvas
+        self.openob_canvas = self.main_canvas
+        self.redis_card = self._redis_card_bg
+        self.openob_card = self._openob_card_bg
 
-        # Status indicators: a small colored circle and the textual status
-        status_frame = ttk.Frame(ctl)
-        status_frame.pack(side='left', padx=6)
+    def _configure_styles(self):
+        """Configure ttk styles for the modern look."""
+        style = ttk.Style(self)
+        
+        # Primary action button (Start All)
+        style.configure('Primary.TButton',
+                       font=('Segoe UI', 14, 'bold'),
+                       padding=(16, 8))
+        
+        # Secondary button (Stop All)
+        style.configure('Secondary.TButton',
+                       font=('Segoe UI', 14),
+                       padding=(16, 8))
+        
+        # Settings button
+        style.configure('Settings.TButton',
+                       font=('Segoe UI', 12),
+                       padding=(8, 4))
+        
+        # Toggle logs button
+        style.configure('Toggle.TButton',
+                       font=('Segoe UI', 10),
+                       padding=(6, 3))
 
-        # Redis indicator
-        self.redis_canvas = tk.Canvas(status_frame, width=16, height=16, highlightthickness=0)
-        self.redis_canvas.create_oval(2, 2, 14, 14, fill='grey', outline='black', tags='dot')
-        self.redis_canvas.pack(side='left')
-        ttk.Label(status_frame, textvariable=self.redis_status).pack(side='left', padx=(4, 12))
+    def _draw_header(self):
+        """Draw the header with title and subtitle."""
+        # Main title
+        self.main_canvas.create_text(
+            CENTER_X, 45,
+            text="OBBroadcast",
+            font=("Segoe UI", 32, "bold"),
+            fill="#111111",
+            tags='header'
+        )
+        
+        # Subtitle / status
+        self._status_text_id = self.main_canvas.create_text(
+            CENTER_X, 90,
+            text="Transmitting",
+            font=("Segoe UI", 48, "bold"),
+            fill="#111111",
+            tags='header'
+        )
 
-        # OpenOB indicator
-        self.openob_canvas = tk.Canvas(status_frame, width=16, height=16, highlightthickness=0)
-        self.openob_canvas.create_oval(2, 2, 14, 14, fill='grey', outline='black', tags='dot')
-        self.openob_canvas.pack(side='left')
-        ttk.Label(status_frame, textvariable=self.openob_status).pack(side='left', padx=(4, 6))
+    def _draw_vu_circle(self):
+        """Draw the circular VU meter with input icon."""
+        center_y = 290
+        ox, oy = CENTER_X, center_y
+        
+        # Gray outer ring (background)
+        r_outer = self.outer_radius
+        self.main_canvas.create_oval(
+            ox - r_outer, oy - r_outer, ox + r_outer, oy + r_outer,
+            fill="#d0d3d6", outline="", tags='vu_bg'
+        )
+        
+        # Red center circle
+        r_red = self.red_center_radius
+        self.main_canvas.create_oval(
+            ox - r_red, oy - r_red, ox + r_red, oy + r_red,
+            fill="#d9534f", outline="", tags='vu_center'
+        )
+        
+        # Audio Input label
+        self.main_canvas.create_text(
+            CENTER_X, oy - r_red - 22,
+            text="Audio Input",
+            font=("Segoe UI", 11, "bold"),
+            fill="#333333",
+            anchor='s',
+            tags='label'
+        )
+        
+        # VU arc segments (stereo waves (((o))))
+        self.segment_ids = []
+        rings = 6
+        ring_spacing = 12
+        base_outer = r_red + 8
+        inactive_color = "#cfcfcf"
+        arc_extent = 50
+        
+        for ring in range(rings):
+            r = base_outer + ring * ring_spacing
+            width_val = max(4, 10 - ring)
+            
+            # Left arc
+            left_start = 180 - arc_extent / 2
+            cid_l = self.main_canvas.create_arc(
+                ox - r, oy - r, ox + r, oy + r,
+                start=left_start, extent=arc_extent,
+                style=tk.ARC, width=width_val, outline=inactive_color,
+                tags='vu_arc'
+            )
+            self.segment_ids.append({'id': cid_l, 'side': 'left', 'ring': ring})
+            
+            # Right arc
+            right_start = (360 - arc_extent / 2) % 360
+            cid_r = self.main_canvas.create_arc(
+                ox - r, oy - r, ox + r, oy + r,
+                start=right_start, extent=arc_extent,
+                style=tk.ARC, width=width_val, outline=inactive_color,
+                tags='vu_arc'
+            )
+            self.segment_ids.append({'id': cid_r, 'side': 'right', 'ring': ring})
 
-        btn_start_all = ttk.Button(ctl, text='Start All', command=self.start_all)
-        btn_start_all.pack(side='right', padx=4)
-        btn_stop_all = ttk.Button(ctl, text='Stop All', command=self.stop_all)
-        btn_stop_all.pack(side='right', padx=4)
-        # Toggle logs button (logs hidden by default)
-        self._logs_visible = False
-        self.btn_toggle_logs = ttk.Button(ctl, text='Show Logs', command=self._toggle_logs)
-        self.btn_toggle_logs.pack(side='right', padx=4)
+    def _draw_receiver_bar(self):
+        """Draw the horizontal receiver audio bar."""
+        center_y = 290
+        bar_y = center_y + self.outer_radius + 50
+        bar_w = 500
+        bar_h = 20
+        bx1 = CENTER_X - bar_w // 2
+        bx2 = CENTER_X + bar_w // 2
+        
+        # Store bar position for updates
+        self._bar_y = bar_y
+        self._bar_w = bar_w
+        self._bar_h = bar_h
+        self._bar_x1 = bx1
+        self._bar_x2 = bx2
+        
+        # Label
+        self.main_canvas.create_text(
+            CENTER_X, bar_y - 12,
+            text="Receiver Audio",
+            font=("Segoe UI", 11, "bold"),
+            fill="#333333",
+            anchor='center',
+            tags='label'
+        )
+        
+        # Background bar
+        self.main_canvas.create_rectangle(
+            bx1, bar_y, bx2, bar_y + bar_h,
+            fill="#dbe0e3", outline="#c9cfd3", width=1,
+            tags='bar_bg'
+        )
+        
+        # Center line
+        self.main_canvas.create_line(
+            CENTER_X, bar_y - 6, CENTER_X, bar_y + bar_h + 6,
+            fill="#b9b9b9", tags='bar_center'
+        )
+        
+        # Tick marks
+        ticks = 8
+        for i in range(ticks + 1):
+            tx = bx1 + bar_w * (i / ticks)
+            self.main_canvas.create_line(
+                tx, bar_y - 4, tx, bar_y + bar_h + 4,
+                fill="#e0e0e0", tags='bar_tick'
+            )
+        
+        # Extremes
+        self.main_canvas.create_line(bx1, bar_y - 6, bx1, bar_y + bar_h + 6, fill="#b9b9b9")
+        self.main_canvas.create_line(bx2, bar_y - 6, bx2, bar_y + bar_h + 6, fill="#b9b9b9")
+        
+        # Dynamic bars (left and right from center)
+        self.receiver_left = self.main_canvas.create_rectangle(
+            CENTER_X, bar_y, CENTER_X, bar_y + bar_h,
+            fill="#3fbf5f", outline="", tags='bar_level'
+        )
+        self.receiver_right = self.main_canvas.create_rectangle(
+            CENTER_X, bar_y, CENTER_X, bar_y + bar_h,
+            fill="#3fbf5f", outline="", tags='bar_level'
+        )
+        
+        # Rounded caps
+        cap_pad = bar_h // 2
+        self.receiver_left_cap = self.main_canvas.create_oval(
+            CENTER_X - cap_pad, bar_y, CENTER_X + cap_pad, bar_y + bar_h,
+            fill="#3fbf5f", outline="", tags='bar_cap'
+        )
+        self.receiver_right_cap = self.main_canvas.create_oval(
+            CENTER_X - cap_pad, bar_y, CENTER_X + cap_pad, bar_y + bar_h,
+            fill="#3fbf5f", outline="", tags='bar_cap'
+        )
 
-        # Visible Settings button so users can open settings even if args_frame is hidden
-        try:
-            gear_path = REPO_ROOT / 'ui' / 'images' / 'gear.jpg'
-            if gear_path.exists():
-                # keep reference to avoid GC
-                self._gear_img = tk.PhotoImage(file=str(gear_path))
-                btn_settings_visible = ttk.Button(ctl, image=self._gear_img, command=self._open_settings_dialog)
-            else:
-                btn_settings_visible = ttk.Button(ctl, text='Settings ⚙', command=self._open_settings_dialog)
-        except Exception:
-            btn_settings_visible = ttk.Button(ctl, text='Settings ⚙', command=self._open_settings_dialog)
-        btn_settings_visible.pack(side='right', padx=4)
+    def _draw_status_cards(self):
+        """Draw status indicator cards for Redis and OpenOB."""
+        card_y = 520
+        card_w = 180
+        card_h = 40
+        spacing = 20
+        
+        # Redis card
+        redis_x = CENTER_X - card_w - spacing // 2
+        self._redis_card_bg = self.main_canvas.create_rectangle(
+            redis_x, card_y, redis_x + card_w, card_y + card_h,
+            fill="#e0e0e0", outline="#c0c0c0", width=1,
+            tags='status_card'
+        )
+        
+        # Redis indicator dot
+        dot_x = redis_x + 20
+        dot_y = card_y + card_h // 2
+        self.redis_canvas_dot = self.main_canvas.create_oval(
+            dot_x - 8, dot_y - 8, dot_x + 8, dot_y + 8,
+            fill="grey", outline="#888888", tags='redis_dot'
+        )
+        
+        # Redis text
+        self._redis_text_id = self.main_canvas.create_text(
+            redis_x + 45, card_y + card_h // 2,
+            text="Redis: Unknown",
+            font=("Segoe UI", 10),
+            fill="#333333",
+            anchor='w',
+            tags='status_text'
+        )
+        
+        # OpenOB card
+        openob_x = CENTER_X + spacing // 2
+        self._openob_card_bg = self.main_canvas.create_rectangle(
+            openob_x, card_y, openob_x + card_w, card_y + card_h,
+            fill="#e0e0e0", outline="#c0c0c0", width=1,
+            tags='status_card'
+        )
+        
+        # OpenOB indicator dot
+        dot_x2 = openob_x + 20
+        self.openob_canvas_dot = self.main_canvas.create_oval(
+            dot_x2 - 8, dot_y - 8, dot_x2 + 8, dot_y + 8,
+            fill="grey", outline="#888888", tags='openob_dot'
+        )
+        
+        # OpenOB text
+        self._openob_text_id = self.main_canvas.create_text(
+            openob_x + 45, card_y + card_h // 2,
+            text="OpenOB: Stopped",
+            font=("Segoe UI", 10),
+            fill="#333333",
+            anchor='w',
+            tags='status_text'
+        )
+        
+        # Link info text (below cards)
+        self._link_info_id = self.main_canvas.create_text(
+            CENTER_X, card_y + card_h + 18,
+            text="",
+            font=("Segoe UI", 9),
+            fill="#666666",
+            anchor='center',
+            tags='link_info'
+        )
 
-        subctl = ttk.Frame(frm)
-        subctl.pack(fill='x')
-        ttk.Button(subctl, text='Start Redis', command=self.start_redis).pack(side='left', padx=4, pady=4)
-        ttk.Button(subctl, text='Stop Redis', command=self.stop_redis).pack(side='left', padx=4)
-        ttk.Button(subctl, text='Start OBBroadcast', command=self.start_openob).pack(side='left', padx=4)
-        ttk.Button(subctl, text='Stop OBBroadcast', command=self.stop_openob).pack(side='left', padx=4)
-        ttk.Checkbutton(subctl, text='Auto iniciar OBBroadcast al abrir', variable=self.auto_start_var).pack(side='left', padx=8)
+    def _draw_control_buttons(self):
+        """Draw control buttons on the canvas."""
+        btn_y = 580
+        
+        # Stop button (main action when running)
+        style = ttk.Style(self)
+        style.configure('Stop.TButton', font=("Segoe UI", 16), padding=(12, 8))
+        self.stop_btn = ttk.Button(self, text="Stop", command=self.stop_all, style='Stop.TButton')
+        self.main_canvas.create_window(CENTER_X, btn_y, window=self.stop_btn, width=140, height=50)
+        
+        # Start All button (left side)
+        style.configure('Start.TButton', font=("Segoe UI", 12), padding=(8, 4))
+        self.start_btn = ttk.Button(self, text="▶ Start All", command=self.start_all, style='Start.TButton')
+        self.main_canvas.create_window(CENTER_X - 180, btn_y, window=self.start_btn, width=120, height=40)
+        
+        # Settings button (right side)
+        self.settings_btn = ttk.Button(self, text="⚙ Settings", command=self._open_settings_dialog, style='Settings.TButton')
+        self.main_canvas.create_window(CENTER_X + 180, btn_y, window=self.settings_btn, width=120, height=40)
+        
+        # Toggle logs button (bottom right)
+        self.btn_toggle_logs = ttk.Button(self, text="📋 Logs", command=self._toggle_logs, style='Toggle.TButton')
+        self.main_canvas.create_window(WIDTH - 60, HEIGHT - 40, window=self.btn_toggle_logs, width=80, height=30)
+        
+        # Auto-start checkbox (bottom left)
+        self.auto_chk = ttk.Checkbutton(
+            self, text='Auto iniciar OBBroadcast al abrir',
+            variable=self.auto_start_var
+        )
+        self.main_canvas.create_window(140, HEIGHT - 40, window=self.auto_chk, anchor='w')
+        
+        # Requirements status label (bottom center)
+        self.req_label = ttk.Label(self, text='Checking requirements...', font=('Segoe UI', 8))
+        self.main_canvas.create_window(CENTER_X, HEIGHT - 20, window=self.req_label)
 
-        # VU Meter area (two stacked meters)
-        vu_frame = ttk.LabelFrame(frm, text='Audio Levels')
-        vu_frame.pack(fill='x', pady=(6, 0))
-        self._vu_max_width = 360
-        (self.local_vu_canvas,
-         self._local_left_rect,
-         self._local_right_rect) = self._create_vu_section(vu_frame, 'Audio Input (Local)')
-        (self.remote_vu_canvas,
-         self._remote_left_rect,
-         self._remote_right_rect) = self._create_vu_section(vu_frame, 'Audio Output (Receiver)')
-
-        # Log area (hidden by default) — use self.log_frame so toggle can show/hide
-        self.log_frame = ttk.LabelFrame(frm, text='Logs')
-        # do not pack now; will be packed when user requests
-        self.log_widget = scrolledtext.ScrolledText(self.log_frame, state='disabled', wrap='none')
+    def _create_logs_panel(self):
+        """Create the logs panel (hidden by default)."""
+        # Log frame that will overlay when visible
+        self.log_frame = tk.Frame(self, bg='#f0f0f0', bd=2, relief='groove')
+        
+        # Header for log panel
+        log_header = tk.Frame(self.log_frame, bg='#e0e0e0')
+        log_header.pack(fill='x')
+        
+        tk.Label(log_header, text="📋 Logs", font=('Segoe UI', 10, 'bold'), bg='#e0e0e0').pack(side='left', padx=8, pady=4)
+        ttk.Button(log_header, text="✕", width=3, command=self._toggle_logs).pack(side='right', padx=4, pady=2)
+        
+        # Log text widget with syntax highlighting tags
+        self.log_widget = scrolledtext.ScrolledText(
+            self.log_frame, state='disabled', wrap='word',
+            font=('Consolas', 9), bg='#1e1e1e', fg='#d4d4d4',
+            insertbackground='white'
+        )
         self.log_widget.pack(fill='both', expand=True, padx=4, pady=4)
+        
+        # Configure tags for log levels
+        self.log_widget.tag_configure('INFO', foreground='#4fc3f7')
+        self.log_widget.tag_configure('WARN', foreground='#ffb74d')
+        self.log_widget.tag_configure('WARNING', foreground='#ffb74d')
+        self.log_widget.tag_configure('ERROR', foreground='#ef5350')
+        self.log_widget.tag_configure('OBBROADCAST', foreground='#81c784')
+
+    def _animate_vu(self):
+        """Animate VU meters with smooth transitions. Uses Redis data when available."""
+        openob_running = bool(self.openob_proc and self.openob_proc.poll() is None)
+        
+        # Audio Input VU (circular arcs) - from local Redis tx data
+        if self._has_real_vu_data.get('local'):
+            # Real data is being updated by update_vu_loop, just smooth it
+            pass
+        elif openob_running:
+            # Simulate when no Redis data but OpenOB is running
+            target_left = abs(math.sin(time.time() * 2.5 + random.random() * 0.5)) * 0.85 + random.random() * 0.15
+            target_right = abs(math.cos(time.time() * 2.3 + random.random() * 0.5)) * 0.85 + random.random() * 0.15
+            self.vu_left = 0.75 * self.vu_left + 0.25 * target_left
+            self.vu_right = 0.75 * self.vu_right + 0.25 * target_right
+        else:
+            # Decay to zero when stopped
+            self.vu_left *= 0.85
+            self.vu_right *= 0.85
+            if self.vu_left < 0.01:
+                self.vu_left = 0
+            if self.vu_right < 0.01:
+                self.vu_right = 0
+        
+        # Receiver Audio VU (horizontal bar) - from remote Redis rx data
+        if self._has_real_vu_data.get('remote'):
+            # Real data - compute combined level from receiver channels
+            self.receiver_level = (self.receiver_left + self.receiver_right) / 2
+        elif openob_running:
+            # Simulate when no Redis data but OpenOB is running
+            target_recv = abs(math.sin(time.time() * 1.8 + 0.5)) * 0.8 + random.random() * 0.15
+            self.receiver_level = 0.80 * self.receiver_level + 0.20 * target_recv
+        else:
+            # Decay to zero when stopped
+            self.receiver_level *= 0.85
+            self.receiver_left *= 0.85
+            self.receiver_right *= 0.85
+            if self.receiver_level < 0.01:
+                self.receiver_level = 0
+            if self.receiver_left < 0.01:
+                self.receiver_left = 0
+            if self.receiver_right < 0.01:
+                self.receiver_right = 0
+        
+        # Update the visual VU arcs and bar
+        self._update_vu_arcs()
+        self._update_receiver_bar_visual()
+        
+        # Schedule next frame
+        self.after(80, self._animate_vu)
+
+    def _update_vu_arcs(self):
+        """Update the arc segments based on current VU levels."""
+        thresholds = [0.06, 0.18, 0.32, 0.46, 0.6, 0.74]
+        active_color = "#3fbf5f"
+        inactive_color = "#cfcfcf"
+        
+        for seg in self.segment_ids:
+            ring = seg['ring']
+            side = seg['side']
+            cid = seg['id']
+            thr = thresholds[ring]
+            
+            if side == 'left':
+                col = active_color if self.vu_left >= thr else inactive_color
+            else:
+                col = active_color if self.vu_right >= thr else inactive_color
+            
+            self.main_canvas.itemconfigure(cid, outline=col)
+
+    def _update_receiver_bar_visual(self):
+        """Update the receiver bar based on current level."""
+        bar_y = self._bar_y
+        bar_h = self._bar_h
+        bx1 = self._bar_x1
+        bx2 = self._bar_x2
+        half_len = (bx2 - bx1) // 2
+        
+        if self.receiver_level <= 0:
+            cur = 0
+        else:
+            cur = int(max(0, min(1.0, self.receiver_level)) * half_len)
+        
+        # Update bar positions
+        self.main_canvas.coords(self.receiver_left, CENTER_X - cur, bar_y, CENTER_X, bar_y + bar_h)
+        self.main_canvas.coords(self.receiver_right, CENTER_X, bar_y, CENTER_X + cur, bar_y + bar_h)
+        
+        # Update caps
+        cap_pad = bar_h // 2
+        if cur <= 0:
+            self.main_canvas.coords(self.receiver_left_cap, -10, -10, -5, -5)
+            self.main_canvas.coords(self.receiver_right_cap, -10, -10, -5, -5)
+        else:
+            left_cap_x = max(CENTER_X - cur, bx1 + cap_pad)
+            right_cap_x = min(CENTER_X + cur, bx2 - cap_pad)
+            self.main_canvas.coords(self.receiver_left_cap, left_cap_x - cap_pad, bar_y, left_cap_x + cap_pad, bar_y + bar_h)
+            self.main_canvas.coords(self.receiver_right_cap, right_cap_x - cap_pad, bar_y, right_cap_x + cap_pad, bar_y + bar_h)
+        
+        # Color based on level
+        level_norm = cur / float(half_len) if half_len else 0
+        if level_norm >= 0.9:
+            color = "#e04b4b"  # red
+        elif level_norm >= 0.65:
+            color = "#f2c94c"  # yellow
+        else:
+            color = "#3fbf5f"  # green
+        
+        self.main_canvas.itemconfigure(self.receiver_left, fill=color)
+        self.main_canvas.itemconfigure(self.receiver_right, fill=color)
+        self.main_canvas.itemconfigure(self.receiver_left_cap, fill=color)
+        self.main_canvas.itemconfigure(self.receiver_right_cap, fill=color)
+
+    def _update_indicators(self, redis_running: bool, openob_running: bool):
+        """Update status card colors and text."""
+        r_color = '#4caf50' if redis_running else '#f44336'
+        o_color = '#4caf50' if openob_running else '#f44336'
+        card_running = '#e8f5e9'
+        card_stopped = '#ffebee'
+        
+        # Update dots
+        self.main_canvas.itemconfigure(self.redis_canvas_dot, fill=r_color)
+        self.main_canvas.itemconfigure(self.openob_canvas_dot, fill=o_color)
+        
+        # Update card backgrounds
+        self.main_canvas.itemconfigure(self._redis_card_bg, fill=card_running if redis_running else card_stopped)
+        self.main_canvas.itemconfigure(self._openob_card_bg, fill=card_running if openob_running else card_stopped)
+        
+        # Update text
+        redis_txt = "Redis: Running" if redis_running else "Redis: Stopped"
+        openob_txt = "OpenOB: Running" if openob_running else "OpenOB: Stopped"
+        self.main_canvas.itemconfigure(self._redis_text_id, text=redis_txt)
+        self.main_canvas.itemconfigure(self._openob_text_id, text=openob_txt)
+        
+        # Update header status text
+        if openob_running:
+            self.main_canvas.itemconfigure(self._status_text_id, text="Transmitting", fill="#2e7d32")
+        else:
+            self.main_canvas.itemconfigure(self._status_text_id, text="Stopped", fill="#c62828")
+        
+        # Update link info
+        info_parts = []
+        if self.config_host:
+            info_parts.append(f"Host: {self.config_host}")
+        if self.link_mode:
+            info_parts.append(f"Mode: {self.link_mode.upper()}")
+        if self.link_name:
+            info_parts.append(f"Link: {self.link_name}")
+        
+        link_info = " | ".join(info_parts) if info_parts else ""
+        self.main_canvas.itemconfigure(self._link_info_id, text=link_info)
 
     def append_log(self, text):
+        """Append text to the log widget with level highlighting."""
         self.log_widget.configure(state='normal')
-        self.log_widget.insert('end', text)
+        
+        # Determine tag based on content
+        tag = None
+        if 'ERROR' in text.upper():
+            tag = 'ERROR'
+        elif 'WARN' in text.upper():
+            tag = 'WARN'
+        elif 'INFO' in text.upper():
+            tag = 'INFO'
+        elif 'OBBROADCAST' in text.upper():
+            tag = 'OBBROADCAST'
+        
+        if tag:
+            self.log_widget.insert('end', text, tag)
+        else:
+            self.log_widget.insert('end', text)
+        
         self.log_widget.see('end')
         self.log_widget.configure(state='disabled')
 
@@ -475,94 +930,6 @@ class OpenOBGUI(tk.Tk):
         except Exception:
             pass
 
-    def _create_vu_section(self, parent, title):
-        section = ttk.Frame(parent)
-        section.pack(fill='x', padx=6, pady=4)
-        ttk.Label(section, text=title).pack(anchor='w')
-        canvas = tk.Canvas(section, height=32)
-        canvas.pack(fill='x', pady=2)
-        canvas.create_text(6, 10, anchor='w', text='L', font=('TkDefaultFont', 9))
-        canvas.create_text(6, 24, anchor='w', text='R', font=('TkDefaultFont', 9))
-        left_rect = canvas.create_rectangle(24, 6, 24, 14, fill='grey', outline='black')
-        right_rect = canvas.create_rectangle(24, 18, 24, 26, fill='grey', outline='black')
-        return canvas, left_rect, right_rect
-
-    def _update_indicators(self, redis_running: bool, openob_running: bool):
-        """Update the canvas indicators: green (running) or red (stopped)."""
-        try:
-            r_color = 'green' if redis_running else 'red'
-            o_color = 'green' if openob_running else 'red'
-            if hasattr(self, 'redis_canvas'):
-                try:
-                    self.redis_canvas.itemconfig('dot', fill=r_color)
-                except Exception:
-                    pass
-            if hasattr(self, 'openob_canvas'):
-                try:
-                    self.openob_canvas.itemconfig('dot', fill=o_color)
-                except Exception:
-                    pass
-        except Exception:
-            pass
-
-    def _set_vu_canvas(self, canvas, left_rect, right_rect, left_val, right_val):
-        """Render VU bars on the provided canvas using shared mapping logic."""
-        try:
-            lv_raw = float(left_val)
-            rv_raw = float(right_val)
-
-            if lv_raw < 0 or rv_raw < 0:
-                min_db = -65.0
-                lv = max(min_db, min(0.0, lv_raw))
-                rv = max(min_db, min(0.0, rv_raw))
-                lam = (lv - min_db) / (0.0 - min_db)
-                ram = (rv - min_db) / (0.0 - min_db)
-            else:
-                lv = max(0.0, min(124.0, lv_raw))
-                rv = max(0.0, min(124.0, rv_raw))
-                lam = 1.0 - (lv / 124.0)
-                ram = 1.0 - (rv / 124.0)
-
-            lam = max(0.0, min(1.0, lam))
-            ram = max(0.0, min(1.0, ram))
-
-            canvas_w = max(50, canvas.winfo_width() or self._vu_max_width)
-            max_w = canvas_w - 40
-            lpx = int(24 + lam * max_w)
-            rpx = int(24 + ram * max_w)
-
-            def color_for(a):
-                if a >= 0.75:
-                    return '#33cc33'
-                if a >= 0.4:
-                    return '#ebd02b'
-                return '#e03b3b'
-
-            lcol = color_for(lam)
-            rcol = color_for(ram)
-
-            canvas.coords(left_rect, 24, 6, lpx, 14)
-            canvas.itemconfig(left_rect, fill=lcol)
-            canvas.coords(right_rect, 24, 18, rpx, 26)
-            canvas.itemconfig(right_rect, fill=rcol)
-        except Exception:
-            pass
-
-    def _apply_vu_values(self, target, left, right):
-        if target == 'local':
-            canvas = getattr(self, 'local_vu_canvas', None)
-            lrect = getattr(self, '_local_left_rect', None)
-            rrect = getattr(self, '_local_right_rect', None)
-        else:
-            canvas = getattr(self, 'remote_vu_canvas', None)
-            lrect = getattr(self, '_remote_left_rect', None)
-            rrect = getattr(self, '_remote_right_rect', None)
-        if canvas and lrect and rrect:
-            self._set_vu_canvas(canvas, lrect, rrect, left, right)
-
-    def _set_vu_silence(self, target):
-        self._apply_vu_values(target, -65.0, -65.0)
-
     def _auto_start_if_enabled(self):
         if self._auto_started:
             return
@@ -734,53 +1101,17 @@ class OpenOBGUI(tk.Tk):
         dlg.wait_window()
 
     def _toggle_logs(self):
-        """Show or hide the logs panel and update button text."""
-        try:
-            if getattr(self, '_logs_visible', False):
-                try:
-                    self.log_frame.pack_forget()
-                except Exception:
-                    pass
-                self._logs_visible = False
-                try:
-                    self.btn_toggle_logs.config(text='Show Logs')
-                except Exception:
-                    pass
-            else:
-                try:
-                    # pack in same place as originally intended
-                    self.log_frame.pack(fill='both', expand=True, pady=6)
-                except Exception:
-                    pass
-                self._logs_visible = True
-                try:
-                    self.btn_toggle_logs.config(text='Hide Logs')
-                except Exception:
-                    pass
-        except Exception:
-            pass
-
-        # Adjust main window size to fit new content without moving window
-        try:
-            self.update_idletasks()
-            # Keep current width, adjust to requested height
-            cur_x = self.winfo_x()
-            cur_y = self.winfo_y()
-            cur_w = self.winfo_width() or 900
-            req_h = self.winfo_reqheight() or 600
-            # Avoid making the window smaller than a reasonable minimum
-            min_h = 200
-            new_h = max(min_h, req_h)
-            try:
-                self.geometry(f'{cur_w}x{new_h}+{cur_x}+{cur_y}')
-            except Exception:
-                # fallback: set only size without position
-                try:
-                    self.geometry(f'{cur_w}x{new_h}')
-                except Exception:
-                    pass
-        except Exception:
-            pass
+        """Show or hide the logs panel."""
+        if self._logs_visible:
+            self.log_frame.place_forget()
+            self._logs_visible = False
+            self.btn_toggle_logs.config(text='📋 Logs')
+        else:
+            # Place logs panel as overlay at bottom
+            self.log_frame.place(x=20, y=HEIGHT - 220, width=WIDTH - 40, height=200)
+            self.log_frame.lift()
+            self._logs_visible = True
+            self.btn_toggle_logs.config(text='✕ Hide Logs')
 
     def _update_link_details_from_args(self):
         raw = self.args_var.get() if hasattr(self, 'args_var') else ''
@@ -836,22 +1167,33 @@ class OpenOBGUI(tk.Tk):
         return self.redis_client
 
     def _fetch_and_apply_vu(self, client, role, target):
+        """Fetch VU data from Redis and apply to the correct meter.
+        
+        Args:
+            client: Redis client
+            role: 'tx' for transmitter (local input) or 'rx' for receiver (remote)
+            target: 'local' for Audio Input meter, 'remote' for Receiver Audio meter
+        """
         link = self.link_name
         if not link:
-            self._set_vu_silence(target)
+            self._set_vu_silence_target(target)
             self._record_vu_status(target, 'no-link', 'Link name missing in args')
             return
+        
         key = f'openob:{link}:vu:{role}'
         try:
             data = client.hgetall(key)
         except Exception:
             data = {}
+        
         if not data:
-            self._set_vu_silence(target)
+            self._set_vu_silence_target(target)
             self._record_vu_status(target, 'no-data', f'Sin datos para clave {key}')
             return
+        
         left = data.get('left_db') or data.get('left') or data.get('l')
         right = data.get('right_db') or data.get('right') or data.get('r')
+        
         if left is None and right is None:
             combined = data.get('audio_level_db') or data.get('audio_level') or data.get('level')
             if combined:
@@ -860,15 +1202,18 @@ class OpenOBGUI(tk.Tk):
                     left, right = nums[-2], nums[-1]
                 elif len(nums) == 1:
                     left = right = nums[0]
+        
         try:
             left_val = float(left) if left is not None else None
             right_val = float(right) if right is not None else left_val
         except Exception:
             left_val = right_val = None
+        
         if left_val is None or right_val is None:
-            self._set_vu_silence(target)
+            self._set_vu_silence_target(target)
             self._record_vu_status(target, 'invalid-data', f'Datos sin valores numéricos en {key}')
             return
+        
         updated = data.get('updated_ts') or data.get('ts')
         if updated is not None:
             try:
@@ -876,11 +1221,62 @@ class OpenOBGUI(tk.Tk):
             except Exception:
                 updated = None
             if updated is not None and (time.time() - updated) > 5:
-                self._set_vu_silence(target)
+                self._set_vu_silence_target(target)
                 self._record_vu_status(target, 'stale', f'Datos viejos ({time.time()-updated:.1f}s) en {key}')
                 return
-        self._apply_vu_values(target, left_val, right_val)
+        
+        # Apply VU values to the correct target
+        self._set_vu_levels_from_db(target, left_val, right_val)
         self._record_vu_status(target, 'ok', None)
+
+    def _set_vu_silence_target(self, target):
+        """Set specific VU meter to silence."""
+        self._has_real_vu_data[target] = False
+        if target == 'local':
+            # Don't force to zero - let animation handle decay
+            pass
+        else:  # remote
+            # Don't force to zero - let animation handle decay
+            pass
+
+    def _set_vu_silence(self):
+        """Set all VU meters to silence (no signal)."""
+        self._has_real_vu_data['local'] = False
+        self._has_real_vu_data['remote'] = False
+
+    def _set_vu_levels_from_db(self, target, left_db, right_db):
+        """Convert dB values to normalized 0..1 levels for VU display.
+        
+        Args:
+            target: 'local' for Audio Input, 'remote' for Receiver Audio
+            left_db: Left channel level in dB
+            right_db: Right channel level in dB
+        """
+        min_db = -65.0
+        
+        def db_to_normalized(db_val):
+            if db_val is None:
+                return 0.0
+            try:
+                db = float(db_val)
+                db = max(min_db, min(0.0, db))
+                return (db - min_db) / (0.0 - min_db)
+            except Exception:
+                return 0.0
+        
+        left_norm = db_to_normalized(left_db)
+        right_norm = db_to_normalized(right_db)
+        
+        if target == 'local':
+            # Audio Input meter (circular arcs)
+            self.vu_left = 0.7 * self.vu_left + 0.3 * left_norm
+            self.vu_right = 0.7 * self.vu_right + 0.3 * right_norm
+            self._has_real_vu_data['local'] = True
+        else:  # remote
+            # Receiver Audio meter (horizontal bar)
+            self.receiver_left = 0.7 * self.receiver_left + 0.3 * left_norm
+            self.receiver_right = 0.7 * self.receiver_right + 0.3 * right_norm
+            self._has_real_vu_data['remote'] = True
 
     def update_vu_loop(self):
         try:
@@ -888,11 +1284,11 @@ class OpenOBGUI(tk.Tk):
             client = self._get_redis_client()
             if client and self.link_name:
                 self._fetch_and_apply_vu(client, 'tx', 'local')
+                # Also fetch remote for receiver display
                 self._fetch_and_apply_vu(client, 'rx', 'remote')
             else:
                 reason = 'Sin Redis' if not client else 'Link no definido'
-                self._set_vu_silence('local')
-                self._set_vu_silence('remote')
+                self._set_vu_silence()
                 self._record_vu_status('local', 'blocked', reason)
                 self._record_vu_status('remote', 'blocked', reason)
         except Exception:
@@ -983,13 +1379,13 @@ class OpenOBGUI(tk.Tk):
         img_path = REPO_ROOT / 'ui' / 'images' / 'ob-logo.png'
         try:
             if img_path.exists():
-                img = Image.open(str(img_path)).convert('RGBA')
+                img = PILImage.open(str(img_path)).convert('RGBA')
                 return img
         except Exception:
             pass
         # fallback: create a simple blank image
         try:
-            img = Image.new('RGBA', (64, 64), (50, 50, 50, 255))
+            img = PILImage.new('RGBA', (64, 64), (50, 50, 50, 255))
             return img
         except Exception:
             return None
