@@ -286,3 +286,17 @@
 2025-12-03 07:06:56,923 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
 2025-12-03 07:06:58,220 [INFO] Auto-starting OBBroadcast (auto option enabled)
 2025-12-03 07:07:02,247 [INFO] LOCAL VU status: ok
+2025-12-03 08:12:22,764 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-03 08:12:22,764 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-03 08:12:24,078 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-03 08:12:28,203 [INFO] LOCAL VU status: ok
+2025-12-03 09:08:06,104 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 09:08:06,104 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 09:08:06,104 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 09:08:06,104 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 09:08:06,104 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 09:08:06,603 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 09:10:43,977 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 09:10:43,977 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 09:17:53,072 [INFO] openob.ui.main_window - Closing application
+2025-12-03 09:17:53,090 [INFO] openob.ui.__main__ - Application closed normally

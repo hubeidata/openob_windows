@@ -3,4 +3,4 @@ dependencias
 GTK3_Gvsbuild
 dump.rdb
 ui/__pycache__/
-logs/ui.log
+logs/
