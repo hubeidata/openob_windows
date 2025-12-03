@@ -5,25 +5,26 @@ main_window.py - Main application window.
 Design decisions:
 - MainWindow only handles UI layout and event binding
 - All business logic delegated to AppController
-- Uses component widgets (VUMeterCircle, ReceiverBar)
-- Clean separation of concerns
+- Matches original main.py design exactly:
+  * White background (#ffffff)
+  * Single central VU meter with input_line.png icon
+  * Horizontal receiver bar below
+  * Start/Stop toggle button
+  * Settings button bottom-right
+  * Auto-start checkbox bottom-left
 """
 
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, scrolledtext, messagebox
 from PIL import Image, ImageTk
-from typing import Optional, Callable
-import os
+from typing import Optional
+import math
+import random
+import time
 
-from .core.models import AppConfig, AppState, VUState, LinkConfig
+from .core.models import AppConfig, AppState, LinkConfig
 from .core.controller import AppController
-from .components.widgets import VUCircle, ReceiverBar
-from .components.dialogs import SettingsDialog, CloseDialog
-from .services.utils import get_logger, configure_logging
-
-# Alias for compatibility
-VUMeterCircle = VUCircle
-
+from .services.utils import get_logger
 
 logger = get_logger(__name__)
 
@@ -31,11 +32,7 @@ logger = get_logger(__name__)
 class MainWindow:
     """
     Main application window for OpenOB broadcast control.
-    
-    Responsibilities:
-    - UI layout and widget creation
-    - Event binding and delegation to controller
-    - Periodic UI updates from controller state
+    Matches the original main.py design exactly.
     """
     
     def __init__(self, root: tk.Tk, config: AppConfig):
@@ -45,14 +42,38 @@ class MainWindow:
         # Initialize controller
         self.controller = AppController(config)
         self.controller.set_root(root)
+        self.controller.initialize()  # Parse default args and check requirements
+        
+        # Connect controller callbacks
+        self.controller.callbacks.on_log = self._on_log_message
+        
+        # VU state
+        self.vu_left = 0.0
+        self.vu_right = 0.0
+        self.receiver_level = 0.0
+        self._has_real_vu_data = {'local': False, 'remote': False}
+        
+        # Visual parameters
+        self.outer_radius = 130
+        self.red_center_radius = 95
+        
+        # Logs visibility
+        self._logs_visible = False
+        self._auto_started = False
         
         # Window configuration
         self._setup_window()
         
         # Create UI
+        self._configure_styles()
         self._create_canvas()
-        self._create_widgets()
-        self._load_logo()
+        self._draw_header()
+        self._draw_vu_circle()
+        self._draw_receiver_bar()
+        self._draw_status_cards()
+        self._draw_control_buttons()
+        self._create_logs_panel()
+        self._load_center_icon()
         
         # Bind events
         self._bind_events()
@@ -64,152 +85,319 @@ class MainWindow:
     
     def _setup_window(self) -> None:
         """Configure main window properties."""
-        self.root.title('OBBroadcast Control')
+        self.root.title('OBBroadcast Controller')
         self.root.geometry(f'{self.config.width}x{self.config.height}')
+        self.root.configure(bg='#ffffff')
         self.root.resizable(False, False)
         
-        # Background color
-        self.root.configure(bg='#1a1a2e')
+        # Set application icon
+        self._set_app_icon()
         
         # Protocol handlers
         self.root.protocol('WM_DELETE_WINDOW', self._on_close)
     
+    def _set_app_icon(self) -> None:
+        """Set application window icon."""
+        try:
+            img_png = self.config.repo_root / 'ui' / 'images' / 'ob-logo.png'
+            img_ico = self.config.repo_root / 'ui' / 'images' / 'ob-logo.ico'
+            if img_png.exists():
+                self._icon_img = tk.PhotoImage(file=str(img_png))
+                try:
+                    self.root.iconphoto(False, self._icon_img)
+                except Exception:
+                    pass
+            if img_ico.exists():
+                try:
+                    self.root.iconbitmap(str(img_ico))
+                except Exception:
+                    pass
+        except Exception:
+            pass
+    
+    def _configure_styles(self) -> None:
+        """Configure ttk styles."""
+        style = ttk.Style(self.root)
+        style.configure('Primary.TButton', font=('Segoe UI', 14, 'bold'), padding=(16, 8))
+        style.configure('Secondary.TButton', font=('Segoe UI', 14), padding=(16, 8))
+        style.configure('Settings.TButton', font=('Segoe UI', 12), padding=(8, 4))
+        style.configure('Stop.TButton', font=('Segoe UI', 16), padding=(12, 8))
+        style.configure('Start.TButton', font=('Segoe UI', 16), padding=(12, 8))
+    
     def _create_canvas(self) -> None:
-        """Create main canvas."""
+        """Create main canvas with white background."""
         self.canvas = tk.Canvas(
             self.root,
             width=self.config.width,
             height=self.config.height,
-            bg='#1a1a2e',
+            bg='#ffffff',
             highlightthickness=0
         )
         self.canvas.pack(fill='both', expand=True)
     
-    def _create_widgets(self) -> None:
-        """Create all UI widgets."""
+    def _draw_header(self) -> None:
+        """Draw the header with title and dynamic status."""
         cx = self.config.center_x
         
-        # Title
+        # Main title
         self.canvas.create_text(
-            cx, 40,
-            text='OBBroadcast',
-            font=('Segoe UI', 28, 'bold'),
-            fill='white'
+            cx, 45,
+            text="OBBroadcast",
+            font=("Segoe UI", 32, "bold"),
+            fill="#111111",
+            tags='header'
         )
         
-        # VU Meters
-        self._create_vu_meters()
-        
-        # Receiver bar
-        self._create_receiver_bar()
-        
-        # Control buttons
-        self._create_buttons()
-        
-        # Status label
-        self._create_status_label()
+        # Dynamic status text (Transmitting / Stopped)
+        self._status_text_id = self.canvas.create_text(
+            cx, 90,
+            text="Stopped",
+            font=("Segoe UI", 48, "bold"),
+            fill="#c62828",
+            tags='header'
+        )
     
-    def _create_vu_meters(self) -> None:
-        """Create left and right VU meter components."""
+    def _draw_vu_circle(self) -> None:
+        """Draw the single central circular VU meter."""
         cx = self.config.center_x
-        vu_y = 280
-        vu_offset = 240
+        center_y = 290
         
-        # Left VU (local/input)
-        self.vu_left = VUMeterCircle(
-            self.canvas,
-            cx - vu_offset,
-            vu_y
+        # Gray outer ring (background)
+        r_outer = self.outer_radius
+        self.canvas.create_oval(
+            cx - r_outer, center_y - r_outer,
+            cx + r_outer, center_y + r_outer,
+            fill="#d0d3d6", outline="", tags='vu_bg'
         )
         
-        # Right VU (remote/receiver)
-        self.vu_right = VUMeterCircle(
-            self.canvas,
-            cx + vu_offset,
-            vu_y
+        # Red center circle
+        r_red = self.red_center_radius
+        self.canvas.create_oval(
+            cx - r_red, center_y - r_red,
+            cx + r_red, center_y + r_red,
+            fill="#d9534f", outline="", tags='vu_center'
         )
+        
+        # Audio Input label
+        self.canvas.create_text(
+            cx, center_y - r_red - 22,
+            text="Audio Input",
+            font=("Segoe UI", 11, "bold"),
+            fill="#333333",
+            anchor='s',
+            tags='label'
+        )
+        
+        # VU arc segments
+        self.segment_ids = []
+        rings = 9
+        ring_spacing = 10
+        base_outer = r_red + 8
+        inactive_color = "#cfcfcf"
+        arc_extent = 50
+        
+        for ring in range(rings):
+            r = base_outer + ring * ring_spacing
+            width_val = max(3, 10 - ring)
+            
+            # Left arc
+            left_start = 180 - arc_extent / 2
+            cid_l = self.canvas.create_arc(
+                cx - r, center_y - r, cx + r, center_y + r,
+                start=left_start, extent=arc_extent,
+                style=tk.ARC, width=width_val, outline=inactive_color,
+                tags='vu_arc'
+            )
+            self.segment_ids.append({'id': cid_l, 'side': 'left', 'ring': ring})
+            
+            # Right arc
+            right_start = (360 - arc_extent / 2) % 360
+            cid_r = self.canvas.create_arc(
+                cx - r, center_y - r, cx + r, center_y + r,
+                start=right_start, extent=arc_extent,
+                style=tk.ARC, width=width_val, outline=inactive_color,
+                tags='vu_arc'
+            )
+            self.segment_ids.append({'id': cid_r, 'side': 'right', 'ring': ring})
+        
+        # Store center position for icon
+        self._vu_center_y = center_y
     
-    def _create_receiver_bar(self) -> None:
-        """Create horizontal receiver level bar."""
+    def _draw_receiver_bar(self) -> None:
+        """Draw the horizontal receiver audio bar."""
         cx = self.config.center_x
-        bar_y = 480
+        center_y = 290
+        bar_y = center_y + self.outer_radius + 50
+        bar_w = 500
+        bar_h = 20
+        bx1 = cx - bar_w // 2
+        bx2 = cx + bar_w // 2
         
-        self.receiver_bar = ReceiverBar(
-            self.canvas,
-            cx,
-            bar_y,
-            width=500,
-            height=20
+        # Store bar position
+        self._bar_y = bar_y
+        self._bar_w = bar_w
+        self._bar_h = bar_h
+        self._bar_x1 = bx1
+        self._bar_x2 = bx2
+        
+        # Label
+        self.canvas.create_text(
+            cx, bar_y - 12,
+            text="Receiver Audio",
+            font=("Segoe UI", 11, "bold"),
+            fill="#333333",
+            anchor='center',
+            tags='label'
+        )
+        
+        # Background bar
+        self.canvas.create_rectangle(
+            bx1, bar_y, bx2, bar_y + bar_h,
+            fill="#dbe0e3", outline="#c9cfd3", width=1,
+            tags='bar_bg'
+        )
+        
+        # Center line
+        self.canvas.create_line(
+            cx, bar_y - 6, cx, bar_y + bar_h + 6,
+            fill="#b9b9b9", tags='bar_center'
+        )
+        
+        # Tick marks
+        ticks = 8
+        for i in range(ticks + 1):
+            tx = bx1 + bar_w * (i / ticks)
+            self.canvas.create_line(
+                tx, bar_y - 4, tx, bar_y + bar_h + 4,
+                fill="#e0e0e0", tags='bar_tick'
+            )
+        
+        # Extremes
+        self.canvas.create_line(bx1, bar_y - 6, bx1, bar_y + bar_h + 6, fill="#b9b9b9")
+        self.canvas.create_line(bx2, bar_y - 6, bx2, bar_y + bar_h + 6, fill="#b9b9b9")
+        
+        # Dynamic bars
+        self.receiver_bar_left = self.canvas.create_rectangle(
+            cx, bar_y, cx, bar_y + bar_h,
+            fill="#3fbf5f", outline="", tags='bar_level'
+        )
+        self.receiver_bar_right = self.canvas.create_rectangle(
+            cx, bar_y, cx, bar_y + bar_h,
+            fill="#3fbf5f", outline="", tags='bar_level'
+        )
+        
+        # Rounded caps
+        cap_pad = bar_h // 2
+        self.receiver_cap_left = self.canvas.create_oval(
+            cx - cap_pad, bar_y, cx + cap_pad, bar_y + bar_h,
+            fill="#3fbf5f", outline="", tags='bar_cap'
+        )
+        self.receiver_cap_right = self.canvas.create_oval(
+            cx - cap_pad, bar_y, cx + cap_pad, bar_y + bar_h,
+            fill="#3fbf5f", outline="", tags='bar_cap'
         )
     
-    def _create_buttons(self) -> None:
-        """Create control buttons."""
+    def _draw_status_cards(self) -> None:
+        """Draw link info text."""
+        cx = self.config.center_x
+        card_y = 520
+        
+        self._link_info_id = self.canvas.create_text(
+            cx, card_y + 20,
+            text="",
+            font=("Segoe UI", 10),
+            fill="#666666",
+            anchor='center',
+            tags='link_info'
+        )
+    
+    def _draw_control_buttons(self) -> None:
+        """Draw control buttons."""
         cx = self.config.center_x
         btn_y = 580
         
-        # Toggle button (Start/Stop)
-        self.btn_toggle = tk.Button(
+        # Main action button (Start/Stop toggle)
+        self.main_action_btn = ttk.Button(
             self.root,
-            text='Stop',
+            text="Start",
             command=self._on_toggle_click,
-            font=('Segoe UI', 14, 'bold'),
-            bg='#e74c3c',
-            fg='white',
-            activebackground='#c0392b',
-            activeforeground='white',
-            width=10,
-            height=1
+            style='Start.TButton'
         )
-        self.canvas.create_window(cx, btn_y, window=self.btn_toggle)
+        self.canvas.create_window(cx, btn_y, window=self.main_action_btn, width=140, height=50)
         
-        # Settings button (bottom-right corner)
-        self.btn_settings = tk.Button(
+        # Auto-start checkbox (bottom left)
+        self.auto_start_var = tk.BooleanVar(value=True)
+        self.auto_chk = ttk.Checkbutton(
             self.root,
-            text='⚙ Settings',
+            text='Auto iniciar OBBroadcast al abrir',
+            variable=self.auto_start_var
+        )
+        self.canvas.create_window(140, self.config.height - 40, window=self.auto_chk, anchor='w')
+        
+        # Settings button (bottom right)
+        self.settings_btn = ttk.Button(
+            self.root,
+            text="⚙ Settings",
             command=self._on_settings_click,
-            font=('Segoe UI', 10),
-            bg='#555555',
-            fg='white',
-            activebackground='#666666',
-            activeforeground='white'
+            style='Settings.TButton'
         )
         self.canvas.create_window(
-            self.config.width - 70,
+            self.config.width - 140,
             self.config.height - 40,
-            window=self.btn_settings
+            window=self.settings_btn,
+            anchor='e',
+            width=120,
+            height=32
         )
-    
-    def _create_status_label(self) -> None:
-        """Create status text label."""
-        cx = self.config.center_x
         
-        self.status_id = self.canvas.create_text(
-            cx, 640,
-            text='Iniciando...',
-            font=('Segoe UI', 11),
-            fill='#aaaaaa'
+        # Requirements status label (bottom center)
+        self.req_label = ttk.Label(self.root, text='Checking requirements...', font=('Segoe UI', 8))
+        self.canvas.create_window(cx, self.config.height - 20, window=self.req_label)
+    
+    def _create_logs_panel(self) -> None:
+        """Create the logs panel (hidden by default)."""
+        self.log_frame = tk.Frame(self.root, bg='#f0f0f0', bd=2, relief='groove')
+        
+        log_header = tk.Frame(self.log_frame, bg='#e0e0e0')
+        log_header.pack(fill='x')
+        
+        tk.Label(log_header, text="📋 Logs", font=('Segoe UI', 10, 'bold'), bg='#e0e0e0').pack(side='left', padx=8, pady=4)
+        ttk.Button(log_header, text="✕", width=3, command=self._toggle_logs).pack(side='right', padx=4, pady=2)
+        
+        self.log_widget = scrolledtext.ScrolledText(
+            self.log_frame, state='disabled', wrap='word',
+            font=('Consolas', 9), bg='#1e1e1e', fg='#d4d4d4',
+            insertbackground='white'
         )
-    
-    def _load_logo(self) -> None:
-        """Load and display center logo."""
-        # Placeholder for center logos in VU meters
-        logo_size = 90
+        self.log_widget.pack(fill='both', expand=True, padx=4, pady=4)
         
-        if self.config.icon_path.exists():
+        self.log_widget.tag_configure('INFO', foreground='#4fc3f7')
+        self.log_widget.tag_configure('WARN', foreground='#ffb74d')
+        self.log_widget.tag_configure('WARNING', foreground='#ffb74d')
+        self.log_widget.tag_configure('ERROR', foreground='#ef5350')
+        self.log_widget.tag_configure('OBBROADCAST', foreground='#81c784')
+    
+    def _load_center_icon(self) -> None:
+        """Load the input_line.png icon for the center of the VU circle."""
+        self.center_icon_img = None
+        icon_path = self.config.repo_root / 'ui' / 'images' / 'input_line.png'
+        
+        if icon_path.exists():
             try:
-                img = Image.open(self.config.icon_path)
-                img = img.resize((logo_size, logo_size), Image.Resampling.LANCZOS)
-                
-                # Store references to prevent garbage collection
-                self._logo_left = ImageTk.PhotoImage(img)
-                self._logo_right = ImageTk.PhotoImage(img)
-                
-                # Update VU meter centers
-                self.vu_left.set_center_image(self._logo_left)
-                self.vu_right.set_center_image(self._logo_right)
-                
+                img = Image.open(str(icon_path)).convert("RGBA")
+                icon_size = 130
+                img = img.resize((icon_size, icon_size), Image.LANCZOS)
+                self.center_icon_img = ImageTk.PhotoImage(img)
             except Exception as e:
-                logger.warning(f"Failed to load logo: {e}")
+                logger.warning(f"Error loading center icon: {e}")
+        
+        if self.center_icon_img:
+            cx = self.config.center_x
+            self.canvas.create_image(
+                cx, self._vu_center_y,
+                image=self.center_icon_img,
+                tags='center_icon'
+            )
     
     def _bind_events(self) -> None:
         """Bind keyboard and window events."""
@@ -218,143 +406,318 @@ class MainWindow:
     
     def _start_update_loops(self) -> None:
         """Start periodic update loops."""
-        # VU meter update (100ms for smooth animation)
-        self._vu_update_id = self.root.after(100, self._update_vu_loop)
+        # VU animation (fast)
+        self._animate_vu()
         
-        # Status update (500ms)
-        self._status_update_id = self.root.after(500, self._update_status_loop)
+        # VU data from Redis (100ms)
+        self._update_vu_from_redis()
         
-        # Cooldown update (1000ms)
-        self._cooldown_update_id = self.root.after(1000, self._update_cooldown_loop)
+        # Status update (2000ms)
+        self._update_status_loop()
+        
+        # Auto-start check (1500ms delay)
+        self.root.after(1500, self._auto_start_if_enabled)
     
-    def _update_vu_loop(self) -> None:
-        """Update VU meters from controller state."""
-        state = self.controller.state
+    def _animate_vu(self) -> None:
+        """Animate VU meters with smooth transitions."""
+        openob_running = self.controller.is_openob_running()
         
-        # Update circular VU meters (left/right channels)
-        self.vu_left.update(
-            state.local_vu.left,
-            state.local_vu.right
-        )
-        self.vu_right.update(
-            state.remote_vu.left,
-            state.remote_vu.right
-        )
+        # Audio Input VU
+        if self._has_real_vu_data.get('local'):
+            pass  # Real data updated by _update_vu_from_redis
+        elif openob_running:
+            # Simulate when no Redis data
+            target_left = abs(math.sin(time.time() * 2.5 + random.random() * 0.5)) * 0.85 + random.random() * 0.15
+            target_right = abs(math.cos(time.time() * 2.3 + random.random() * 0.5)) * 0.85 + random.random() * 0.15
+            self.vu_left = 0.75 * self.vu_left + 0.25 * target_left
+            self.vu_right = 0.75 * self.vu_right + 0.25 * target_right
+        else:
+            # Decay to zero
+            self.vu_left *= 0.85
+            self.vu_right *= 0.85
+            if self.vu_left < 0.01:
+                self.vu_left = 0
+            if self.vu_right < 0.01:
+                self.vu_right = 0
         
-        # Update receiver bar
-        self.receiver_bar.update(state.receiver_level)
+        # Receiver Audio - only show real data, no simulation
+        # If no RX data, show silence (decay to zero)
+        if self._has_real_vu_data.get('remote'):
+            pass  # Real data updated by _update_vu_from_redis
+        else:
+            # No real data - decay to silence
+            self.receiver_level *= 0.85
+            if self.receiver_level < 0.01:
+                self.receiver_level = 0
         
-        # Schedule next update
-        self._vu_update_id = self.root.after(100, self._update_vu_loop)
+        # Update visuals
+        self._update_vu_arcs()
+        self._update_receiver_bar_visual()
+        
+        # Schedule next frame
+        avg_level = max(self.vu_left, self.vu_right, self.receiver_level)
+        if avg_level > 0.7:
+            refresh_ms = 40
+        elif avg_level > 0.4:
+            refresh_ms = 60
+        else:
+            refresh_ms = 80
+        
+        self.root.after(refresh_ms, self._animate_vu)
+    
+    def _update_vu_arcs(self) -> None:
+        """Update the arc segments based on current VU levels."""
+        thresholds = [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.78, 0.90]
+        inactive_color = "#cfcfcf"
+        ring_colors = [
+            "#3fbf5f", "#3fbf5f", "#3fbf5f",  # green
+            "#5fcf5f", "#7fdf5f", "#bfef3f",  # yellow-green
+            "#f2c94c", "#f0a030", "#e04b4b",  # yellow to red
+        ]
+        
+        for seg in self.segment_ids:
+            ring = seg['ring']
+            side = seg['side']
+            cid = seg['id']
+            thr = thresholds[ring]
+            
+            level = self.vu_left if side == 'left' else self.vu_right
+            
+            if level >= thr:
+                col = ring_colors[ring]
+            else:
+                col = inactive_color
+            
+            self.canvas.itemconfigure(cid, outline=col)
+    
+    def _update_receiver_bar_visual(self) -> None:
+        """Update the receiver bar based on current level."""
+        cx = self.config.center_x
+        bar_y = self._bar_y
+        bar_h = self._bar_h
+        bx1 = self._bar_x1
+        bx2 = self._bar_x2
+        half_len = (bx2 - bx1) // 2
+        
+        cur = int(max(0, min(1.0, self.receiver_level)) * half_len) if self.receiver_level > 0 else 0
+        
+        # Update bar positions
+        self.canvas.coords(self.receiver_bar_left, cx - cur, bar_y, cx, bar_y + bar_h)
+        self.canvas.coords(self.receiver_bar_right, cx, bar_y, cx + cur, bar_y + bar_h)
+        
+        # Update caps
+        cap_pad = bar_h // 2
+        if cur <= 0:
+            self.canvas.coords(self.receiver_cap_left, -10, -10, -5, -5)
+            self.canvas.coords(self.receiver_cap_right, -10, -10, -5, -5)
+        else:
+            left_cap_x = max(cx - cur, bx1 + cap_pad)
+            right_cap_x = min(cx + cur, bx2 - cap_pad)
+            self.canvas.coords(self.receiver_cap_left, left_cap_x - cap_pad, bar_y, left_cap_x + cap_pad, bar_y + bar_h)
+            self.canvas.coords(self.receiver_cap_right, right_cap_x - cap_pad, bar_y, right_cap_x + cap_pad, bar_y + bar_h)
+        
+        # Color based on level
+        level_norm = cur / float(half_len) if half_len else 0
+        if level_norm >= 0.9:
+            color = "#e04b4b"
+        elif level_norm >= 0.65:
+            color = "#f2c94c"
+        else:
+            color = "#3fbf5f"
+        
+        self.canvas.itemconfigure(self.receiver_bar_left, fill=color)
+        self.canvas.itemconfigure(self.receiver_bar_right, fill=color)
+        self.canvas.itemconfigure(self.receiver_cap_left, fill=color)
+        self.canvas.itemconfigure(self.receiver_cap_right, fill=color)
+    
+    def _update_vu_from_redis(self) -> None:
+        """Fetch VU data from Redis via controller."""
+        try:
+            # First trigger controller to fetch from Redis
+            self.controller.update_vu_from_redis()
+            
+            # Then get the updated state
+            state = self.controller.state
+            
+            # Local VU (Audio Input)
+            if state.local_vu.has_real_data:
+                # Check if levels are above minimum threshold for visualization
+                avg_local = state.local_vu.average
+                if avg_local >= 0.02:  # Only use real data if above noise floor
+                    self._has_real_vu_data['local'] = True
+                    self.vu_left = state.local_vu.left
+                    self.vu_right = state.local_vu.right
+                else:
+                    # Data is too low, use simulation for better UX
+                    self._has_real_vu_data['local'] = False
+            else:
+                self._has_real_vu_data['local'] = False
+            
+            # Remote VU (Receiver) - show real data only, no threshold
+            if state.remote_vu.has_real_data:
+                self._has_real_vu_data['remote'] = True
+                avg_remote = state.remote_vu.average
+                # Apply smoothing for visual effect
+                self.receiver_level = 0.7 * self.receiver_level + 0.3 * avg_remote
+            else:
+                self._has_real_vu_data['remote'] = False
+            
+        except Exception:
+            pass
+        
+        self.root.after(100, self._update_vu_from_redis)
     
     def _update_status_loop(self) -> None:
-        """Update status display from controller state."""
+        """Update status display."""
+        self.controller.refresh_status()
         state = self.controller.state
         
-        # Update button appearance
-        self._update_toggle_button(state)
+        # Update header status text
+        if state.openob_running:
+            self.canvas.itemconfigure(self._status_text_id, text="Transmitting", fill="#2e7d32")
+        else:
+            self.canvas.itemconfigure(self._status_text_id, text="Stopped", fill="#c62828")
         
-        # Update status text
-        self._update_status_text(state)
-        
-        # Schedule next update
-        self._status_update_id = self.root.after(500, self._update_status_loop)
-    
-    def _update_cooldown_loop(self) -> None:
-        """Update cooldown state."""
-        state = self.controller.state
-        
-        if state.cooldown_active and state.cooldown_remaining > 0:
-            self.controller.tick_cooldown()
-            
-            if state.cooldown_remaining <= 0:
-                # Cooldown finished
-                self._update_toggle_button(state)
-        
-        self._cooldown_update_id = self.root.after(1000, self._update_cooldown_loop)
-    
-    def _update_toggle_button(self, state: AppState) -> None:
-        """Update toggle button based on state."""
+        # Update button
         if state.cooldown_active:
-            # Cooldown state
-            self.btn_toggle.config(
-                text=f'Espere ({state.cooldown_remaining}s)',
-                bg='#7f8c8d',
-                state='disabled'
+            self.main_action_btn.configure(
+                state='disabled',
+                text=f'Espera {state.cooldown_remaining}s'
             )
         elif state.openob_running:
-            # Running state - show Stop
-            self.btn_toggle.config(
-                text='Stop',
-                bg='#e74c3c',
-                state='normal'
-            )
+            self.main_action_btn.configure(text="Stop", style='Stop.TButton', state='normal')
         else:
-            # Stopped state - show Start
-            self.btn_toggle.config(
-                text='Start',
-                bg='#27ae60',
-                state='normal'
-            )
-    
-    def _update_status_text(self, state: AppState) -> None:
-        """Update status label text."""
-        if state.cooldown_active:
-            text = f"Esperando {state.cooldown_remaining}s..."
-            color = '#f39c12'
-        elif state.openob_running:
-            text = "OpenOB en ejecución"
-            color = '#2ecc71'
-        else:
-            text = "OpenOB detenido"
-            color = '#e74c3c'
+            self.main_action_btn.configure(text="Start", style='Start.TButton', state='normal')
         
-        self.canvas.itemconfig(self.status_id, text=text, fill=color)
+        # Update link info
+        link_config = self.controller.get_link_config()
+        if link_config:
+            info_parts = []
+            if link_config.config_host:
+                info_parts.append(f"Host: {link_config.config_host}")
+            if link_config.link_mode:
+                info_parts.append(f"Mode: {link_config.link_mode.upper()}")
+            if link_config.link_name:
+                info_parts.append(f"Link: {link_config.link_name}")
+            link_info = " | ".join(info_parts)
+            self.canvas.itemconfigure(self._link_info_id, text=link_info)
+        
+        # Update requirements
+        self._update_requirements_label()
+        
+        self.root.after(2000, self._update_status_loop)
+    
+    def _update_requirements_label(self) -> None:
+        """Update requirements status label."""
+        msgs = self.controller.check_requirements()
+        self.req_label.config(text=' | '.join(msgs))
+    
+    def _auto_start_if_enabled(self) -> None:
+        """Auto-start OpenOB if enabled."""
+        if self._auto_started:
+            return
+        
+        try:
+            if self.auto_start_var.get():
+                if not self.controller.is_openob_running():
+                    logger.info('Auto-starting OBBroadcast')
+                    self.controller.start_openob()
+        finally:
+            self._auto_started = True
     
     def _on_toggle_click(self) -> None:
         """Handle toggle button click."""
         state = self.controller.state
         
         if state.cooldown_active:
-            return  # Ignore during cooldown
+            return
         
         if state.openob_running:
-            # Stop OpenOB
             self.controller.stop_openob()
-            self.controller.start_cooldown(5)  # 5 second cooldown
+            self._start_cooldown()
         else:
-            # Start OpenOB
             self.controller.start_openob()
     
+    def _start_cooldown(self) -> None:
+        """Start cooldown period."""
+        self.controller.start_cooldown(5)
+        self._cooldown_tick()
+    
+    def _cooldown_tick(self) -> None:
+        """Update cooldown countdown."""
+        state = self.controller.state
+        
+        if state.cooldown_remaining > 0:
+            self.controller.tick_cooldown()
+            self.main_action_btn.configure(text=f'Espera {state.cooldown_remaining}s')
+            self.root.after(1000, self._cooldown_tick)
+        else:
+            self.main_action_btn.configure(text='Start', state='normal')
+    
     def _on_settings_click(self) -> None:
-        """Handle settings button click."""
-        config = LinkConfig.from_args(self.controller.current_args)
+        """Open settings dialog."""
+        from .components.dialogs import SettingsDialog
+        
+        link_config = self.controller.get_link_config() or LinkConfig()
         
         dialog = SettingsDialog(
             self.root,
-            config,
-            on_logs_click=self._show_logs
+            link_config,
+            on_logs_click=self._toggle_logs
         )
         self.root.wait_window(dialog)
         
         if dialog.result and dialog.result.saved:
-            self.controller.update_args(dialog.result.args)
+            self.controller.set_args(dialog.result.args)
             logger.info(f"Settings updated: {dialog.result.args}")
     
-    def _show_logs(self) -> None:
-        """Show logs window or file."""
-        log_file = self.config.ui_log_file
-        if log_file.exists():
-            os.startfile(str(log_file))
+    def _toggle_logs(self) -> None:
+        """Toggle logs panel visibility."""
+        if self._logs_visible:
+            self.log_frame.place_forget()
+            self._logs_visible = False
         else:
-            messagebox.showinfo("Logs", "No hay archivo de logs disponible.")
+            self.log_frame.place(
+                x=20,
+                y=self.config.height - 220,
+                width=self.config.width - 40,
+                height=200
+            )
+            self.log_frame.lift()
+            self._logs_visible = True
+    
+    def _on_log_message(self, text: str) -> None:
+        """Handle log message from controller - thread-safe."""
+        # Schedule on main thread to avoid Tkinter threading issues
+        self.root.after(0, lambda: self.append_log(text))
+    
+    def append_log(self, text: str) -> None:
+        """Append text to log widget."""
+        self.log_widget.configure(state='normal')
+        
+        tag = None
+        if 'ERROR' in text.upper():
+            tag = 'ERROR'
+        elif 'WARN' in text.upper():
+            tag = 'WARN'
+        elif 'INFO' in text.upper():
+            tag = 'INFO'
+        elif 'OBBROADCAST' in text.upper():
+            tag = 'OBBROADCAST'
+        
+        if tag:
+            self.log_widget.insert('end', text, tag)
+        else:
+            self.log_widget.insert('end', text)
+        
+        self.log_widget.see('end')
+        self.log_widget.configure(state='disabled')
     
     def _on_close(self) -> None:
         """Handle window close request."""
-        state = self.controller.state
+        from .components.dialogs import CloseDialog
         
-        if state.openob_running:
-            # Show close dialog
+        if self.controller.is_openob_running():
             dialog = CloseDialog(self.root, has_tray_support=False)
             choice = dialog.show()
             
@@ -362,39 +725,17 @@ class MainWindow:
                 self.controller.stop_openob()
                 self._cleanup_and_close()
             elif choice == CloseDialog.CHOICE_BACKGROUND:
-                self._minimize_to_tray()
+                self.root.withdraw()
             # CANCEL: do nothing
         else:
             self._cleanup_and_close()
     
     def _cleanup_and_close(self) -> None:
-        """Clean up resources and close application."""
+        """Clean up and close."""
         logger.info("Closing application")
-        
-        # Cancel scheduled updates
-        if hasattr(self, '_vu_update_id'):
-            self.root.after_cancel(self._vu_update_id)
-        if hasattr(self, '_status_update_id'):
-            self.root.after_cancel(self._status_update_id)
-        if hasattr(self, '_cooldown_update_id'):
-            self.root.after_cancel(self._cooldown_update_id)
-        
-        # Cleanup controller
         self.controller.cleanup()
-        
-        # Destroy window
         self.root.destroy()
-    
-    def _minimize_to_tray(self) -> None:
-        """Minimize to system tray (if supported)."""
-        # TODO: Implement tray icon support
-        self.root.withdraw()
-        logger.info("Minimized to tray (placeholder)")
     
     def run(self) -> None:
         """Start the application main loop."""
-        # Start VU loop in controller
-        self.controller.start_vu_loop()
-        
-        # Run Tkinter mainloop
         self.root.mainloop()

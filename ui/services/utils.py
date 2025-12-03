@@ -97,7 +97,7 @@ def setup_logging(log_file: Path, logger_name: str = 'openob.ui') -> logging.Log
     return logger
 
 
-def db_to_normalized(db_value: float, min_db: float = -65.0, gamma: float = 0.7) -> float:
+def db_to_normalized(db_value: float, min_db: float = -120.0, gamma: float = 0.6) -> float:
     """
     Convert dB value to normalized 0..1 range.
     
@@ -121,7 +121,7 @@ def db_to_normalized(db_value: float, min_db: float = -65.0, gamma: float = 0.7)
         # Linear normalization
         linear = (db - min_db) / (0.0 - min_db)
         
-        # Apply gamma curve
+        # Apply gamma curve for better visual response
         curved = math.pow(linear, gamma)
         
         return curved

@@ -1,302 +1,79 @@
-2025-11-19 22:24:49,030 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-19 22:24:49,031 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-19 22:24:49,965 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-19 22:36:29,343 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-19 22:36:29,343 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-19 22:36:30,332 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-19 22:38:09,699 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-19 22:38:09,699 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-19 22:38:10,722 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-19 22:39:06,130 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-19 22:39:06,130 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-19 22:39:07,103 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-19 22:39:41,844 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-19 22:39:41,844 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-19 22:39:42,864 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-19 22:40:34,894 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-19 22:40:34,901 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-19 22:40:35,930 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-19 22:40:40,766 [WARNING] LOCAL VU status: blocked (Sin Redis)
-2025-11-19 22:40:40,768 [WARNING] REMOTE VU status: blocked (Sin Redis)
-2025-11-19 22:40:48,318 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-19 22:40:48,320 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-19 22:43:43,148 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-19 22:43:43,148 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-19 22:43:44,142 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-19 22:43:47,499 [INFO] LOCAL VU status: ok
-2025-11-20 16:04:18,047 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-20 16:04:18,047 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-20 16:04:18,382 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-20 16:04:22,389 [INFO] LOCAL VU status: ok
-2025-11-20 18:14:50,356 [INFO] REMOTE VU status: ok
-2025-11-20 18:14:58,944 [WARNING] REMOTE VU status: stale (Datos viejos (5.0s) en openob:transmission:vu:rx)
-2025-11-20 18:14:59,956 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-20 18:15:01,323 [INFO] REMOTE VU status: ok
-2025-11-20 18:15:10,736 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-20 18:16:32,747 [INFO] REMOTE VU status: ok
-2025-11-20 18:20:57,872 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-20 18:21:18,721 [INFO] REMOTE VU status: ok
-2025-11-20 18:21:28,436 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-20 18:21:31,797 [INFO] REMOTE VU status: ok
-2025-11-20 19:41:44,798 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 07:17:26,076 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-21 07:17:26,079 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 07:17:26,848 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-21 07:17:30,714 [INFO] LOCAL VU status: ok
-2025-11-21 16:54:42,466 [INFO] LOCAL VU status: ok
-2025-11-21 16:54:42,466 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 16:54:42,466 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-21 16:55:19,018 [INFO] LOCAL VU status: ok
-2025-11-21 16:55:19,018 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 16:55:20,056 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-21 18:53:44,582 [INFO] LOCAL VU status: ok
-2025-11-21 18:53:44,582 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 18:53:45,406 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-21 19:52:26,900 [INFO] LOCAL VU status: ok
-2025-11-21 19:52:26,900 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 19:52:27,169 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-21 19:53:51,030 [INFO] LOCAL VU status: ok
-2025-11-21 19:53:51,030 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 19:53:51,948 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-21 19:57:20,716 [INFO] LOCAL VU status: ok
-2025-11-21 19:57:20,716 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 19:57:21,705 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-21 19:58:11,059 [INFO] LOCAL VU status: ok
-2025-11-21 19:58:11,059 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 19:58:11,947 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-21 19:58:39,322 [INFO] LOCAL VU status: ok
-2025-11-21 19:58:39,322 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 19:58:40,338 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-21 19:59:25,559 [INFO] LOCAL VU status: ok
-2025-11-21 19:59:25,559 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 19:59:26,572 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-21 20:01:36,385 [INFO] LOCAL VU status: ok
-2025-11-21 20:01:36,385 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 20:01:37,369 [INFO] Auto-starting OpenOB (auto option enabled)
-2025-11-21 20:10:44,291 [INFO] LOCAL VU status: ok
-2025-11-21 20:10:44,291 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-21 20:10:45,309 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-24 07:23:33,623 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-24 07:23:33,623 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-24 07:23:33,623 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-24 07:23:36,801 [INFO] LOCAL VU status: ok
-2025-11-24 07:28:48,860 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-24 07:28:48,860 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-24 07:28:48,860 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-24 07:28:53,246 [INFO] LOCAL VU status: ok
-2025-11-24 07:28:58,581 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-25 11:42:12,577 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-25 11:42:12,577 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-25 11:42:12,586 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-25 11:42:17,946 [INFO] LOCAL VU status: ok
-2025-11-25 17:44:46,555 [INFO] LOCAL VU status: ok
-2025-11-25 17:44:46,555 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-25 17:44:47,467 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-25 17:49:17,452 [INFO] LOCAL VU status: ok
-2025-11-25 17:49:17,452 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-25 17:49:18,315 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-25 17:53:53,009 [INFO] LOCAL VU status: ok
-2025-11-25 17:53:53,009 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-25 17:53:53,871 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-25 17:55:25,238 [INFO] LOCAL VU status: ok
-2025-11-25 17:55:25,240 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-25 17:55:26,099 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-25 17:55:59,954 [INFO] LOCAL VU status: ok
-2025-11-25 17:55:59,958 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-25 17:56:00,831 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-25 17:56:29,364 [INFO] LOCAL VU status: ok
-2025-11-25 17:56:29,364 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-25 17:56:30,233 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-25 18:00:42,342 [INFO] LOCAL VU status: ok
-2025-11-25 18:00:42,342 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-25 18:00:43,185 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-26 06:29:54,430 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-26 06:29:54,430 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-26 06:29:55,171 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-26 06:29:58,780 [INFO] LOCAL VU status: ok
-2025-11-27 07:55:51,440 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-27 07:55:51,440 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-27 07:55:51,440 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-27 07:55:56,997 [INFO] LOCAL VU status: ok
-2025-11-27 07:58:58,334 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-28 07:11:39,054 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-28 07:11:39,054 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-28 07:11:39,054 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-28 07:11:43,400 [INFO] LOCAL VU status: ok
-2025-11-29 07:37:16,468 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-29 07:37:16,468 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-29 07:37:16,595 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-29 07:37:20,812 [INFO] LOCAL VU status: ok
-2025-11-29 17:12:00,394 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-29 17:12:00,394 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-29 17:12:00,611 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-29 17:12:04,744 [INFO] LOCAL VU status: ok
-2025-11-30 08:46:04,013 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-30 08:46:04,015 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-30 08:46:04,493 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-30 08:46:08,394 [INFO] LOCAL VU status: ok
-2025-11-30 10:43:08,388 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-11-30 10:43:08,388 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-30 10:43:08,664 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-11-30 10:43:12,730 [INFO] LOCAL VU status: ok
-2025-11-30 11:07:41,704 [INFO] LOCAL VU status: ok
-2025-11-30 11:07:41,704 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-11-30 11:07:42,629 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-01 12:59:46,655 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-01 12:59:46,655 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-01 12:59:47,599 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-01 12:59:51,020 [INFO] LOCAL VU status: ok
-2025-12-01 13:26:06,609 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-01 13:26:06,612 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-01 13:26:07,955 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-01 13:28:54,868 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-01 13:28:54,868 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-01 13:30:54,685 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-01 13:30:54,685 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-01 13:30:56,026 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-01 13:32:37,044 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-01 13:32:37,044 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-01 13:32:38,374 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 05:40:35,584 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 05:40:35,589 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 05:40:36,896 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 05:40:41,019 [INFO] LOCAL VU status: ok
-2025-12-02 05:40:46,604 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 16:43:22,968 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 16:43:22,980 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 16:43:24,307 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 16:43:29,485 [INFO] LOCAL VU status: ok
-2025-12-02 16:44:57,528 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 16:45:04,695 [INFO] LOCAL VU status: ok
-2025-12-02 16:50:15,009 [INFO] LOCAL VU status: ok
-2025-12-02 16:50:15,009 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 16:50:16,326 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 17:28:10,876 [INFO] LOCAL VU status: ok
-2025-12-02 17:28:10,879 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 17:28:12,227 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 17:54:34,670 [INFO] LOCAL VU status: ok
-2025-12-02 17:54:34,670 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 17:54:36,005 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:01:04,397 [INFO] LOCAL VU status: ok
-2025-12-02 18:01:04,397 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:01:05,404 [INFO] REMOTE VU status: ok
-2025-12-02 18:01:05,682 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:01:06,103 [INFO] REMOTE VU status: ok
-2025-12-02 18:01:12,163 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:01:12,209 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:03:23,446 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:03:23,446 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:03:24,791 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:03:27,798 [INFO] LOCAL VU status: ok
-2025-12-02 18:03:27,800 [INFO] REMOTE VU status: ok
-2025-12-02 18:20:10,177 [INFO] LOCAL VU status: ok
-2025-12-02 18:20:10,177 [INFO] REMOTE VU status: ok
-2025-12-02 18:20:11,508 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:20:38,777 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:20:38,777 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:20:40,122 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:20:43,105 [INFO] LOCAL VU status: ok
-2025-12-02 18:20:43,105 [INFO] REMOTE VU status: ok
-2025-12-02 18:22:30,604 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:22:30,604 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:22:31,937 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:23:19,766 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:23:19,770 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:23:21,101 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:23:24,161 [INFO] LOCAL VU status: ok
-2025-12-02 18:23:24,161 [INFO] REMOTE VU status: ok
-2025-12-02 18:25:22,393 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:25:22,409 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:25:23,747 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:25:26,756 [INFO] LOCAL VU status: ok
-2025-12-02 18:25:26,756 [INFO] REMOTE VU status: ok
-2025-12-02 18:28:37,743 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:28:37,747 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:28:39,104 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:28:42,081 [INFO] LOCAL VU status: ok
-2025-12-02 18:28:42,081 [INFO] REMOTE VU status: ok
-2025-12-02 18:28:46,440 [WARNING] REMOTE VU status: stale (Datos viejos (5.6s) en openob:transmission:vu:rx)
-2025-12-02 18:28:47,452 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:28:47,458 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:30:25,658 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:30:25,670 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:30:26,999 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:30:35,384 [INFO] LOCAL VU status: ok
-2025-12-02 18:30:35,386 [INFO] REMOTE VU status: ok
-2025-12-02 18:31:21,113 [WARNING] REMOTE VU status: stale (Datos viejos (5.7s) en openob:transmission:vu:rx)
-2025-12-02 18:31:22,277 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:31:22,281 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:31:28,819 [INFO] LOCAL VU status: ok
-2025-12-02 18:31:28,819 [INFO] REMOTE VU status: ok
-2025-12-02 18:32:46,195 [WARNING] REMOTE VU status: stale (Datos viejos (5.1s) en openob:transmission:vu:rx)
-2025-12-02 18:32:47,356 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:32:58,237 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:33:16,807 [INFO] LOCAL VU status: ok
-2025-12-02 18:33:28,852 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:33:45,144 [INFO] LOCAL VU status: ok
-2025-12-02 18:33:45,144 [INFO] REMOTE VU status: ok
-2025-12-02 18:33:59,393 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:33:59,393 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:34:06,938 [INFO] LOCAL VU status: ok
-2025-12-02 18:34:06,940 [INFO] REMOTE VU status: ok
-2025-12-02 18:35:55,245 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:35:55,245 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:35:56,582 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:35:59,613 [INFO] LOCAL VU status: ok
-2025-12-02 18:35:59,613 [INFO] REMOTE VU status: ok
-2025-12-02 18:36:07,149 [WARNING] LOCAL VU status: stale (Datos viejos (5.0s) en openob:transmission:vu:tx)
-2025-12-02 18:36:07,155 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:36:08,306 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:36:13,644 [INFO] LOCAL VU status: ok
-2025-12-02 18:36:13,644 [INFO] REMOTE VU status: ok
-2025-12-02 18:36:26,732 [WARNING] REMOTE VU status: stale (Datos viejos (5.1s) en openob:transmission:vu:rx)
-2025-12-02 18:36:27,895 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:36:27,899 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:36:34,419 [INFO] LOCAL VU status: ok
-2025-12-02 18:36:34,419 [INFO] REMOTE VU status: ok
-2025-12-02 18:39:06,106 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:39:06,106 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:39:07,455 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:39:10,469 [INFO] LOCAL VU status: ok
-2025-12-02 18:39:10,469 [INFO] REMOTE VU status: ok
-2025-12-02 18:51:46,394 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:51:46,394 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:51:47,726 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:51:50,756 [INFO] LOCAL VU status: ok
-2025-12-02 18:51:50,756 [INFO] REMOTE VU status: ok
-2025-12-02 18:56:25,632 [WARNING] REMOTE VU status: stale (Datos viejos (5.2s) en openob:transmission:vu:rx)
-2025-12-02 18:56:26,811 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:56:26,811 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:56:31,156 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 18:56:31,156 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 18:56:32,501 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 18:56:35,073 [INFO] LOCAL VU status: ok
-2025-12-02 18:56:35,188 [INFO] REMOTE VU status: ok
-2025-12-02 19:06:51,231 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 19:06:51,231 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 19:06:52,582 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-02 19:06:55,232 [INFO] LOCAL VU status: ok
-2025-12-02 19:06:55,232 [INFO] REMOTE VU status: ok
-2025-12-02 19:10:46,367 [WARNING] REMOTE VU status: stale (Datos viejos (5.0s) en openob:transmission:vu:rx)
-2025-12-02 19:10:47,232 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-02 19:10:47,257 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-02 19:10:54,541 [INFO] LOCAL VU status: ok
-2025-12-02 19:10:54,543 [INFO] REMOTE VU status: ok
-2025-12-03 07:06:56,912 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-03 07:06:56,923 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-03 07:06:58,220 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-03 07:07:02,247 [INFO] LOCAL VU status: ok
-2025-12-03 08:12:22,764 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
-2025-12-03 08:12:22,764 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
-2025-12-03 08:12:24,078 [INFO] Auto-starting OBBroadcast (auto option enabled)
-2025-12-03 08:12:28,203 [INFO] LOCAL VU status: ok
-2025-12-03 09:08:06,104 [INFO] openob.ui.__main__ - ============================================================
-2025-12-03 09:08:06,104 [INFO] openob.ui.__main__ - OBBroadcast UI starting
-2025-12-03 09:08:06,104 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
-2025-12-03 09:08:06,104 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
-2025-12-03 09:08:06,104 [INFO] openob.ui.__main__ - ============================================================
-2025-12-03 09:08:06,603 [INFO] openob.ui.main_window - MainWindow initialized
-2025-12-03 09:10:43,977 [INFO] openob.ui.process - Started OpenOB (direct venv)
-2025-12-03 09:10:43,977 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
-2025-12-03 09:17:53,072 [INFO] openob.ui.main_window - Closing application
-2025-12-03 09:17:53,090 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 10:56:10,380 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 10:56:10,380 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 10:56:10,380 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 10:56:10,380 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 10:56:10,380 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 10:56:11,448 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 10:56:11,450 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 10:56:11,450 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 10:56:11,992 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 10:56:13,501 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 10:56:13,673 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 10:56:13,680 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 10:56:13,680 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 10:58:17,454 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 10:58:17,454 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 10:58:17,454 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 10:58:17,454 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 10:58:17,454 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 10:58:18,337 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 10:58:18,337 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 10:58:18,930 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 10:58:20,431 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 10:58:20,608 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 10:58:20,613 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 10:58:20,613 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 11:09:57,703 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 11:09:57,705 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 11:09:57,705 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 11:09:57,705 [INFO] openob.ui.main_window - Closing application
+2025-12-03 11:09:57,725 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 11:15:55,776 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 11:15:55,777 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 11:15:55,777 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 11:15:55,777 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 11:15:55,777 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 11:15:56,782 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 11:15:56,784 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 11:15:57,375 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 11:15:58,876 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 11:15:59,047 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 11:15:59,050 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 11:15:59,052 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 11:54:13,625 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 11:54:13,627 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 11:54:13,627 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 11:54:17,766 [INFO] openob.ui.main_window - Closing application
+2025-12-03 11:54:17,786 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 11:57:28,960 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 11:57:28,960 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 11:57:28,960 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 11:57:28,960 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 11:57:28,960 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 11:57:31,221 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 11:57:31,714 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 11:57:33,215 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 11:57:33,376 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 11:57:33,376 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 11:57:33,376 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 11:57:36,702 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 11:57:36,702 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 11:57:58,640 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 12:14:16,337 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 12:14:16,337 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 12:14:16,337 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 12:14:16,337 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 12:14:16,337 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 12:14:17,280 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 12:14:17,280 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 12:14:17,280 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 12:14:17,834 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 12:14:19,334 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 12:14:19,502 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 12:14:19,510 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 12:14:19,510 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 12:14:38,143 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 12:14:38,147 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 12:14:38,147 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 12:14:57,209 [INFO] openob.ui.main_window - Closing application
+2025-12-03 12:14:57,227 [INFO] openob.ui.__main__ - Application closed normally

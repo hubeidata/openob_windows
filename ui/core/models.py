@@ -31,6 +31,7 @@ class AppConfig:
     height: int = 700
     
     # Default OpenOB arguments
+    # Formato: <config-host> <node-name> <link-name> <mode> [peer-ip] -e <encoding> -r <sample-rate> -j <jitter> -a <audio>
     default_args: str = '127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto'
     
     @property

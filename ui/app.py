@@ -29,11 +29,9 @@ def setup_environment() -> None:
     Configure environment variables for GStreamer and GTK.
     Must be called before importing GTK-related modules.
     """
-    gtk_root = REPO_ROOT / 'GTK3_Gvsbuild'
-    
-    # GStreamer paths
-    gst_bin = gtk_root / 'bin'
-    gst_gir = gtk_root / 'lib' / 'girepository-1.0'
+    # GStreamer paths (same as run_ui.bat)
+    gst_bin = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\bin')
+    gst_gir = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0')
     
     if gst_bin.exists():
         os.environ['PATH'] = str(gst_bin) + os.pathsep + os.environ.get('PATH', '')
@@ -53,13 +51,13 @@ def create_config() -> AppConfig:
     return AppConfig(
         repo_root=REPO_ROOT,
         venv_python=REPO_ROOT / '.venv' / 'Scripts' / 'python.exe',
-        openob_script=REPO_ROOT / 'scripts' / 'start_openob.ps1',
-        start_script=REPO_ROOT / 'scripts' / 'start_redis_and_openob.ps1',
-        gstreamer_bin=REPO_ROOT / 'GTK3_Gvsbuild' / 'bin',
-        gstreamer_gir=REPO_ROOT / 'GTK3_Gvsbuild' / 'lib' / 'girepository-1.0',
+        openob_script=REPO_ROOT / '.venv' / 'Scripts' / 'openob',  # Script sin extensión, usar con python.exe
+        start_script=REPO_ROOT / 'scripts' / 'start_openob.ps1',
+        gstreamer_bin=Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\bin'),
+        gstreamer_gir=Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0'),
         log_dir=log_dir,
         ui_log_file=log_dir / 'ui.log',
-        icon_path=REPO_ROOT / 'ui' / 'images' / 'logo_openob.png',
+        icon_path=REPO_ROOT / 'ui' / 'images' / 'input_line.png',
         width=960,
         height=700,
         default_args='127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto'

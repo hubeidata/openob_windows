@@ -141,6 +141,10 @@ class OpenOBProcessManager:
     Handles starting, stopping, and monitoring the OpenOB process.
     """
     
+    # GStreamer paths for environment
+    GSTREAMER_BIN = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\bin')
+    GSTREAMER_GIR = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0')
+    
     def __init__(
         self,
         venv_python: Path,
@@ -155,6 +159,24 @@ class OpenOBProcessManager:
         
         self._process: Optional[subprocess.Popen] = None
         self._output_thread: Optional[threading.Thread] = None
+    
+    def _get_gstreamer_env(self) -> dict:
+        """Get environment variables with GStreamer paths included."""
+        import os
+        env = os.environ.copy()
+        
+        # Add GStreamer bin to PATH
+        if self.GSTREAMER_BIN.exists():
+            current_path = env.get('PATH', '')
+            if str(self.GSTREAMER_BIN) not in current_path:
+                env['PATH'] = str(self.GSTREAMER_BIN) + os.pathsep + current_path
+            env['GST_PLUGIN_PATH'] = str(self.GSTREAMER_BIN)
+        
+        # Add GStreamer typelib path
+        if self.GSTREAMER_GIR.exists():
+            env['GI_TYPELIB_PATH'] = str(self.GSTREAMER_GIR)
+        
+        return env
     
     @property
     def is_running(self) -> bool:
@@ -219,13 +241,19 @@ class OpenOBProcessManager:
                     '-OpenobArgs', args
                 ]
             else:
+                # Always use python.exe to run the openob script
                 cmd = [str(self._venv_python), str(self._openob_script)] + split_args
+                logger.info(f"OpenOB command: {' '.join(cmd)}")
+            
+            # Get environment with GStreamer paths
+            env = self._get_gstreamer_env()
             
             self._process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
+                env=env,
                 cwd=str(self._working_dir) if self._working_dir else None,
                 creationflags=CREATION_FLAGS
             )

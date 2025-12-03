@@ -19,7 +19,7 @@ if not exist "%PYTHONW%" (
     echo pythonw not found at %PYTHONW%. Trying system pythonw... 
     set "PYTHONW=pythonw.exe"
 )
-"%PYTHONW%" "%~dp0\..\ui\main.py"
+"%PYTHONW%" "%~dp0\..\ui\app.py"
 
 :: return to previous directory
 popd
