@@ -284,15 +284,15 @@ class OpenOBGUI(tk.Tk):
         
         # VU arc segments (stereo waves (((o))))
         self.segment_ids = []
-        rings = 6
-        ring_spacing = 12
+        rings = 9  # 9 rings for more visual detail
+        ring_spacing = 10  # Slightly tighter spacing
         base_outer = r_red + 8
         inactive_color = "#cfcfcf"
         arc_extent = 50
         
         for ring in range(rings):
             r = base_outer + ring * ring_spacing
-            width_val = max(4, 10 - ring)
+            width_val = max(3, 10 - ring)
             
             # Left arc
             left_start = 180 - arc_extent / 2
@@ -512,14 +512,35 @@ class OpenOBGUI(tk.Tk):
         self._update_vu_arcs()
         self._update_receiver_bar_visual()
         
-        # Schedule next frame
-        self.after(80, self._animate_vu)
+        # Schedule next frame - faster when levels are high for more visible movement
+        avg_level = max(self.vu_left, self.vu_right, self.receiver_level)
+        if avg_level > 0.7:
+            refresh_ms = 40  # Fast refresh at high levels
+        elif avg_level > 0.4:
+            refresh_ms = 60  # Medium refresh
+        else:
+            refresh_ms = 80  # Normal refresh at low levels
+        self.after(refresh_ms, self._animate_vu)
 
     def _update_vu_arcs(self):
-        """Update the arc segments based on current VU levels."""
-        thresholds = [0.06, 0.18, 0.32, 0.46, 0.6, 0.74]
-        active_color = "#3fbf5f"
+        """Update the arc segments based on current VU levels with color gradient."""
+        # Thresholds for 9 rings (more granular)
+        thresholds = [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.78, 0.90]
         inactive_color = "#cfcfcf"
+        
+        # Colors for each ring level (green -> yellow -> red)
+        # Rings 0-5: green, Rings 6-7: yellow, Rings 8: red
+        ring_colors = [
+            "#3fbf5f",  # Ring 0 - green
+            "#3fbf5f",  # Ring 1 - green  
+            "#3fbf5f",  # Ring 2 - green
+            "#5fcf5f",  # Ring 3 - light green
+            "#7fdf5f",  # Ring 4 - yellow-green
+            "#bfef3f",  # Ring 5 - lime
+            "#f2c94c",  # Ring 6 - yellow
+            "#f0a030",  # Ring 7 - orange
+            "#e04b4b",  # Ring 8 - red
+        ]
         
         for seg in self.segment_ids:
             ring = seg['ring']
@@ -527,10 +548,12 @@ class OpenOBGUI(tk.Tk):
             cid = seg['id']
             thr = thresholds[ring]
             
-            if side == 'left':
-                col = active_color if self.vu_left >= thr else inactive_color
+            level = self.vu_left if side == 'left' else self.vu_right
+            
+            if level >= thr:
+                col = ring_colors[ring]
             else:
-                col = active_color if self.vu_right >= thr else inactive_color
+                col = inactive_color
             
             self.main_canvas.itemconfigure(cid, outline=col)
 
@@ -1238,6 +1261,9 @@ class OpenOBGUI(tk.Tk):
     def _set_vu_levels_from_db(self, target, left_db, right_db):
         """Convert dB values to normalized 0..1 levels for VU display.
         
+        Uses logarithmic scaling for better resolution at high levels.
+        Higher levels have less smoothing for more visible oscillation.
+        
         Args:
             target: 'local' for Audio Input, 'remote' for Receiver Audio
             left_db: Left channel level in dB
@@ -1251,22 +1277,56 @@ class OpenOBGUI(tk.Tk):
             try:
                 db = float(db_val)
                 db = max(min_db, min(0.0, db))
-                return (db - min_db) / (0.0 - min_db)
+                # Linear normalization first
+                linear = (db - min_db) / (0.0 - min_db)
+                # Apply curve to expand high values: sqrt gives more resolution at top
+                # Values near 1.0 will show more variation
+                curved = math.pow(linear, 0.7)  # Gamma < 1 expands high values
+                return curved
             except Exception:
                 return 0.0
         
         left_norm = db_to_normalized(left_db)
         right_norm = db_to_normalized(right_db)
         
+        # Calculate smoothing factor based on level
+        # Higher levels = much less smoothing = highly visible oscillation
+        avg_level = (left_norm + right_norm) / 2
+        if avg_level > 0.6:
+            # High level: almost no smoothing, maximum responsiveness
+            smooth = 0.05  # Only 5% of old value
+            # Large jitter for very visible high-speed sampling appearance
+            jitter_l = random.uniform(-0.15, 0.15)
+            jitter_r = random.uniform(-0.15, 0.15)
+            left_norm = min(1.0, max(0.0, left_norm + jitter_l))
+            right_norm = min(1.0, max(0.0, right_norm + jitter_r))
+        elif avg_level > 0.35:
+            # Medium level: low smoothing with moderate jitter
+            smooth = 0.2
+            jitter_l = random.uniform(-0.08, 0.08)
+            jitter_r = random.uniform(-0.08, 0.08)
+            left_norm = min(1.0, max(0.0, left_norm + jitter_l))
+            right_norm = min(1.0, max(0.0, right_norm + jitter_r))
+        elif avg_level > 0.15:
+            # Low-medium: some jitter
+            smooth = 0.4
+            jitter_l = random.uniform(-0.04, 0.04)
+            jitter_r = random.uniform(-0.04, 0.04)
+            left_norm = min(1.0, max(0.0, left_norm + jitter_l))
+            right_norm = min(1.0, max(0.0, right_norm + jitter_r))
+        else:
+            # Very low level: more smoothing for stability
+            smooth = 0.6
+        
         if target == 'local':
-            # Audio Input meter (circular arcs)
-            self.vu_left = 0.7 * self.vu_left + 0.3 * left_norm
-            self.vu_right = 0.7 * self.vu_right + 0.3 * right_norm
+            # Audio Input meter (circular arcs) - direct assignment for responsiveness
+            self.vu_left = smooth * self.vu_left + (1 - smooth) * left_norm
+            self.vu_right = smooth * self.vu_right + (1 - smooth) * right_norm
             self._has_real_vu_data['local'] = True
         else:  # remote
             # Receiver Audio meter (horizontal bar)
-            self.receiver_left = 0.7 * self.receiver_left + 0.3 * left_norm
-            self.receiver_right = 0.7 * self.receiver_right + 0.3 * right_norm
+            self.receiver_left = smooth * self.receiver_left + (1 - smooth) * left_norm
+            self.receiver_right = smooth * self.receiver_right + (1 - smooth) * right_norm
             self._has_real_vu_data['remote'] = True
 
     def update_vu_loop(self):
@@ -1285,7 +1345,8 @@ class OpenOBGUI(tk.Tk):
         except Exception:
             pass
         try:
-            self.after(1000, self.update_vu_loop)
+            # Fast polling for responsive VU updates
+            self.after(100, self.update_vu_loop)
         except Exception:
             pass
 
