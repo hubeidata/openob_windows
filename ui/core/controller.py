@@ -30,6 +30,7 @@ from ..services.process_service import (
     ServiceStatus,
     ProcessResult
 )
+from ..services.config_storage import ConfigStorageService, SavedConfig
 from ..services.utils import (
     db_to_normalized, 
     apply_vu_jitter, 
@@ -70,6 +71,10 @@ class AppController:
         self.vu_config = VUVisualConfig()
         self.callbacks = UICallbacks()
         
+        # Initialize config storage service (for persistent settings)
+        self._config_storage = ConfigStorageService(config.repo_root / 'ui')
+        self._config_storage.load()
+        
         # Initialize services
         self._redis_service = RedisService()
         self._redis_manager = RedisServiceManager(config.repo_root)
@@ -89,7 +94,8 @@ class AppController:
         
         # Current link configuration
         self._link_config: Optional[LinkConfig] = None
-        self._args_string: str = config.default_args
+        # Use saved args if available, otherwise use default
+        self._args_string: str = self._config_storage.config.get_current_args()
         
         # VU loop state
         self._vu_loop_running = False
@@ -104,6 +110,16 @@ class AppController:
     def current_args(self) -> str:
         """Get current OpenOB arguments string."""
         return self._args_string
+    
+    @property
+    def saved_config(self) -> SavedConfig:
+        """Get saved configuration."""
+        return self._config_storage.config
+    
+    @property
+    def auto_start_enabled(self) -> bool:
+        """Get auto-start setting from saved config."""
+        return self._config_storage.config.auto_start
     
     # -------------------------
     # Initialization
@@ -141,6 +157,16 @@ class AppController:
         """Set OpenOB arguments and update link config."""
         self._args_string = args
         self._update_link_config()
+        
+        # Save to persistent storage
+        mode = 'rx' if ' rx ' in args or args.endswith(' rx') else 'tx'
+        self._config_storage.update_from_args(args, mode)
+        self._config_storage.save()
+    
+    def set_auto_start(self, enabled: bool) -> None:
+        """Set and save auto-start preference."""
+        self._config_storage.update(auto_start=enabled)
+        self._config_storage.save()
     
     def update_args(self, args: str) -> None:
         """Alias for set_args - update OpenOB arguments."""
@@ -214,6 +240,9 @@ class AppController:
                 message="Redis not running",
                 return_code=-1  # Special code to indicate Redis check
             )
+        
+        # Log the command that will be executed
+        self._log(f"Executing OpenOB with args: {self._args_string}")
         
         # Start process
         result = self._openob_manager.start(

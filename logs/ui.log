@@ -91,3 +91,713 @@
 2025-12-03 12:15:40,268 [INFO] openob.ui - LOCAL VU status: ok
 2025-12-03 12:15:40,268 [INFO] openob.ui - REMOTE VU status: ok
 2025-12-03 12:41:22,050 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 14:51:13,704 [INFO] LOCAL VU status: ok
+2025-12-03 14:51:13,704 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-03 14:51:14,776 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-03 14:52:31,291 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 14:52:31,294 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 14:52:31,294 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 14:52:38,027 [INFO] openob.ui.main_window - Closing application
+2025-12-03 14:52:38,059 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 14:53:07,752 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 14:53:07,752 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 14:53:07,752 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 14:53:07,752 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 14:53:07,752 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 14:53:09,954 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 14:53:10,447 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 14:53:11,962 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 14:53:12,144 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 14:53:12,144 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 14:53:12,144 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 14:53:15,472 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 14:54:11,963 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 14:54:11,963 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 14:54:11,963 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 14:54:13,725 [INFO] openob.ui.main_window - Closing application
+2025-12-03 14:54:13,754 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 14:55:59,351 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-03 14:55:59,351 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-03 14:56:00,640 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-03 14:56:21,072 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-03 14:56:21,076 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-03 14:56:22,324 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-03 14:57:24,993 [WARNING] LOCAL VU status: no-data (Sin datos para clave openob:transmission:vu:tx)
+2025-12-03 14:57:24,996 [WARNING] REMOTE VU status: no-data (Sin datos para clave openob:transmission:vu:rx)
+2025-12-03 14:57:26,223 [INFO] Auto-starting OBBroadcast (auto option enabled)
+2025-12-03 14:58:18,133 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 14:58:18,133 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 14:58:18,134 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 14:58:18,134 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 14:58:18,134 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 14:58:19,050 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 14:58:19,729 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 14:58:21,225 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 14:58:21,423 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 14:58:21,423 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 14:58:21,423 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 14:58:23,771 [INFO] openob.ui.main_window - Opening settings dialog...
+2025-12-03 14:58:23,779 [INFO] openob.ui.main_window - Current config: LinkConfig(config_host='127.0.0.1', node_id='emetteur', link_name='transmission', link_mode='tx', peer_ip='192.168.1.17', encoding='pcm', sample_rate='48000', jitter_buffer='60', audio_backend='auto')
+2025-12-03 14:58:24,834 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 14:58:34,695 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 14:58:34,697 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 14:58:34,697 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 14:58:34,698 [INFO] openob.ui.main_window - Closing application
+2025-12-03 14:58:34,725 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 14:58:46,023 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 14:58:46,023 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 14:58:46,023 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 14:58:46,023 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 14:58:46,023 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 14:58:46,870 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 14:58:47,519 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 14:58:49,019 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 14:58:49,198 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 14:58:49,203 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 14:58:49,203 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 14:58:50,651 [INFO] openob.ui.main_window - Opening settings dialog...
+2025-12-03 14:58:50,656 [INFO] openob.ui.main_window - Current config: LinkConfig(config_host='127.0.0.1', node_id='emetteur', link_name='transmission', link_mode='tx', peer_ip='192.168.1.17', encoding='pcm', sample_rate='48000', jitter_buffer='60', audio_backend='auto')
+2025-12-03 14:58:52,660 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 14:58:56,609 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 14:58:56,609 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 14:58:56,609 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 14:58:56,609 [INFO] openob.ui.main_window - Closing application
+2025-12-03 14:58:56,633 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 14:59:45,580 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 14:59:45,580 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 14:59:45,580 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 14:59:45,580 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 14:59:45,580 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 14:59:46,430 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 14:59:47,070 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 14:59:48,582 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 14:59:48,767 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 14:59:48,770 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 14:59:48,773 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 14:59:52,229 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 14:59:52,323 [INFO] openob.ui.main_window - Opening settings dialog...
+2025-12-03 14:59:52,328 [INFO] openob.ui.main_window - Current config: LinkConfig(config_host='127.0.0.1', node_id='emetteur', link_name='transmission', link_mode='tx', peer_ip='192.168.1.17', encoding='pcm', sample_rate='48000', jitter_buffer='60', audio_backend='auto')
+2025-12-03 14:59:52,328 [INFO] openob.ui.main_window - Creating SettingsDialog...
+2025-12-03 14:59:52,360 [INFO] openob.ui.main_window - SettingsDialog created: .!settingsdialog
+2025-12-03 14:59:52,360 [INFO] openob.ui.main_window - Waiting for dialog window...
+2025-12-03 14:59:56,392 [INFO] openob.ui.main_window - Dialog closed
+2025-12-03 14:59:56,392 [INFO] openob.ui.main_window - Dialog result: None
+2025-12-03 15:00:01,856 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 15:00:01,858 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 15:00:01,858 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 15:00:01,858 [INFO] openob.ui.main_window - Closing application
+2025-12-03 15:00:01,887 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 15:00:24,818 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:00:24,818 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 15:00:24,818 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 15:00:24,818 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 15:00:24,818 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:00:25,719 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:00:26,360 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 15:00:27,875 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 15:00:28,056 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:00:28,056 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:00:28,056 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:00:31,475 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:00:36,932 [INFO] openob.ui.main_window - Opening settings dialog...
+2025-12-03 15:00:36,956 [INFO] openob.ui.main_window - Current config: LinkConfig(config_host='127.0.0.1', node_id='emetteur', link_name='transmission', link_mode='tx', peer_ip='192.168.1.17', encoding='pcm', sample_rate='48000', jitter_buffer='60', audio_backend='auto')
+2025-12-03 15:00:36,956 [INFO] openob.ui.main_window - Creating SettingsDialog...
+2025-12-03 15:00:36,989 [INFO] openob.ui.main_window - SettingsDialog created: .!settingsdialog
+2025-12-03 15:00:36,989 [INFO] openob.ui.main_window - Waiting for dialog window...
+2025-12-03 15:00:59,816 [INFO] openob.ui.main_window - Dialog closed
+2025-12-03 15:00:59,816 [INFO] openob.ui.main_window - Dialog result: None
+2025-12-03 15:01:00,652 [INFO] openob.ui.main_window - Opening settings dialog...
+2025-12-03 15:01:00,652 [INFO] openob.ui.main_window - Current config: LinkConfig(config_host='127.0.0.1', node_id='emetteur', link_name='transmission', link_mode='tx', peer_ip='192.168.1.17', encoding='pcm', sample_rate='48000', jitter_buffer='60', audio_backend='auto')
+2025-12-03 15:01:00,652 [INFO] openob.ui.main_window - Creating SettingsDialog...
+2025-12-03 15:01:00,687 [INFO] openob.ui.main_window - SettingsDialog created: .!settingsdialog2
+2025-12-03 15:01:00,687 [INFO] openob.ui.main_window - Waiting for dialog window...
+2025-12-03 15:01:02,766 [INFO] openob.ui.main_window - Dialog closed
+2025-12-03 15:01:02,766 [INFO] openob.ui.main_window - Dialog result: None
+2025-12-03 15:01:03,677 [INFO] openob.ui.main_window - Opening settings dialog...
+2025-12-03 15:01:03,677 [INFO] openob.ui.main_window - Current config: LinkConfig(config_host='127.0.0.1', node_id='emetteur', link_name='transmission', link_mode='tx', peer_ip='192.168.1.17', encoding='pcm', sample_rate='48000', jitter_buffer='60', audio_backend='auto')
+2025-12-03 15:01:03,677 [INFO] openob.ui.main_window - Creating SettingsDialog...
+2025-12-03 15:01:03,717 [INFO] openob.ui.main_window - SettingsDialog created: .!settingsdialog3
+2025-12-03 15:01:03,717 [INFO] openob.ui.main_window - Waiting for dialog window...
+2025-12-03 15:01:04,975 [INFO] openob.ui.main_window - Dialog closed
+2025-12-03 15:01:04,975 [INFO] openob.ui.main_window - Dialog result: None
+2025-12-03 15:01:06,051 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 15:01:06,053 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 15:01:06,053 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 15:01:07,315 [INFO] openob.ui.main_window - Closing application
+2025-12-03 15:01:07,340 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 15:01:33,606 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:01:33,606 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 15:01:33,606 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 15:01:33,606 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 15:01:33,606 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:01:34,478 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:01:35,122 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 15:01:36,631 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 15:01:36,801 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:01:36,806 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:01:36,806 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:01:40,240 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:01:56,296 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:01:56,296 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 15:01:56,296 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 15:01:56,296 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 15:01:56,296 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:01:57,225 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:01:57,227 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:01:57,889 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 15:01:59,396 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 15:01:59,576 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:01:59,580 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:01:59,580 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:02:08,531 [INFO] openob.ui.main_window - Opening settings dialog...
+2025-12-03 15:02:08,552 [INFO] openob.ui.main_window - Current config: LinkConfig(config_host='127.0.0.1', node_id='emetteur', link_name='transmission', link_mode='tx', peer_ip='192.168.1.17', encoding='pcm', sample_rate='48000', jitter_buffer='60', audio_backend='auto')
+2025-12-03 15:02:08,552 [INFO] openob.ui.main_window - Creating SettingsDialog...
+2025-12-03 15:02:08,586 [INFO] openob.ui.main_window - SettingsDialog created: .!settingsdialog
+2025-12-03 15:02:08,586 [INFO] openob.ui.main_window - Waiting for dialog window...
+2025-12-03 15:02:15,736 [INFO] openob.ui.main_window - Dialog closed
+2025-12-03 15:02:15,736 [INFO] openob.ui.main_window - Settings updated: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:02:37,978 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:02:37,978 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 15:02:37,978 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 15:02:37,978 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 15:02:37,978 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:02:38,908 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:02:38,908 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:02:39,598 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 15:02:41,113 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 15:02:41,293 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:02:41,298 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:02:41,298 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:02:46,677 [INFO] openob.ui.main_window - Opening settings dialog...
+2025-12-03 15:02:46,698 [INFO] openob.ui.main_window - Current config: LinkConfig(config_host='127.0.0.1', node_id='emetteur', link_name='transmission', link_mode='tx', peer_ip='192.168.1.17', encoding='pcm', sample_rate='48000', jitter_buffer='60', audio_backend='auto')
+2025-12-03 15:02:46,700 [INFO] openob.ui.main_window - Creating SettingsDialog...
+2025-12-03 15:02:46,738 [INFO] openob.ui.main_window - SettingsDialog created: .!settingsdialog
+2025-12-03 15:02:46,738 [INFO] openob.ui.main_window - Waiting for dialog window...
+2025-12-03 15:05:11,260 [INFO] openob.ui.main_window - Dialog closed
+2025-12-03 15:05:11,260 [INFO] openob.ui.main_window - Dialog result: SettingsResult(saved=False, args='')
+2025-12-03 15:05:13,896 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 15:05:13,900 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 15:05:13,900 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 15:05:15,444 [INFO] openob.ui.main_window - Closing application
+2025-12-03 15:05:15,464 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 15:06:12,057 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:06:12,058 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 15:06:12,058 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 15:06:12,058 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 15:06:12,058 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:06:13,665 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:06:13,666 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:06:14,779 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 15:06:16,285 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 15:06:16,649 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:06:16,661 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:06:16,661 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:06:19,519 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:06:40,691 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:06:40,691 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 15:06:40,691 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 15:06:40,691 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 15:06:40,691 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:06:42,066 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:06:43,137 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 15:06:44,650 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 15:06:44,985 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:06:45,000 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:06:45,000 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:06:48,644 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:06:52,073 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:06:52,097 [ERROR] openob.ui.main_window - Error opening ConfigView: 'AppState' object has no attribute 'args'
+Traceback (most recent call last):
+  File "C:\Users\vamanuel\Documents\openob_windows\ui\main_window.py", line 664, in _on_settings_click
+    current_args = self.controller.state.args
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'AppState' object has no attribute 'args'
+2025-12-03 15:06:57,730 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:06:57,732 [ERROR] openob.ui.main_window - Error opening ConfigView: 'AppState' object has no attribute 'args'
+Traceback (most recent call last):
+  File "C:\Users\vamanuel\Documents\openob_windows\ui\main_window.py", line 664, in _on_settings_click
+    current_args = self.controller.state.args
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'AppState' object has no attribute 'args'
+2025-12-03 15:06:58,844 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:06:58,844 [ERROR] openob.ui.main_window - Error opening ConfigView: 'AppState' object has no attribute 'args'
+Traceback (most recent call last):
+  File "C:\Users\vamanuel\Documents\openob_windows\ui\main_window.py", line 664, in _on_settings_click
+    current_args = self.controller.state.args
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'AppState' object has no attribute 'args'
+2025-12-03 15:07:03,857 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:07:03,857 [ERROR] openob.ui.main_window - Error opening ConfigView: 'AppState' object has no attribute 'args'
+Traceback (most recent call last):
+  File "C:\Users\vamanuel\Documents\openob_windows\ui\main_window.py", line 664, in _on_settings_click
+    current_args = self.controller.state.args
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'AppState' object has no attribute 'args'
+2025-12-03 15:07:04,460 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 15:07:04,462 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 15:07:04,462 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 15:07:11,362 [INFO] openob.ui.main_window - Closing application
+2025-12-03 15:07:11,392 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 15:07:39,709 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:07:39,709 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 15:07:39,709 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 15:07:39,709 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 15:07:39,709 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:07:41,962 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:07:42,466 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 15:07:44,017 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 15:07:44,175 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:07:44,175 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:07:44,175 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:07:46,276 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:07:46,321 [ERROR] openob.ui.main_window - Error opening ConfigView: 'AppState' object has no attribute 'args'
+Traceback (most recent call last):
+  File "C:\Users\vamanuel\Documents\openob_windows\ui\main_window.py", line 664, in _on_settings_click
+    current_args = self.controller.state.args
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'AppState' object has no attribute 'args'
+2025-12-03 15:07:47,488 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:07:53,250 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 15:07:53,252 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 15:07:53,252 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 15:08:34,458 [INFO] openob.ui.main_window - Closing application
+2025-12-03 15:08:34,480 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 15:09:23,819 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:09:23,819 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 15:09:23,819 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 15:09:23,819 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 15:09:23,819 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:09:24,694 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:09:25,288 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 15:09:26,799 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 15:09:26,976 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:09:26,980 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:09:26,981 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:09:29,412 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:09:29,501 [INFO] openob.ui.main_window - ConfigView created: .!configview
+2025-12-03 15:09:30,371 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:09:50,717 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:09:50,731 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 15:10:19,134 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:10:19,134 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 15:10:19,134 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 15:10:19,134 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 15:10:19,134 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:10:21,416 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:10:21,416 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:10:22,182 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 15:10:23,684 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 15:10:23,857 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:10:23,861 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:10:23,861 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:10:26,066 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:10:26,134 [INFO] openob.ui.main_window - ConfigView created: .!configview
+2025-12-03 15:10:59,444 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:10:59,466 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 15:10:59,468 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.15:6379
+2025-12-03 15:11:05,363 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:11:05,391 [INFO] openob.ui.main_window - ConfigView created: .!configview2
+2025-12-03 15:11:07,091 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:11:07,115 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 15:15:34,391 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:15:34,428 [INFO] openob.ui.main_window - ConfigView created: .!configview3
+2025-12-03 15:15:36,881 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:15:36,906 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 15:15:38,491 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:15:38,525 [INFO] openob.ui.main_window - ConfigView created: .!configview4
+2025-12-03 15:18:01,947 [INFO] openob.ui.main_window - Configuration updated: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:18:01,964 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 15:18:01,965 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:18:06,179 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 15:18:06,181 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 15:18:06,181 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 15:19:16,787 [INFO] openob.ui.main_window - Closing application
+2025-12-03 15:19:16,810 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 15:19:33,043 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:19:33,043 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 15:19:33,045 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 15:19:33,045 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 15:19:33,045 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:19:33,930 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:19:33,931 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:19:34,538 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 15:19:36,051 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 15:19:36,247 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:19:36,251 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:19:36,251 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:19:46,082 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 15:19:46,084 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 15:19:46,084 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 15:19:50,474 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:19:50,541 [INFO] openob.ui.main_window - ConfigView created: .!configview
+2025-12-03 15:19:59,948 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:19:59,963 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 15:19:59,978 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.15:6379
+2025-12-03 15:20:01,722 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:20:01,725 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:20:01,725 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:20:41,832 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 15:22:02,221 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 15:22:02,221 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 15:22:02,221 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 15:22:06,203 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:22:06,237 [INFO] openob.ui.main_window - ConfigView created: .!configview2
+2025-12-03 15:22:17,603 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:22:17,623 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 15:22:18,869 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:22:18,895 [INFO] openob.ui.main_window - ConfigView created: .!configview3
+2025-12-03 15:32:58,410 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:32:58,430 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 15:37:19,307 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:37:19,337 [INFO] openob.ui.main_window - ConfigView created: .!configview4
+2025-12-03 15:37:36,585 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:37:36,606 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 15:37:49,160 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:37:49,163 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:37:49,163 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:37:52,880 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 15:37:52,884 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 15:37:52,884 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 15:37:54,498 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:37:54,520 [INFO] openob.ui.main_window - ConfigView created: .!configview5
+2025-12-03 15:37:59,818 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:37:59,843 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 15:50:41,052 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:50:41,052 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 15:50:41,052 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 15:50:41,052 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 15:50:41,052 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 15:50:47,053 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 15:50:47,053 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 15:50:48,950 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 15:50:50,454 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 15:50:50,622 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 15:50:50,628 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:50:50,628 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:50:54,818 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 15:50:54,820 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 15:50:54,820 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 15:50:56,538 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:50:56,623 [INFO] openob.ui.main_window - ConfigView created: .!configview
+2025-12-03 15:51:01,650 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:51:01,664 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 15:51:01,750 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.15:6379
+2025-12-03 15:51:09,436 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:51:09,440 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 15:51:09,440 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 15:51:17,676 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 15:51:17,676 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 15:51:17,676 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 15:51:19,970 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 15:51:20,004 [INFO] openob.ui.main_window - ConfigView created: .!configview2
+2025-12-03 15:51:39,556 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 15:51:39,576 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:03:16,858 [INFO] openob.ui.main_window - Closing application
+2025-12-03 16:03:16,903 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 16:03:20,020 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:03:20,020 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 16:03:20,020 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 16:03:20,020 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 16:03:20,020 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:03:22,563 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 16:03:22,563 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 16:03:23,211 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 16:03:24,716 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 16:03:24,904 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:03:24,909 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:03:24,910 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:06:07,543 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:06:07,543 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:06:07,543 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:06:07,543 [INFO] openob.ui.main_window - Closing application
+2025-12-03 16:06:07,569 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 16:06:11,887 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:06:11,889 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 16:06:11,889 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 16:06:11,889 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 16:06:11,889 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:06:14,289 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 16:06:14,289 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 16:06:14,797 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 16:06:16,300 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 16:06:16,472 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:06:16,473 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:06:16,473 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:07:27,049 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:07:27,049 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:07:27,049 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:07:28,912 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 16:07:28,973 [INFO] openob.ui.main_window - ConfigView created: .!configview
+2025-12-03 16:07:33,040 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 16:07:33,067 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:07:33,069 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.15:6379
+2025-12-03 16:07:36,620 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 16:07:36,622 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:07:36,622 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:08:05,722 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:08:05,722 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:08:05,722 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:08:12,386 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 16:08:12,415 [INFO] openob.ui.main_window - ConfigView created: .!configview2
+2025-12-03 16:08:17,563 [INFO] openob.ui.main_window - Configuration updated: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:08:17,582 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:08:17,592 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 16:08:19,342 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:08:19,342 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:08:19,342 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:12:54,169 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:12:54,171 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:12:54,171 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:13:05,067 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 16:13:05,092 [INFO] openob.ui.main_window - ConfigView created: .!configview3
+2025-12-03 16:13:09,738 [INFO] openob.ui.main_window - Configuration updated: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:13:09,757 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:14:30,247 [INFO] openob.ui.main_window - Closing application
+2025-12-03 16:14:30,270 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 16:14:34,126 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:14:34,127 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 16:14:34,127 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 16:14:34,127 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 16:14:34,127 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:14:36,542 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 16:14:36,542 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 16:14:37,067 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 16:14:38,575 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 16:14:38,757 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:14:38,759 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:14:38,759 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:14:42,107 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:14:42,107 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:14:42,107 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:14:51,249 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 16:14:51,310 [INFO] openob.ui.main_window - ConfigView created: .!configview
+2025-12-03 16:14:54,937 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 16:14:54,959 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:14:54,997 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.15:6379
+2025-12-03 16:14:59,385 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.15 recepteur transmission rx -a alsa -d hw:1,0
+2025-12-03 16:14:59,390 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:14:59,390 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:15:31,999 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:15:31,999 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:15:31,999 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:15:43,239 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 16:15:43,272 [INFO] openob.ui.main_window - ConfigView created: .!configview2
+2025-12-03 16:15:46,913 [INFO] openob.ui.main_window - Configuration updated: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:15:46,937 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:15:46,997 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 16:15:48,764 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:15:48,767 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:15:48,767 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:20:13,657 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:20:13,659 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:20:13,659 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:23:02,472 [INFO] openob.ui.main_window - Closing application
+2025-12-03 16:23:02,493 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 16:23:04,541 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:23:04,543 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 16:23:04,543 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 16:23:04,543 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 16:23:04,543 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:23:06,659 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 16:23:06,659 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 16:23:07,170 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 16:23:08,671 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 16:23:08,884 [INFO] openob.ui - Executing OpenOB with args: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:23:08,884 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:23:08,887 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:23:08,887 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:23:13,057 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:23:13,060 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:23:13,060 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:23:18,081 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 16:23:18,157 [INFO] openob.ui.main_window - ConfigView created: .!configview
+2025-12-03 16:23:22,642 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a auto
+2025-12-03 16:23:22,668 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:23:22,669 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.15:6379
+2025-12-03 16:23:24,285 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.15 recepteur transmission rx -a auto
+2025-12-03 16:23:24,285 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.15 recepteur transmission rx -a auto
+2025-12-03 16:23:24,288 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:23:24,288 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:24:09,321 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:24:09,323 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:24:09,323 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:24:10,449 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 16:24:10,491 [INFO] openob.ui.main_window - ConfigView created: .!configview2
+2025-12-03 16:26:03,633 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a auto
+2025-12-03 16:26:03,652 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:26:04,969 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 16:26:05,000 [INFO] openob.ui.main_window - ConfigView created: .!configview3
+2025-12-03 16:30:37,161 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a auto
+2025-12-03 16:30:37,179 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:30:38,689 [INFO] openob.ui.main_window - Closing application
+2025-12-03 16:30:38,712 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 16:30:42,562 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:30:42,562 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 16:30:42,562 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 16:30:42,562 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 16:30:42,562 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:30:42,813 [INFO] openob.ui.config_storage - Config file not found, using defaults: C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json
+2025-12-03 16:30:44,832 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-03 16:30:44,832 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 16:30:45,353 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 16:30:46,857 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 16:30:47,031 [INFO] openob.ui - Executing OpenOB with args: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:30:47,031 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-03 16:30:47,037 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:30:47,037 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:30:50,377 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:30:50,378 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:30:50,378 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:30:52,979 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 16:30:53,041 [INFO] openob.ui.main_window - ConfigView created: .!configview
+2025-12-03 16:30:58,993 [INFO] openob.ui.config_storage - Saved config to C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-03 16:30:58,993 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.15 recepteur transmission rx -a auto
+2025-12-03 16:30:59,015 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:30:59,096 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.15:6379
+2025-12-03 16:31:00,942 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.15 recepteur transmission rx -a auto
+2025-12-03 16:31:00,942 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.15 recepteur transmission rx -a auto
+2025-12-03 16:31:00,947 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:31:00,947 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:31:37,827 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:31:37,827 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:31:37,827 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:31:42,119 [INFO] openob.ui.main_window - Closing application
+2025-12-03 16:31:42,143 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 16:31:44,399 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:31:44,399 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 16:31:44,399 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 16:31:44,399 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 16:31:44,401 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:31:44,622 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-03 16:31:46,751 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.15:6379
+2025-12-03 16:31:46,751 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 16:31:47,258 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 16:31:48,763 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 16:31:48,933 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.15 recepteur transmission rx -a auto
+2025-12-03 16:31:48,933 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.15 recepteur transmission rx -a auto
+2025-12-03 16:31:48,940 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:31:48,940 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:31:53,276 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:31:53,279 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:31:53,279 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:31:55,089 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 16:31:55,147 [INFO] openob.ui.main_window - ConfigView created: .!configview
+2025-12-03 16:33:23,474 [INFO] openob.ui.config_storage - Saved config to C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-03 16:33:23,476 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:33:23,492 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:33:23,551 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.17:6379
+2025-12-03 16:33:25,709 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:33:25,709 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:33:25,712 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:33:25,712 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:34:10,112 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 16:36:35,074 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:36:35,074 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:36:35,074 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:37:41,848 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:37:41,848 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:37:41,848 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:37:41,848 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:37:53,696 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:37:53,696 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:37:53,696 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:37:55,930 [INFO] openob.ui.main_window - Closing application
+2025-12-03 16:37:55,964 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 16:39:52,364 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:39:52,364 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 16:39:52,364 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 16:39:52,364 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 16:39:52,364 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:39:52,644 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-03 16:39:54,782 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.17:6379
+2025-12-03 16:39:54,782 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 16:39:55,276 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 16:39:56,774 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 16:39:56,949 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:39:56,949 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:39:56,949 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:39:56,949 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:39:58,845 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:39:58,845 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:39:58,845 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:39:59,753 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-03 16:39:59,801 [INFO] openob.ui.main_window - ConfigView created: .!configview
+2025-12-03 16:40:40,477 [INFO] openob.ui.config_storage - Saved config to C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-03 16:40:40,477 [INFO] openob.ui.main_window - Configuration updated: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:40:40,493 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-03 16:40:41,466 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:40:41,466 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:40:41,470 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:40:41,470 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:40:43,877 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 16:41:40,276 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:41:40,276 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:41:40,276 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:41:56,108 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:41:56,108 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:41:56,108 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:41:56,108 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:41:58,586 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 16:42:06,713 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:42:06,713 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:42:06,713 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:42:13,734 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:42:13,734 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:42:13,736 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:42:13,736 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:42:16,200 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 16:46:02,774 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 16:46:02,888 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 16:48:37,952 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:48:37,954 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:48:37,954 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:48:39,704 [INFO] openob.ui.main_window - Closing application
+2025-12-03 16:48:39,723 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 16:48:46,344 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:48:46,344 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 16:48:46,344 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 16:48:46,344 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 16:48:46,344 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 16:48:46,532 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-03 16:48:48,515 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.17:6379
+2025-12-03 16:48:48,515 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 16:48:49,023 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 16:48:50,529 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 16:48:50,735 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:48:50,735 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:48:50,749 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:48:50,749 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:48:53,261 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 16:48:58,031 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 16:48:58,031 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 16:48:58,031 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 16:49:12,725 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:49:12,725 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 16:49:12,726 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 16:49:12,726 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 16:49:15,189 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 19:18:11,579 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 19:18:11,584 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 19:18:11,584 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 19:18:13,187 [INFO] openob.ui.main_window - Closing application
+2025-12-03 19:18:13,195 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-03 20:21:38,464 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 20:21:38,464 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-03 20:21:38,464 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-03 20:21:38,464 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-03 20:21:38,464 [INFO] openob.ui.__main__ - ============================================================
+2025-12-03 20:21:39,716 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-03 20:21:44,192 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.17:6379
+2025-12-03 20:21:44,193 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-03 20:21:44,694 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-03 20:21:46,199 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-03 20:21:46,418 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 20:21:46,418 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-03 20:21:46,418 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-03 20:21:46,418 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-03 20:21:49,729 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-03 20:22:08,145 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-03 20:22:08,145 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-03 20:22:08,145 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-03 20:22:15,401 [INFO] openob.ui.main_window - Closing application
+2025-12-03 20:22:15,417 [INFO] openob.ui.__main__ - Application closed normally

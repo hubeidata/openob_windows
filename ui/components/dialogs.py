@@ -38,15 +38,30 @@ class SettingsDialog(tk.Toplevel):
         super().__init__(parent)
         
         self.title('Configuraciones de OBBroadcast')
-        self.transient(parent)
-        self.grab_set()
         
         self._config = current_config
         self._on_logs_click = on_logs_click
         self._result: Optional[SettingsResult] = None
         
+        # Handle window close button
+        self.protocol("WM_DELETE_WINDOW", self._on_cancel)
+        
+        # Create widgets
         self._create_widgets()
+        
+        # Set size and position
+        self.geometry("520x480")
+        self.minsize(450, 400)
+        self.resizable(True, True)
+        
+        # Update geometry before centering
+        self.update_idletasks()
         self._center_on_parent(parent)
+        
+        # Make modal
+        self.transient(parent)
+        self.grab_set()
+        self.focus_set()
     
     @property
     def result(self) -> Optional[SettingsResult]:

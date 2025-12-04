@@ -19,6 +19,7 @@ from .utils import (
     smooth_value,
     simulate_vu_level
 )
+from .config_storage import ConfigStorageService, SavedConfig
 
 __all__ = [
     'RedisService',
@@ -34,4 +35,6 @@ __all__ = [
     'apply_vu_jitter',
     'smooth_value',
     'simulate_vu_level',
+    'ConfigStorageService',
+    'SavedConfig',
 ]

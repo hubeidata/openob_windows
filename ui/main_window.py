@@ -139,16 +139,16 @@ class MainWindow:
         """Draw the header with title and dynamic status."""
         cx = self.config.center_x
         
-        # Main title
-        self.canvas.create_text(
+        # Main title (changes based on mode: Transmitter/Receiver)
+        self._title_text_id = self.canvas.create_text(
             cx, 45,
-            text="OBBroadcast",
+            text="OBBroadcast Transmitter",
             font=("Segoe UI", 32, "bold"),
             fill="#111111",
             tags='header'
         )
         
-        # Dynamic status text (Transmitting / Stopped)
+        # Dynamic status text (Transmitting / Stopped / Receiving)
         self._status_text_id = self.canvas.create_text(
             cx, 90,
             text="Stopped",
@@ -178,8 +178,8 @@ class MainWindow:
             fill="#d9534f", outline="", tags='vu_center'
         )
         
-        # Audio Input label
-        self.canvas.create_text(
+        # Audio Input/Output label (changes based on mode)
+        self._vu_label_id = self.canvas.create_text(
             cx, center_y - r_red - 22,
             text="Audio Input",
             font=("Segoe UI", 11, "bold"),
@@ -240,8 +240,8 @@ class MainWindow:
         self._bar_x1 = bx1
         self._bar_x2 = bx2
         
-        # Label
-        self.canvas.create_text(
+        # Label (changes based on mode)
+        self._bar_label_id = self.canvas.create_text(
             cx, bar_y - 12,
             text="Receiver Audio",
             font=("Segoe UI", 11, "bold"),
@@ -326,11 +326,13 @@ class MainWindow:
         self.canvas.create_window(cx, btn_y, window=self.main_action_btn, width=140, height=50)
         
         # Auto-start checkbox (bottom left)
-        self.auto_start_var = tk.BooleanVar(value=True)
+        # Auto-start checkbox (bottom left) - load from saved config
+        self.auto_start_var = tk.BooleanVar(value=self.controller.auto_start_enabled)
         self.auto_chk = ttk.Checkbutton(
             self.root,
             text='Auto iniciar OBBroadcast al abrir',
-            variable=self.auto_start_var
+            variable=self.auto_start_var,
+            command=self._on_auto_start_changed
         )
         self.canvas.create_window(140, self.config.height - 40, window=self.auto_chk, anchor='w')
         
@@ -347,6 +349,22 @@ class MainWindow:
             window=self.settings_btn,
             anchor='e',
             width=120,
+            height=32
+        )
+        
+        # Logs button (next to Settings)
+        self.logs_btn = ttk.Button(
+            self.root,
+            text="📋 Logs",
+            command=self._toggle_logs,
+            style='Settings.TButton'
+        )
+        self.canvas.create_window(
+            self.config.width - 270,
+            self.config.height - 40,
+            window=self.logs_btn,
+            anchor='e',
+            width=100,
             height=32
         )
         
@@ -539,28 +557,58 @@ class MainWindow:
             # Then get the updated state
             state = self.controller.state
             
-            # Local VU (Audio Input)
-            if state.local_vu.has_real_data:
-                # Check if levels are above minimum threshold for visualization
-                avg_local = state.local_vu.average
-                if avg_local >= 0.02:  # Only use real data if above noise floor
-                    self._has_real_vu_data['local'] = True
-                    self.vu_left = state.local_vu.left
-                    self.vu_right = state.local_vu.right
-                else:
-                    # Data is too low, use simulation for better UX
-                    self._has_real_vu_data['local'] = False
-            else:
-                self._has_real_vu_data['local'] = False
+            # Determine current mode
+            link_config = self.controller.get_link_config()
+            is_rx_mode = link_config and link_config.link_mode == 'rx'
             
-            # Remote VU (Receiver) - show real data only, no threshold
-            if state.remote_vu.has_real_data:
-                self._has_real_vu_data['remote'] = True
-                avg_remote = state.remote_vu.average
-                # Apply smoothing for visual effect
-                self.receiver_level = 0.7 * self.receiver_level + 0.3 * avg_remote
+            # In TX mode:
+            #   - Circular VU (vu_left/vu_right) shows local_vu (audio being transmitted)
+            #   - Bar shows remote_vu (what receiver is getting)
+            # In RX mode:
+            #   - Circular VU shows remote_vu (audio being received/output)
+            #   - Bar shows local_vu (what transmitter sent - if available)
+            
+            if is_rx_mode:
+                # RX Mode: Circular VU shows received audio (remote_vu from rx)
+                if state.remote_vu.has_real_data:
+                    avg_remote = state.remote_vu.average
+                    if avg_remote >= 0.02:
+                        self._has_real_vu_data['local'] = True
+                        self.vu_left = state.remote_vu.left
+                        self.vu_right = state.remote_vu.right
+                    else:
+                        self._has_real_vu_data['local'] = False
+                else:
+                    self._has_real_vu_data['local'] = False
+                
+                # Bar shows transmitted audio (local_vu from tx)
+                if state.local_vu.has_real_data:
+                    self._has_real_vu_data['remote'] = True
+                    avg_local = state.local_vu.average
+                    self.receiver_level = 0.7 * self.receiver_level + 0.3 * avg_local
+                else:
+                    self._has_real_vu_data['remote'] = False
             else:
-                self._has_real_vu_data['remote'] = False
+                # TX Mode: Normal behavior
+                # Circular VU shows audio being transmitted (local_vu)
+                if state.local_vu.has_real_data:
+                    avg_local = state.local_vu.average
+                    if avg_local >= 0.02:
+                        self._has_real_vu_data['local'] = True
+                        self.vu_left = state.local_vu.left
+                        self.vu_right = state.local_vu.right
+                    else:
+                        self._has_real_vu_data['local'] = False
+                else:
+                    self._has_real_vu_data['local'] = False
+                
+                # Bar shows what receiver is getting (remote_vu from rx)
+                if state.remote_vu.has_real_data:
+                    self._has_real_vu_data['remote'] = True
+                    avg_remote = state.remote_vu.average
+                    self.receiver_level = 0.7 * self.receiver_level + 0.3 * avg_remote
+                else:
+                    self._has_real_vu_data['remote'] = False
             
         except Exception:
             pass
@@ -572,9 +620,26 @@ class MainWindow:
         self.controller.refresh_status()
         state = self.controller.state
         
-        # Update header status text
+        # Determine current mode (TX or RX)
+        link_config = self.controller.get_link_config()
+        is_rx_mode = link_config and link_config.link_mode == 'rx'
+        
+        # Update labels based on mode
+        if is_rx_mode:
+            self.canvas.itemconfigure(self._title_text_id, text="OBBroadcast Receiver")
+            self.canvas.itemconfigure(self._vu_label_id, text="Audio Output")
+            self.canvas.itemconfigure(self._bar_label_id, text="Audio Transmitted")
+        else:
+            self.canvas.itemconfigure(self._title_text_id, text="OBBroadcast Transmitter")
+            self.canvas.itemconfigure(self._vu_label_id, text="Audio Input")
+            self.canvas.itemconfigure(self._bar_label_id, text="Receiver Audio")
+        
+        # Update header status text based on mode and running state
         if state.openob_running:
-            self.canvas.itemconfigure(self._status_text_id, text="Transmitting", fill="#2e7d32")
+            if is_rx_mode:
+                self.canvas.itemconfigure(self._status_text_id, text="Receiving", fill="#2e7d32")
+            else:
+                self.canvas.itemconfigure(self._status_text_id, text="Transmitting", fill="#2e7d32")
         else:
             self.canvas.itemconfigure(self._status_text_id, text="Stopped", fill="#c62828")
         
@@ -625,6 +690,12 @@ class MainWindow:
         finally:
             self._auto_started = True
     
+    def _on_auto_start_changed(self) -> None:
+        """Handle auto-start checkbox change."""
+        enabled = self.auto_start_var.get()
+        self.controller.set_auto_start(enabled)
+        logger.info(f"Auto-start {'enabled' if enabled else 'disabled'}")
+    
     def _on_toggle_click(self) -> None:
         """Handle toggle button click."""
         state = self.controller.state
@@ -655,21 +726,66 @@ class MainWindow:
             self.main_action_btn.configure(text='Start', state='normal')
     
     def _on_settings_click(self) -> None:
-        """Open settings dialog."""
-        from .components.dialogs import SettingsDialog
+        """Open configuration view (AudioBridge Pro style)."""
+        # Check if OpenOB is running - must stop before editing config
+        if self.controller.is_openob_running():
+            messagebox.showwarning(
+                "OBBroadcast en ejecución",
+                "Debe detener OBBroadcast antes de modificar las configuraciones.\n\n"
+                "Haga clic en 'Stop' primero y luego intente nuevamente."
+            )
+            return
         
-        link_config = self.controller.get_link_config() or LinkConfig()
-        
-        dialog = SettingsDialog(
-            self.root,
-            link_config,
-            on_logs_click=self._toggle_logs
-        )
-        self.root.wait_window(dialog)
-        
-        if dialog.result and dialog.result.saved:
-            self.controller.set_args(dialog.result.args)
-            logger.info(f"Settings updated: {dialog.result.args}")
+        try:
+            logger.info("Opening ConfigView...")
+            from .components.config import ConfigView, ConfigController, ConfigState, TransmissionMode
+            
+            # Get current args from controller to determine mode
+            current_args = self.controller.current_args
+            is_rx_mode = " rx " in current_args or current_args.endswith(" rx")
+            
+            # Create initial state from current settings
+            initial_state = ConfigState(
+                transmission_mode=TransmissionMode.RX if is_rx_mode else TransmissionMode.TX
+            )
+            
+            # Parse current args into state
+            link_config = self.controller.get_link_config()
+            if link_config:
+                if is_rx_mode:
+                    initial_state.rx_config_host = link_config.config_host or initial_state.rx_config_host
+                    initial_state.rx_node_name = link_config.node_id or initial_state.rx_node_name
+                    initial_state.rx_link_name = link_config.link_name or initial_state.rx_link_name
+                    initial_state.rx_audio_backend = link_config.audio_backend or initial_state.rx_audio_backend
+                else:
+                    initial_state.tx_config_host = link_config.config_host or initial_state.tx_config_host
+                    initial_state.tx_node_name = link_config.node_id or initial_state.tx_node_name
+                    initial_state.tx_link_name = link_config.link_name or initial_state.tx_link_name
+                    initial_state.tx_peer_ip = link_config.peer_ip or initial_state.tx_peer_ip
+                    initial_state.tx_encoding = link_config.encoding or initial_state.tx_encoding
+                    initial_state.tx_sample_rate = link_config.sample_rate or initial_state.tx_sample_rate
+                    initial_state.tx_jitter_buffer = link_config.jitter_buffer or initial_state.tx_jitter_buffer
+                    initial_state.tx_audio_backend = link_config.audio_backend or initial_state.tx_audio_backend
+            
+            controller = ConfigController(initial_state)
+            
+            def on_config_close(result):
+                if result and result.saved:
+                    self.controller.set_args(result.args)
+                    logger.info(f"Configuration updated: {result.args}")
+            
+            dialog = ConfigView(
+                self.root,
+                controller,
+                on_close=on_config_close,
+                on_home=lambda: None  # Just close when Home is clicked
+            )
+            logger.info(f"ConfigView created: {dialog}")
+            self.root.wait_window(dialog)
+            logger.info("ConfigView closed")
+            
+        except Exception as e:
+            logger.error(f"Error opening ConfigView: {e}", exc_info=True)
     
     def _toggle_logs(self) -> None:
         """Toggle logs panel visibility."""

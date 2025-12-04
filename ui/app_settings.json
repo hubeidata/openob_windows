@@ -1,0 +1,18 @@
+{
+  "transmission_mode": "rx",
+  "vpn_enabled": false,
+  "tx_config_host": "127.0.0.1",
+  "tx_node_name": "emetteur",
+  "tx_link_name": "transmission",
+  "tx_peer_ip": "192.168.1.17",
+  "tx_encoding": "pcm",
+  "tx_sample_rate": "48000",
+  "tx_jitter_buffer": "60",
+  "tx_audio_backend": "auto",
+  "rx_config_host": "192.168.1.17",
+  "rx_node_name": "recepteur",
+  "rx_link_name": "transmission",
+  "rx_audio_backend": "auto",
+  "rx_alsa_device": "",
+  "auto_start": true
+}
