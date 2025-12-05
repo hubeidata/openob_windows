@@ -801,3 +801,133 @@ AttributeError: 'AppState' object has no attribute 'args'
 2025-12-03 20:22:08,145 [INFO] openob.ui - Stopped OBBroadcast
 2025-12-03 20:22:15,401 [INFO] openob.ui.main_window - Closing application
 2025-12-03 20:22:15,417 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-04 07:20:23,409 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 07:20:23,409 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-04 07:20:23,409 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-04 07:20:23,409 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-04 07:20:23,409 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 07:20:24,607 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-04 07:21:15,056 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 07:21:15,056 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-04 07:21:15,056 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-04 07:21:15,056 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-04 07:21:15,056 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 07:21:15,284 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-04 07:21:38,460 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 07:21:40,505 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-04 15:47:10,953 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 15:47:10,953 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-04 15:47:10,953 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-04 15:47:10,953 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-04 15:47:10,953 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 15:47:11,100 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-04 15:47:34,450 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:47:36,121 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-04 15:47:57,183 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:47:57,184 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-04 15:47:57,378 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-04 15:47:57,378 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-04 15:47:57,384 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-04 15:47:57,384 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-04 15:48:19,040 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:48:40,603 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:49:02,156 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:49:23,714 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:49:45,267 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:50:06,813 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:50:29,847 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:50:51,512 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:51:13,223 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:51:34,762 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:51:56,490 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:52:18,155 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:52:39,876 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:53:01,066 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 15:53:01,066 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-04 15:53:01,066 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-04 15:53:01,066 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-04 15:53:01,066 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 15:53:01,301 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-04 15:53:05,296 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:53:05,775 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-04 15:53:07,285 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-04 15:53:07,443 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-04 15:53:07,443 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-04 15:53:07,459 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-04 15:53:07,459 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-04 15:53:17,745 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:53:30,396 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:53:42,456 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:53:54,547 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:54:06,589 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:54:19,021 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:54:31,578 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:54:43,652 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:54:56,139 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:55:08,562 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:55:21,031 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:55:33,608 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:55:45,623 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:55:58,124 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:56:10,629 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:56:22,701 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:56:34,748 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:56:46,834 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:56:58,888 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:57:10,995 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:57:23,494 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:57:35,958 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:57:41,798 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-04 15:57:41,800 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-04 15:57:41,800 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-04 15:57:41,800 [INFO] openob.ui.main_window - Closing application
+2025-12-04 15:57:41,816 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-04 15:57:44,388 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 15:57:44,388 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-04 15:57:44,388 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-04 15:57:44,388 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-04 15:57:44,388 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 15:57:44,525 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-04 15:57:48,267 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:57:48,727 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-04 15:57:50,245 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-04 15:57:50,406 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.17 recepteur transmission rx -a auto
+2025-12-04 15:57:50,406 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 192.168.1.17 recepteur transmission rx -a auto
+2025-12-04 15:57:50,406 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-04 15:57:50,406 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-04 15:57:56,363 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-04 15:57:56,363 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-04 15:57:56,363 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-04 15:58:00,770 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:58:03,199 [INFO] openob.ui.main_window - Opening ConfigView...
+2025-12-04 15:58:03,272 [INFO] openob.ui.main_window - ConfigView created: .!configview
+2025-12-04 15:58:13,251 [WARNING] openob.ui.redis - Failed to connect to Redis at 192.168.1.17:6379: Timeout connecting to server
+2025-12-04 15:58:16,219 [INFO] openob.ui.config_storage - Saved config to C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=tx
+2025-12-04 15:58:16,219 [INFO] openob.ui.main_window - Configuration updated: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-04 15:58:16,230 [INFO] openob.ui.main_window - ConfigView closed
+2025-12-04 15:58:16,329 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-04 15:58:18,846 [INFO] openob.ui - Executing OpenOB with args: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-04 15:58:18,846 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-04 15:58:18,859 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-04 15:58:18,859 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-04 15:58:22,850 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-04 16:06:09,116 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-04 16:06:09,116 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-04 16:06:09,116 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-04 16:06:09,116 [INFO] openob.ui.main_window - Closing application
+2025-12-04 16:06:09,152 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-04 16:06:12,480 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 16:06:12,480 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-04 16:06:12,480 [INFO] openob.ui.__main__ - Python: 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)]
+2025-12-04 16:06:12,480 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-04 16:06:12,480 [INFO] openob.ui.__main__ - ============================================================
+2025-12-04 16:06:12,673 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=tx
+2025-12-04 16:06:14,537 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-04 16:06:15,045 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-04 16:06:16,550 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-04 16:06:16,704 [INFO] openob.ui - Executing OpenOB with args: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-04 16:06:16,704 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\python.exe C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob 127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto
+2025-12-04 16:06:16,720 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-04 16:06:16,720 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-04 16:06:19,234 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-04 16:11:55,344 [INFO] openob.ui - REMOTE VU status: ok

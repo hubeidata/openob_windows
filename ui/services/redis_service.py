@@ -46,11 +46,19 @@ class RedisService:
     
     # Data staleness threshold in seconds
     STALE_THRESHOLD = 5.0
+    # Connection timeout in seconds (short to avoid UI freeze)
+    CONNECT_TIMEOUT = 2.0
+    # Socket timeout in seconds
+    SOCKET_TIMEOUT = 1.0
+    # Retry delay after failed connection (seconds)
+    RETRY_DELAY = 10.0
     
     def __init__(self):
         self._client: Optional[Any] = None  # redis.StrictRedis
         self._host: Optional[str] = None
         self._port: int = 6379
+        self._last_failed_attempt: float = 0.0
+        self._last_failed_host: Optional[str] = None
     
     @property
     def is_available(self) -> bool:
@@ -81,25 +89,37 @@ class RedisService:
         if self._client and self._host == host and self._port == port:
             return True
         
+        # Check if we recently failed to connect to this host (avoid repeated timeouts)
+        if self._last_failed_host == f"{host}:{port}":
+            elapsed = time.time() - self._last_failed_attempt
+            if elapsed < self.RETRY_DELAY:
+                # Skip connection attempt, still in cooldown
+                return False
+        
         try:
             client = redis.StrictRedis(
                 host=host, 
                 port=port, 
                 db=0, 
                 charset='utf-8', 
-                decode_responses=True
+                decode_responses=True,
+                socket_timeout=self.SOCKET_TIMEOUT,
+                socket_connect_timeout=self.CONNECT_TIMEOUT
             )
             client.ping()
             
             self._client = client
             self._host = host
             self._port = port
+            self._last_failed_host = None  # Clear failed state on success
             logger.info(f"Connected to Redis at {host}:{port}")
             return True
             
         except Exception as e:
             logger.warning(f"Failed to connect to Redis at {host}:{port}: {e}")
             self._client = None
+            self._last_failed_attempt = time.time()
+            self._last_failed_host = f"{host}:{port}"
             return False
     
     def disconnect(self) -> None:
@@ -107,6 +127,7 @@ class RedisService:
         self._client = None
         self._host = None
         self._port = 6379
+        self._last_failed_host = None  # Allow immediate reconnection after disconnect
     
     def fetch_vu_data(self, link_name: str, role: str) -> Optional[VUData]:
         """

@@ -1,5 +1,5 @@
 {
-  "transmission_mode": "rx",
+  "transmission_mode": "tx",
   "vpn_enabled": false,
   "tx_config_host": "127.0.0.1",
   "tx_node_name": "emetteur",

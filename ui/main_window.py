@@ -139,10 +139,10 @@ class MainWindow:
         """Draw the header with title and dynamic status."""
         cx = self.config.center_x
         
-        # Main title (changes based on mode: Transmitter/Receiver)
+        # Main title (changes based on mode: TX/RX)
         self._title_text_id = self.canvas.create_text(
             cx, 45,
-            text="OBBroadcast Transmitter",
+            text="OBBroadcast TX",
             font=("Segoe UI", 32, "bold"),
             fill="#111111",
             tags='header'
@@ -440,17 +440,23 @@ class MainWindow:
         """Animate VU meters with smooth transitions."""
         openob_running = self.controller.is_openob_running()
         
-        # Audio Input VU
+        # Determine current mode
+        link_config = self.controller.get_link_config()
+        is_rx_mode = link_config and link_config.link_mode == 'rx'
+        
+        # Circular VU (vu_left/vu_right)
+        # In TX mode: simulate if no real data
+        # In RX mode: never simulate, only show real data or silence
         if self._has_real_vu_data.get('local'):
             pass  # Real data updated by _update_vu_from_redis
-        elif openob_running:
-            # Simulate when no Redis data
+        elif openob_running and not is_rx_mode:
+            # TX mode only: Simulate when no Redis data
             target_left = abs(math.sin(time.time() * 2.5 + random.random() * 0.5)) * 0.85 + random.random() * 0.15
             target_right = abs(math.cos(time.time() * 2.3 + random.random() * 0.5)) * 0.85 + random.random() * 0.15
             self.vu_left = 0.75 * self.vu_left + 0.25 * target_left
             self.vu_right = 0.75 * self.vu_right + 0.25 * target_right
         else:
-            # Decay to zero
+            # Decay to zero (RX mode without data, or not running)
             self.vu_left *= 0.85
             self.vu_right *= 0.85
             if self.vu_left < 0.01:
@@ -458,8 +464,7 @@ class MainWindow:
             if self.vu_right < 0.01:
                 self.vu_right = 0
         
-        # Receiver Audio - only show real data, no simulation
-        # If no RX data, show silence (decay to zero)
+        # Horizontal bar (receiver_level) - never simulate, only real data
         if self._has_real_vu_data.get('remote'):
             pass  # Real data updated by _update_vu_from_redis
         else:
@@ -626,11 +631,11 @@ class MainWindow:
         
         # Update labels based on mode
         if is_rx_mode:
-            self.canvas.itemconfigure(self._title_text_id, text="OBBroadcast Receiver")
+            self.canvas.itemconfigure(self._title_text_id, text="OBBroadcast RX")
             self.canvas.itemconfigure(self._vu_label_id, text="Audio Output")
             self.canvas.itemconfigure(self._bar_label_id, text="Audio Transmitted")
         else:
-            self.canvas.itemconfigure(self._title_text_id, text="OBBroadcast Transmitter")
+            self.canvas.itemconfigure(self._title_text_id, text="OBBroadcast TX")
             self.canvas.itemconfigure(self._vu_label_id, text="Audio Input")
             self.canvas.itemconfigure(self._bar_label_id, text="Receiver Audio")
         
