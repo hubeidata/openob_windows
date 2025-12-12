@@ -51,7 +51,7 @@ def create_config() -> AppConfig:
     return AppConfig(
         repo_root=REPO_ROOT,
         venv_python=REPO_ROOT / '.venv' / 'Scripts' / 'python.exe',
-        openob_script=REPO_ROOT / '.venv' / 'Scripts' / 'openob',  # Script sin extensión, usar con python.exe
+        openob_script=REPO_ROOT / '.venv' / 'Scripts' / 'openob.exe',
         start_script=REPO_ROOT / 'scripts' / 'start_openob.ps1',
         gstreamer_bin=Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\bin'),
         gstreamer_gir=Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0'),

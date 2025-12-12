@@ -19,7 +19,7 @@ from the virtualenv.
 [CmdletBinding()]
 param(
     [string]$VenvPython = '.\.venv\Scripts\python.exe',
-    [string]$OpenobScript = '.\.venv\Scripts\openob',
+    [string]$OpenobScript = '.\.venv\Scripts\openob.exe',
     [string]$GstBin = 'C:\Program Files\gstreamer\1.0\msvc_x86_64\bin',
     [string]$GstGir = 'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0',
     [string]$OpenobArgs = '127.0.0.1 emetteur transmission tx 192.168.18.37 -e pcm -r 48000 -j 60 -a auto',
@@ -63,7 +63,7 @@ if (-not (Test-Path $VenvPython)) {
 }
 
 if (-not (Test-Path $OpenobScript)) {
-    Write-Warning "openob script not found at $OpenobScript. Attempting to run the installed entry point may still work."
+    Write-Warning "openob entrypoint not found at $OpenobScript. Will try module execution from repo sources (python -m openob)."
 }
 
 $env:PATH = $env:PATH + ";$GstBin"
@@ -78,9 +78,28 @@ if (-not $redisOk -and -not $ForceRun) {
 
 $argList = $OpenobArgs -split ' '
 
+# If the entrypoint doesn't exist, run as module from repo sources.
+$useModule = -not (Test-Path $OpenobScript)
+if ($useModule) {
+    $openobRepo = Join-Path $repoRoot 'openob'
+    if (Test-Path (Join-Path $openobRepo 'openob\__init__.py')) {
+        if ($env:PYTHONPATH) {
+            $env:PYTHONPATH = "$openobRepo;$env:PYTHONPATH"
+        } else {
+            $env:PYTHONPATH = $openobRepo
+        }
+        Write-Host "Using module execution with PYTHONPATH=$env:PYTHONPATH"
+    } else {
+        Write-Warning "OpenOB sources not found at $openobRepo. Module execution may fail unless OpenOB is installed in the venv."
+    }
+}
+
 if ($Background) {
-    Write-Host "Launching OpenOB in background: $VenvPython $OpenobScript $OpenobArgs"
-    $argString = "$OpenobScript $OpenobArgs"
+    if ($useModule) {
+        Write-Host "Launching OpenOB in background: $VenvPython -m openob $OpenobArgs"
+    } else {
+        Write-Host "Launching OpenOB in background: $VenvPython $OpenobScript $OpenobArgs"
+    }
     # Ensure log directory
     if (-not (Test-Path $LogDir)) { New-Item -ItemType Directory -Path $LogDir | Out-Null }
     $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
@@ -89,16 +108,25 @@ if ($Background) {
     # Build a PowerShell one-liner that runs the python command and redirects output to a log file.
     # Use single quotes carefully to avoid expansion in the wrapper; escape single quotes inside.
     $py = (Resolve-Path $VenvPython).Path
-    $scriptPath = (Resolve-Path $OpenobScript).Path
     $escapedArgs = $OpenobArgs -Replace "'", "''"
-    $psCommand = "& '$py' '$scriptPath' $escapedArgs *> '$logFile' 2>&1"
+    if ($useModule) {
+        $psCommand = "& '$py' -m openob $escapedArgs *> '$logFile' 2>&1"
+    } else {
+        $scriptPath = (Resolve-Path $OpenobScript).Path
+        $psCommand = "& '$py' '$scriptPath' $escapedArgs *> '$logFile' 2>&1"
+    }
 
     Start-Process -FilePath powershell -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-WindowStyle','Hidden','-Command',$psCommand -WorkingDirectory (Get-Location).Path -PassThru | Out-Null
     Write-Host "OpenOB launched in background. Logs: $logFile"
 }
 else {
-    Write-Host "Running OpenOB: $VenvPython $OpenobScript $OpenobArgs"
-    & $VenvPython $OpenobScript $argList
+    if ($useModule) {
+        Write-Host "Running OpenOB: $VenvPython -m openob $OpenobArgs"
+        & $VenvPython -m openob $argList
+    } else {
+        Write-Host "Running OpenOB: $VenvPython $OpenobScript $OpenobArgs"
+        & $VenvPython $OpenobScript $argList
+    }
 }
 
 Write-Host 'start_openob.ps1 finished.'

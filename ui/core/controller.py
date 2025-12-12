@@ -229,8 +229,8 @@ class AppController:
     def start_openob(self, use_fallback: bool = False) -> ProcessResult:
         """Start OpenOB process."""
         # Check if can start
-        can_start, error = self._openob_manager.can_start()
-        if not can_start and not use_fallback:
+        can_start, error = self._openob_manager.can_start_with(use_fallback=use_fallback)
+        if not can_start:
             return ProcessResult(success=False, message=error)
         
         # Check Redis

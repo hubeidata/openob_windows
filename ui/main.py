@@ -48,7 +48,7 @@ creationflags = subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WI
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 VENV_PY = REPO_ROOT / '.venv' / 'Scripts' / 'python.exe'
-OPENOB_SCRIPT = REPO_ROOT / '.venv' / 'Scripts' / 'openob'
+OPENOB_SCRIPT = REPO_ROOT / '.venv' / 'Scripts' / 'openob.exe'
 SCRIPT_START_OPENOB = REPO_ROOT / 'scripts' / 'start_openob.ps1'
 GSTREAMER_BIN = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\bin')
 GSTREAMER_GIR = Path(r'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0')
@@ -795,25 +795,70 @@ class OpenOBGUI(tk.Tk):
             messagebox.showerror('Error', f'Venv python not found at {VENV_PY}')
             return
 
-        if not OPENOB_SCRIPT.exists():
-            # Fallback: if the helper script exists, warn but still allow user to continue
+        # Resolve entrypoint on Windows venvs; fallback to module execution from sources.
+        entrypoint = None
+        candidates = [
+            OPENOB_SCRIPT,
+            OPENOB_SCRIPT.with_name('openob-script.py'),
+            OPENOB_SCRIPT.with_suffix(''),  # e.g. Linux-style "openob"
+        ]
+        for c in candidates:
+            try:
+                if c and c.exists():
+                    entrypoint = c
+                    break
+            except Exception:
+                pass
+
+        openob_source_ok = (REPO_ROOT / 'openob' / 'openob' / '__init__.py').exists()
+
+        if entrypoint is None and not openob_source_ok:
             if SCRIPT_START_OPENOB.exists():
-                if not messagebox.askyesno('Warning', f'OBBroadcast entry script not found at {OPENOB_SCRIPT}. Use helper script instead?'):
+                if not messagebox.askyesno(
+                    'Warning',
+                    f'OBBroadcast entrypoint not found (tried {OPENOB_SCRIPT} and openob sources missing). Use helper script instead?'
+                ):
                     return
             else:
-                messagebox.showerror('Error', f'OBBroadcast entry script not found at {OPENOB_SCRIPT} and helper missing at {SCRIPT_START_OPENOB}')
+                messagebox.showerror(
+                    'Error',
+                    f'OBBroadcast entrypoint not found at {OPENOB_SCRIPT} and helper missing at {SCRIPT_START_OPENOB}'
+                )
                 return
 
-        # Build direct command: <venv_python> <openob_script> <args...>
+        # Build command: <openob.exe> <args...> OR <venv_python> <openob-script.py> <args...> OR <venv_python> -m openob <args...>
         try:
             split_args = shlex.split(args)
         except Exception:
             split_args = args.split()
 
-        cmd = [str(VENV_PY), str(OPENOB_SCRIPT)] + split_args
+        if entrypoint is not None and entrypoint.suffix.lower() == '.exe':
+            cmd = [str(entrypoint)] + split_args
+        elif entrypoint is not None:
+            cmd = [str(VENV_PY), str(entrypoint)] + split_args
+        else:
+            cmd = [str(VENV_PY), '-m', 'openob'] + split_args
+
+        # Ensure openob sources are importable when using module fallback
+        env = os.environ.copy()
+        if openob_source_ok:
+            openob_repo = str(REPO_ROOT / 'openob')
+            existing = env.get('PYTHONPATH', '')
+            if existing:
+                env['PYTHONPATH'] = openob_repo + os.pathsep + existing
+            else:
+                env['PYTHONPATH'] = openob_repo
         try:
             # Start the real OBBroadcast process and stream output into the UI
-            self.openob_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=str(REPO_ROOT), creationflags=creationflags)
+            self.openob_proc = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                cwd=str(REPO_ROOT),
+                env=env,
+                creationflags=creationflags,
+            )
             threading.Thread(target=self._stream_process_output, args=(self.openob_proc, 'OBBROADCAST'), daemon=True).start()
             self.append_log('Started OBBroadcast (direct venv python)\n')
             self.openob_status.set('OBBroadcast: running')

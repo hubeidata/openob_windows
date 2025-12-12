@@ -195,15 +195,69 @@ class OpenOBProcessManager:
         Returns:
             Tuple of (can_start, error_message)
         """
+        return self.can_start_with(use_fallback=False)
+
+    def can_start_with(self, use_fallback: bool) -> tuple[bool, str]:
+        """Check if OpenOB can be started with the requested mode."""
         if not self._venv_python.exists():
             return False, f"Venv python not found at {self._venv_python}"
-        
-        if not self._openob_script.exists():
+
+        if use_fallback:
             if self._fallback_script and self._fallback_script.exists():
-                return True, ""  # Can use fallback
-            return False, f"OpenOB script not found at {self._openob_script}"
-        
-        return True, ""
+                return True, ""
+            return False, "Fallback start script not found"
+
+        # Direct mode: prefer an installed script/exe, otherwise run module from source.
+        if self._openob_script.exists():
+            return True, ""
+
+        # Allow module execution if source checkout exists in repo_root/openob
+        if self._working_dir:
+            source_pkg = self._working_dir / 'openob' / 'openob' / '__init__.py'
+            if source_pkg.exists():
+                return True, ""
+
+        if self._fallback_script and self._fallback_script.exists():
+            return False, f"OpenOB entrypoint not found at {self._openob_script} (fallback available)"
+
+        return False, f"OpenOB entrypoint not found at {self._openob_script}"
+
+    def _add_openob_source_to_pythonpath(self, env: dict) -> None:
+        """Ensure openob sources are importable when running `python -m openob.*` from repo."""
+        if not self._working_dir:
+            return
+
+        openob_repo = self._working_dir / 'openob'
+        if not (openob_repo / 'openob' / '__init__.py').exists():
+            return
+
+        import os
+        existing = env.get('PYTHONPATH', '')
+        paths = [p for p in existing.split(os.pathsep) if p]
+        if str(openob_repo) not in paths:
+            paths.insert(0, str(openob_repo))
+            env['PYTHONPATH'] = os.pathsep.join(paths)
+
+    def _resolve_openob_entrypoint(self) -> Optional[Path]:
+        """Resolve the most likely OpenOB entrypoint on Windows venvs."""
+        if self._openob_script.exists():
+            return self._openob_script
+
+        # Common Windows console_scripts outputs
+        candidates = []
+        if self._openob_script.suffix:
+            candidates.append(self._openob_script)
+        else:
+            candidates.extend([
+                self._openob_script.with_suffix('.exe'),
+                self._openob_script.with_name(self._openob_script.name + '-script.py'),
+            ])
+
+        for candidate in candidates:
+            if candidate.exists():
+                return candidate
+
+        return None
     
     def start(
         self, 
@@ -241,12 +295,22 @@ class OpenOBProcessManager:
                     '-OpenobArgs', args
                 ]
             else:
-                # Always use python.exe to run the openob script
-                cmd = [str(self._venv_python), str(self._openob_script)] + split_args
+                entrypoint = self._resolve_openob_entrypoint()
+                if entrypoint is not None:
+                    if entrypoint.suffix.lower() == '.exe':
+                        cmd = [str(entrypoint)] + split_args
+                    else:
+                        cmd = [str(self._venv_python), str(entrypoint)] + split_args
+                else:
+                    # Fallback: run module from installed package or from repo sources
+                    cmd = [str(self._venv_python), '-m', 'openob'] + split_args
                 logger.info(f"OpenOB command: {' '.join(cmd)}")
             
             # Get environment with GStreamer paths
             env = self._get_gstreamer_env()
+            if not (use_fallback and self._fallback_script and self._fallback_script.exists()):
+                # Only needed for module execution; safe to include always.
+                self._add_openob_source_to_pythonpath(env)
             
             self._process = subprocess.Popen(
                 cmd,
