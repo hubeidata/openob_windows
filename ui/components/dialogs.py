@@ -15,6 +15,7 @@ from typing import Optional, Callable
 from dataclasses import dataclass
 
 from ..core.models import LinkConfig
+from .bitrate import build_bitrate_choices, parse_bitrate_label
 
 
 @dataclass
@@ -33,6 +34,7 @@ class SettingsDialog(tk.Toplevel):
         self,
         parent: tk.Widget,
         current_config: LinkConfig,
+        vpn_enabled: bool = False,
         on_logs_click: Optional[Callable[[], None]] = None
     ):
         super().__init__(parent)
@@ -40,8 +42,12 @@ class SettingsDialog(tk.Toplevel):
         self.title('Configuraciones de OBBroadcast')
         
         self._config = current_config
+        self._vpn_enabled = vpn_enabled
         self._on_logs_click = on_logs_click
         self._result: Optional[SettingsResult] = None
+
+        self._bitrate_choices = build_bitrate_choices()
+        self._bitrate_last_valid = '48'
         
         # Handle window close button
         self.protocol("WM_DELETE_WINDOW", self._on_cancel)
@@ -113,9 +119,30 @@ class SettingsDialog(tk.Toplevel):
         row_enc = ttk.Frame(frame)
         row_enc.pack(fill='x', pady=2)
         ttk.Label(row_enc, text='Encoding (-e):', width=28).pack(side='left')
-        self.cb_enc = ttk.Combobox(row_enc, values=['pcm', 'opus'], width=10)
-        self.cb_enc.set(self._config.encoding or 'pcm')
+        # PCM is allowed only when VPN is OFF
+        enc_values = ['opus'] if self._vpn_enabled else ['opus', 'pcm']
+        self.cb_enc = ttk.Combobox(row_enc, values=enc_values, width=10, state='readonly')
+        # Default: opus
+        self.cb_enc.set(self._config.encoding or 'opus')
         self.cb_enc.pack(side='left')
+
+        # Bitrate (Opus only)
+        row_br = ttk.Frame(frame)
+        row_br.pack(fill='x', pady=2)
+        ttk.Label(row_br, text='Bitrate (-b) kbit/s:', width=28).pack(side='left')
+        self.cb_bitrate = ttk.Combobox(
+            row_br,
+            values=[c.label for c in self._bitrate_choices],
+            width=18,
+            state='readonly',
+        )
+        # Default: 48 (Plan Free)
+        initial_bitrate = (self._config.bitrate or '').strip() or '48'
+        if parse_bitrate_label(initial_bitrate) not in (16, 24, 32, 48):
+            initial_bitrate = '48'
+        self._bitrate_last_valid = initial_bitrate
+        self.cb_bitrate.set(initial_bitrate)
+        self.cb_bitrate.pack(side='left')
         
         # Sample rate
         self.e_rate = self._labeled_entry(
@@ -142,6 +169,11 @@ class SettingsDialog(tk.Toplevel):
         )
         self.cb_audio.set(self._config.audio_backend or 'auto')
         self.cb_audio.pack(side='left')
+
+        # Enforce constraints on initial state
+        self.cb_enc.bind('<<ComboboxSelected>>', lambda _e: self._on_encoding_changed())
+        self.cb_bitrate.bind('<<ComboboxSelected>>', lambda _e: self._on_bitrate_changed())
+        self._on_encoding_changed()
         
         # Separator
         ttk.Separator(frame, orient='horizontal').pack(fill='x', pady=(12, 8))
@@ -206,13 +238,25 @@ class SettingsDialog(tk.Toplevel):
             return
         
         # Build new config
+        encoding = self.cb_enc.get().strip()
+        bitrate_label = self.cb_bitrate.get().strip()
+        bitrate_value = parse_bitrate_label(bitrate_label)
+
+        if self._vpn_enabled and encoding == 'pcm':
+            messagebox.showerror(
+                'Error',
+                'PCM no está permitido si la VPN está activada. Seleccione Opus.'
+            )
+            return
+
         config = LinkConfig(
             config_host=cfg,
             node_id=node,
             link_name=link,
             link_mode=mode,
             peer_ip=self.e_peer.get().strip() if mode == 'tx' else None,
-            encoding=self.cb_enc.get().strip(),
+            encoding=encoding,
+            bitrate=str(bitrate_value) if (mode == 'tx' and encoding == 'opus' and bitrate_value) else '',
             sample_rate=self.e_rate.get().strip(),
             jitter_buffer=self.e_jit.get().strip(),
             audio_backend=self.cb_audio.get().strip()
@@ -220,6 +264,63 @@ class SettingsDialog(tk.Toplevel):
         
         self._result = SettingsResult(saved=True, args=config.to_args())
         self.destroy()
+
+    def _on_encoding_changed(self) -> None:
+        """Enforce encoding constraints and enable/disable bitrate."""
+        enc = self.cb_enc.get().strip()
+
+        # Block PCM if VPN is enabled
+        if self._vpn_enabled and enc == 'pcm':
+            self.cb_enc.set('opus')
+            messagebox.showinfo(
+                'VPN requerida',
+                'Cuando la VPN está activada no se permite PCM.\n\nSe seleccionó Opus automáticamente.'
+            )
+            enc = 'opus'
+
+        # Bitrate only applies to TX+Opus
+        if self._config.link_mode != 'tx':
+            self.cb_bitrate.set('')
+            self.cb_bitrate.configure(state='disabled')
+            return
+
+        if enc == 'opus':
+            self.cb_bitrate.configure(state='readonly')
+            # Ensure a valid bitrate is selected
+            current = self.cb_bitrate.get().strip() or self._bitrate_last_valid
+            b = parse_bitrate_label(current)
+            if b is None:
+                self.cb_bitrate.set('48')
+                self._bitrate_last_valid = '48'
+        else:
+            # PCM: bitrate not applicable
+            self.cb_bitrate.set('')
+            self.cb_bitrate.configure(state='disabled')
+
+    def _on_bitrate_changed(self) -> None:
+        """Prevent selecting Premium/Gold bitrates while still showing them."""
+        label = self.cb_bitrate.get().strip()
+        b = parse_bitrate_label(label)
+
+        # If label contains a plan (Básico/Premium), treat as locked
+        if 'Plan Básico' in label or 'Plan Premium' in label:
+            self.cb_bitrate.set(self._bitrate_last_valid)
+            messagebox.showinfo(
+                'Bitrate bloqueado',
+                'Ese bitrate requiere un plan superior.\n\nSeleccione uno de: 16, 24, 32, 48.'
+            )
+            return
+
+        if b is None:
+            self.cb_bitrate.set(self._bitrate_last_valid)
+            return
+
+        # Allowed list (Plan Free)
+        if b not in (16, 24, 32, 48):
+            self.cb_bitrate.set(self._bitrate_last_valid)
+            return
+
+        self._bitrate_last_valid = str(b)
     
     def _on_cancel(self) -> None:
         """Handle cancel button."""

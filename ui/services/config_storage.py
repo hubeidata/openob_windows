@@ -28,7 +28,8 @@ class SavedConfig:
     tx_node_name: str = "emetteur"
     tx_link_name: str = "transmission"
     tx_peer_ip: str = "192.168.1.17"
-    tx_encoding: str = "pcm"
+    tx_encoding: str = "opus"
+    tx_bitrate: str = "48"
     tx_sample_rate: str = "48000"
     tx_jitter_buffer: str = "60"
     tx_audio_backend: str = "auto"
@@ -62,6 +63,8 @@ class SavedConfig:
         
         if self.tx_encoding:
             parts.extend(["-e", self.tx_encoding])
+        if self.tx_encoding == 'opus' and self.tx_bitrate:
+            parts.extend(["-b", self.tx_bitrate])
         if self.tx_sample_rate:
             parts.extend(["-r", self.tx_sample_rate])
         if self.tx_jitter_buffer:
@@ -141,7 +144,8 @@ class ConfigStorageService:
                 tx_node_name=data.get('tx_node_name', 'emetteur'),
                 tx_link_name=data.get('tx_link_name', 'transmission'),
                 tx_peer_ip=data.get('tx_peer_ip', '192.168.1.17'),
-                tx_encoding=data.get('tx_encoding', 'pcm'),
+                tx_encoding=data.get('tx_encoding', 'opus'),
+                tx_bitrate=data.get('tx_bitrate', '48'),
                 tx_sample_rate=data.get('tx_sample_rate', '48000'),
                 tx_jitter_buffer=data.get('tx_jitter_buffer', '60'),
                 tx_audio_backend=data.get('tx_audio_backend', 'auto'),
@@ -222,6 +226,9 @@ class ConfigStorageService:
             while i < len(parts):
                 if parts[i] == '-e' and i + 1 < len(parts):
                     self._config.tx_encoding = parts[i + 1]
+                    i += 2
+                elif parts[i] == '-b' and i + 1 < len(parts):
+                    self._config.tx_bitrate = parts[i + 1]
                     i += 2
                 elif parts[i] == '-r' and i + 1 < len(parts):
                     self._config.tx_sample_rate = parts[i + 1]

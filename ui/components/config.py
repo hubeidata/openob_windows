@@ -45,7 +45,8 @@ class ConfigState:
     tx_node_name: str = "emetteur"
     tx_link_name: str = "transmission"
     tx_peer_ip: str = "192.168.1.17"
-    tx_encoding: str = "pcm"
+    tx_encoding: str = "opus"
+    tx_bitrate: str = "48"
     tx_sample_rate: str = "48000"
     tx_jitter_buffer: str = "60"
     tx_audio_backend: str = "auto"
@@ -76,6 +77,8 @@ class ConfigState:
         
         if self.tx_encoding:
             parts.extend(["-e", self.tx_encoding])
+        if self.tx_encoding == 'opus' and self.tx_bitrate:
+            parts.extend(["-b", self.tx_bitrate])
         if self.tx_sample_rate:
             parts.extend(["-r", self.tx_sample_rate])
         if self.tx_jitter_buffer:
@@ -554,6 +557,9 @@ class ConfigView(tk.Toplevel):
     def _on_vpn_toggle(self) -> None:
         """Handle VPN toggle (placeholder)."""
         self._controller.set_vpn_enabled(self._vpn_var.get())
+        # Enforce: PCM not allowed when VPN is enabled.
+        if self._vpn_var.get() and self._controller.state.tx_encoding == 'pcm':
+            self._controller.update_tx_config(encoding='opus')
         # TODO: Implement VPN functionality
     
     def _on_open_detailed_config(self) -> None:
@@ -572,6 +578,7 @@ class ConfigView(tk.Toplevel):
                 link_mode="tx",
                 peer_ip=state.tx_peer_ip,
                 encoding=state.tx_encoding,
+                bitrate=state.tx_bitrate,
                 sample_rate=state.tx_sample_rate,
                 jitter_buffer=state.tx_jitter_buffer,
                 audio_backend=state.tx_audio_backend
@@ -585,7 +592,7 @@ class ConfigView(tk.Toplevel):
                 audio_backend=state.rx_audio_backend
             )
         
-        dialog = SettingsDialog(self, config)
+        dialog = SettingsDialog(self, config, vpn_enabled=state.vpn_enabled)
         self.wait_window(dialog)
         
         if dialog.result and dialog.result.saved:
@@ -606,6 +613,7 @@ class ConfigView(tk.Toplevel):
                 link_name=config.link_name or "",
                 peer_ip=config.peer_ip or "",
                 encoding=config.encoding or "",
+                bitrate=config.bitrate or "",
                 sample_rate=config.sample_rate or "",
                 jitter_buffer=config.jitter_buffer or "",
                 audio_backend=config.audio_backend or ""

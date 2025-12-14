@@ -60,7 +60,7 @@ def create_config() -> AppConfig:
         icon_path=REPO_ROOT / 'ui' / 'images' / 'input_line.png',
         width=960,
         height=700,
-        default_args='127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto'
+        default_args='127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto'
     )
 
 

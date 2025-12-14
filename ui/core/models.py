@@ -32,7 +32,7 @@ class AppConfig:
     
     # Default OpenOB arguments
     # Formato: <config-host> <node-name> <link-name> <mode> [peer-ip] -e <encoding> -r <sample-rate> -j <jitter> -a <audio>
-    default_args: str = '127.0.0.1 emetteur transmission tx 192.168.1.17 -e pcm -r 48000 -j 60 -a auto'
+    default_args: str = '127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto'
     
     @property
     def center_x(self) -> int:
@@ -75,6 +75,7 @@ class LinkConfig:
     link_mode: Optional[str] = None  # 'tx' or 'rx'
     peer_ip: Optional[str] = None
     encoding: str = 'pcm'
+    bitrate: str = ''
     sample_rate: str = ''
     jitter_buffer: str = ''
     audio_backend: str = 'auto'
@@ -107,6 +108,9 @@ class LinkConfig:
             if opt == '-e' and i + 1 < len(parts):
                 config.encoding = parts[i + 1]
                 i += 2
+            elif opt == '-b' and i + 1 < len(parts):
+                config.bitrate = parts[i + 1]
+                i += 2
             elif opt == '-r' and i + 1 < len(parts):
                 config.sample_rate = parts[i + 1]
                 i += 2
@@ -137,6 +141,8 @@ class LinkConfig:
         
         if self.encoding:
             parts.extend(['-e', self.encoding])
+        if self.link_mode == 'tx' and self.encoding == 'opus' and self.bitrate:
+            parts.extend(['-b', self.bitrate])
         if self.sample_rate:
             parts.extend(['-r', self.sample_rate])
         if self.jitter_buffer:
