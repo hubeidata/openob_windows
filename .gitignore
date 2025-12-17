@@ -7,3 +7,4 @@ logs
 lcd/__pycache__
 lcd/installConfigs/__pycache__/i2c_lib_0.cpython-312.pyc
 lcd/installConfigs/__pycache__/i2c_lib_1.cpython-312.pyc
+logs/ui.log

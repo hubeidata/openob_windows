@@ -30,32 +30,36 @@ except Exception:
 LCD_WIDTH = 16
 
 
+def _lcd_bar_char() -> str:
+    """Return the character used to fill the VU bar on HD44780.
+
+    By default we use 0xFF (full block) which renders as a solid cell on
+    most 1602 LCD ROMs. Override with OPENOB_LCD_BAR_CHAR.
+    """
+    raw = (os.environ.get("OPENOB_LCD_BAR_CHAR", "") or "").strip()
+    if not raw:
+        return chr(255)
+    low = raw.lower()
+    if low in {"255", "0xff", "ff", "block", "full"}:
+        return chr(255)
+    # Use first character if a longer string was provided
+    return raw[0]
+
+
 def _setup_logging() -> logging.Logger:
-    """Setup a simple file logger for on-device diagnostics."""
-    level_name = os.environ.get("OPENOB_LCD_LOG_LEVEL", "INFO").upper().strip()
-    level = getattr(logging, level_name, logging.INFO)
+    """Return a disabled logger.
 
-    log_path = os.environ.get("OPENOB_LCD_LOG", "/tmp/openob_lcd_decoder.log")
+    The LCD runs in a tight loop; logging can create I/O overhead and fill
+    storage on embedded devices. This monitor runs with logging disabled.
+    """
     logger = logging.getLogger("openob.lcd.decoder")
-    logger.setLevel(level)
+    try:
+        logger.handlers.clear()
+    except Exception:
+        pass
+    logger.addHandler(logging.NullHandler())
     logger.propagate = False
-
-    if not logger.handlers:
-        try:
-            handler = logging.FileHandler(log_path, encoding="utf-8")
-        except Exception:
-            # Fallback to stderr if file is not writable
-            handler = logging.StreamHandler()
-
-        handler.setLevel(level)
-        handler.setFormatter(
-            logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
-        )
-        logger.addHandler(handler)
-
-    logger.info("LCD decoder logger initialized")
-    logger.info("Log path: %s", log_path)
-    logger.info("Log level: %s", level_name)
+    logger.disabled = True
     return logger
 
 
@@ -119,14 +123,17 @@ def render_rx_bar(left_norm: float, right_norm: float) -> str:
     left_n = max(0, min(max_side, left_n))
     right_n = max(0, min(max_side, right_n))
 
+    bar = _lcd_bar_char()
+
     chars = [" "] * LCD_WIDTH
-    chars[center_l] = "|"
-    chars[center_r] = "|"
+    # Center marker is two filled cells ("||" concept) for better visibility
+    chars[center_l] = bar
+    chars[center_r] = bar
 
     for i in range(1, left_n + 1):
-        chars[center_l - i] = "|"
+        chars[center_l - i] = bar
     for i in range(1, right_n + 1):
-        chars[center_r + i] = "|"
+        chars[center_r + i] = bar
 
     return "".join(chars)
 
@@ -312,23 +319,11 @@ def main() -> int:
     link_name = os.environ.get("OPENOB_LINK_NAME", "transmission")
     vu_link_name = link_name
 
-    logger.info(
-        "Starting LCD decoder: redis=%s:%s link_name=%s antena_rx=%s antena_tx=%s encoder=%s",
-        redis_host,
-        redis_port,
-        link_name,
-        antena_rx_ip,
-        antena_tx_ip,
-        encoder_ip,
-    )
-
     client = _redis_client(redis_host, redis_port)
     try:
         if client is not None:
             client.ping()
-            logger.info("Redis ping OK")
     except Exception:
-        logger.exception("Redis ping failed (will continue without VU data)")
         client = None
 
     # Splash
@@ -340,11 +335,6 @@ def main() -> int:
     current_top = ""
     next_monitor_change = 0.0
 
-    # Diagnostics: limit log frequency so we don't spam.
-    log_every_s = float(os.environ.get("OPENOB_LCD_LOG_EVERY_S", "2.0"))
-    next_diag_log = 0.0
-    last_bottom: Optional[str] = None
-
     discover_every_s = float(os.environ.get("OPENOB_LCD_DISCOVER_EVERY_S", "5.0"))
     next_discover = 0.0
 
@@ -355,12 +345,12 @@ def main() -> int:
     # Ping timeout: keep small so pings don't freeze LCD updates
     ping_timeout_s = float(os.environ.get("OPENOB_LCD_PING_TIMEOUT_S", "0.35"))
     ping_timeout_s = max(0.1, min(2.0, ping_timeout_s))
-    logger.info("LCD refresh_s=%s ping_timeout_s=%s", refresh_s, ping_timeout_s)
 
     monitors = [
         lambda: _ping_text("ANT RX", antena_rx_ip, timeout_s=ping_timeout_s),
         lambda: _ping_text("ANT TX", antena_tx_ip, timeout_s=ping_timeout_s),
         lambda: _ping_text("ENC", encoder_ip, timeout_s=ping_timeout_s),
+        _ip_text,
     ]
 
     # LCD VU scaling (tune to match UI feel)
@@ -368,12 +358,6 @@ def main() -> int:
     vu_min_db = float(os.environ.get("OPENOB_LCD_VU_MIN_DB", "-30"))
     vu_gamma = float(os.environ.get("OPENOB_LCD_VU_GAMMA", "1.6"))
     vu_headroom_db = float(os.environ.get("OPENOB_LCD_VU_HEADROOM_DB", "1.0"))
-    logger.info(
-        "VU scaling: min_db=%s gamma=%s headroom_db=%s",
-        vu_min_db,
-        vu_gamma,
-        vu_headroom_db,
-    )
 
     try:
         while True:
@@ -395,11 +379,8 @@ def main() -> int:
 
                 # If VU is missing, try to discover correct link_name in Redis
                 if client is not None and now >= next_discover:
-                    discovered = _discover_vu_link_name(client, logger=logger)
+                    discovered = _discover_vu_link_name(client, logger=None)
                     if discovered and discovered != vu_link_name:
-                        logger.info(
-                            "Switching vu_link_name from '%s' to '%s'", vu_link_name, discovered
-                        )
                         vu_link_name = discovered
                     next_discover = now + max(1.0, discover_every_s)
             else:
@@ -416,47 +397,6 @@ def main() -> int:
                     headroom_db=vu_headroom_db,
                 )
                 bottom = render_rx_bar(left_norm, right_norm)
-
-            # Periodic diagnostics
-            if now >= next_diag_log:
-                key = f"openob:{vu_link_name}:vu:rx"
-                if vu is None:
-                    logger.info("VU missing: key=%s bottom='%s'", key, bottom)
-                else:
-                    age = (now - vu.updated_ts) if vu.updated_ts else None
-                    left_norm_dbg = _db_to_norm_scaled(
-                        vu.left_db,
-                        min_db=vu_min_db,
-                        gamma=vu_gamma,
-                        headroom_db=vu_headroom_db,
-                    )
-                    right_norm_dbg = _db_to_norm_scaled(
-                        vu.right_db,
-                        min_db=vu_min_db,
-                        gamma=vu_gamma,
-                        headroom_db=vu_headroom_db,
-                    )
-                    left_steps = int(left_norm_dbg * 7)
-                    right_steps = int(right_norm_dbg * 7)
-                    logger.info(
-                        "VU rx(%s): key=%s left_db=%.2f right_db=%.2f age=%s L=%0.2f(%s/7) R=%0.2f(%s/7) bottom='%s'",
-                        vu.source,
-                        key,
-                        vu.left_db,
-                        vu.right_db,
-                        (f"{age:.1f}s" if age is not None else "?"),
-                        left_norm_dbg,
-                        left_steps,
-                        right_norm_dbg,
-                        right_steps,
-                        bottom,
-                    )
-                next_diag_log = now + max(0.2, log_every_s)
-
-            # Also log when bottom bar changes (helps see oscillation)
-            if bottom != last_bottom:
-                logger.debug("Bottom changed: '%s'", bottom)
-                last_bottom = bottom
 
             display.lcd_display_string(_fit_lcd(top), 1)
             display.lcd_display_string(_fit_lcd(bottom), 2)
