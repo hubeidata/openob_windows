@@ -1227,3 +1227,6 @@ AttributeError: 'AppState' object has no attribute 'args'
 2025-12-16 16:26:55,558 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
 2025-12-16 16:26:58,151 [INFO] openob.ui - LOCAL VU status: ok
 2025-12-16 16:27:13,943 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-16 17:28:31,901 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-16 17:28:31,901 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-16 17:28:31,901 [INFO] openob.ui - Stopped OBBroadcast
