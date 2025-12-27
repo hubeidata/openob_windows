@@ -3,11 +3,67 @@ dependencias
 GTK3_Gvsbuild
 dump.rdb
 ui/__pycache__/
-logs
-lcd/__pycache__
+logs/
+lcd/__pycache__/
 lcd/installConfigs/__pycache__/i2c_lib_0.cpython-312.pyc
 lcd/installConfigs/__pycache__/i2c_lib_1.cpython-312.pyc
 logs/ui.log
 # Builds / downloads
 openob-embedded-installer/.downloads/
 *.pdb
+
+# ---- General Python ignores ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+pip-wheel-metadata/
+
+# ---- Embeddable runtime / packaging outputs (reproducible) ----
+openob-embedded-installer/dist/
+openob-embedded-installer/packaging/openob_runtime/python/
+openob-embedded-installer/packaging/openob_runtime/gvsbuild/
+openob-embedded-installer/packaging/openob_runtime/logs/
+openob-embedded-installer/packaging/openob_runtime/redis/
+openob-embedded-installer/packaging/openob_runtime/bin/
+
+# ---- Downloads / archives ----
+openob-embedded-installer/.downloads/
+openob-embedded-installer/.downloaded
+*.zip
+*.tar.gz
+*.7z
+
+# ---- Installer / build tools / artifacts ----
+*.iss.rsp
+*.exe
+*.msi
+*.msi.*
+*.log
+
+# ---- Test / CI / local env ----
+.vscode/
+.idea/
+.env
+.venv/
+venv/
+.envrc
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ---- OS / editor files ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Optional: Windows / Visual Studio ----
+*.suo
+*.user
+*.userosscache
