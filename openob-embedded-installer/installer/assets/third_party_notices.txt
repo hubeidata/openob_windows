@@ -1,0 +1,4 @@
+Placeholder: lista dependencias de terceros y sus licencias.
+- Python (python.org)
+- Paquetes pip: redis, pystray, pillow
+- (Opcional) Redis for Windows (binarios presentes en el repo)

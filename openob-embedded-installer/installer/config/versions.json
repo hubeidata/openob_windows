@@ -1,0 +1,14 @@
+{
+  "app": {
+    "name": "OpenOB",
+    "version": "0.0.0"
+  },
+  "python": {
+    "version": "3.14.2",
+    "arch": "amd64",
+    "embedZipUrl": "https://www.python.org/ftp/python/{version}/python-{version}-embed-amd64.zip"
+  },
+  "innoSetup": {
+    "defaultIsccPath": "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe"
+  }
+}

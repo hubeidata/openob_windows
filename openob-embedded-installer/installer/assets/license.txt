@@ -1,0 +1,1 @@
+Placeholder: añade aquí el texto de licencia del instalador.

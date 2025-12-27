@@ -1,0 +1,24 @@
+[
+  {
+    "cfg_host": "127.0.0.1",
+    "node": "emetteur",
+    "link": "transmission",
+    "mode": "tx",
+    "peer": "192.168.1.17",
+    "enc": "pcm",
+    "rate": "48000",
+    "jitter": "60",
+    "audio": "auto"
+  },
+  {
+    "cfg_host": "127.0.0.1",
+    "node": "emetteur_1",
+    "link": "transmission_1",
+    "mode": "tx",
+    "peer": "192.168.1.18",
+    "enc": "pcm",
+    "rate": "48000",
+    "jitter": "60",
+    "audio": "auto"
+  }
+]
