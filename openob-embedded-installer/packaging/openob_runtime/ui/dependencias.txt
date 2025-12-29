@@ -1,3 +1,0 @@
-#Activar el entorno Virtual
-.\.venv\Scripts\Activate.ps1
-cd Docu sdpipfsdfdsfsdfsdpip install pystray pillow
