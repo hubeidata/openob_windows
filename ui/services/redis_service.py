@@ -107,19 +107,19 @@ class RedisService:
                 socket_connect_timeout=self.CONNECT_TIMEOUT,
             )
 
-            # Try a few construction variants to handle differing redis package APIs.
+            # Try a couple of construction variants to handle differing redis package APIs.
             client = None
             last_err = None
-            for variant in ('encoding', 'charset', 'none'):
+            for variant in ('encoding', 'none'):
                 try:
                     if variant == 'encoding':
                         client = redis.StrictRedis(**kw, encoding='utf-8')
-                    elif variant == 'charset':
-                        client = redis.StrictRedis(**kw, charset='utf-8')
                     else:
                         client = redis.StrictRedis(**kw)
                     break
                 except TypeError as e:
+                    # Keep this at debug level to avoid spamming the UI logs with harmless
+                    # API mismatch TypeErrors (e.g., older/newer redis-py variations).
                     logger.debug(f"Redis client init with {variant} failed: {e}")
                     last_err = e
 

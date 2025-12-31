@@ -150,4 +150,45 @@ if ($distInfo) {
     Copy-Item -Recurse -Force $distInfo.FullName $dst
 }
 
+# Ensure a minimal sitecustomize.py is present to add DLL search dirs and GI_TYPELIB_PATH at runtime
+$siteCustomizePath = Join-Path $dstSite 'sitecustomize.py'
+if (-not (Test-Path $siteCustomizePath)) {
+    Write-Host "Adding sitecustomize.py to runtime site-packages: $siteCustomizePath"
+    $siteCustomizeContent = @'
+import os
+from pathlib import Path
+import sys
+
+def add_if_exists(path):
+    p = Path(path)
+    if p.is_dir():
+        try:
+            os.add_dll_directory(str(p))
+            # minimal diagnostic only if env var OPENOB_DEBUG_GI set
+            if os.environ.get('OPENOB_DEBUG_GI'):
+                print(f"[openob-site] added dll dir: {p}")
+            return True
+        except Exception:
+            return False
+    return False
+
+python_dir = Path(sys.executable).parent
+runtime_root = python_dir.parent
+# gvsbuild native bin relative to runtime root
+gvsbuild_bin = runtime_root / 'gvsbuild' / 'bin'
+add_if_exists(gvsbuild_bin)
+# also try system GStreamer bin
+system_gst_bin = Path(r"C:\Program Files\gstreamer\1.0\msvc_x86_64\bin")
+add_if_exists(system_gst_bin)
+# set GI_TYPELIB_PATH if not present and system girepo exists
+if 'GI_TYPELIB_PATH' not in os.environ:
+    girepo = Path(r"C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0")
+    if girepo.is_dir():
+        os.environ['GI_TYPELIB_PATH'] = str(girepo)
+        if os.environ.get('OPENOB_DEBUG_GI'):
+            print(f"[openob-site] set GI_TYPELIB_PATH={girepo}")
+'@
+    Set-Content -Path $siteCustomizePath -Value $siteCustomizeContent -Encoding UTF8
+}
+
 Write-Host "gi bundled (ABI tag $cpTag)."

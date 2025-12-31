@@ -21,7 +21,7 @@ function Assert-Admin {
 Assert-Admin
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$msiPath = Join-Path $repoRoot 'gstreamer\gstreamer-1.0-msvc-x86_64-1.26.10.msi'
+$msiPath = Join-Path $repoRoot 'gstreamer\gstreamer-1.0-msvc-x86_64-1.26.7.msi'
 
 if (-not (Test-Path $msiPath)) {
     Write-Error "GStreamer MSI not found at: $msiPath"

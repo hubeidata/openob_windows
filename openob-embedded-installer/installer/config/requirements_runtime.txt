@@ -1,4 +1,5 @@
 redis
+# Ensure redis-py is installed in the runtime for Redis integration
 pystray
 pillow
 typing_extensions

@@ -80,9 +80,42 @@ Start-Sleep -Seconds 2
 try {
     $svc = Get-Service -Name Redis -ErrorAction Stop
     Write-Host "Service 'Redis' status: $($svc.Status)"
-}
-catch {
+} catch {
     Write-Warning "Could not query service 'Redis'. It may have a different name or installation failed. Check the Windows Event Log for details."
 }
 
+# Publish environment variables so Redis is available for other tools and shells
+$redisDir = Split-Path -Parent $RedisExe
+# Add redis dir to Machine PATH
+$currentPath = [Environment]::GetEnvironmentVariable('Path','Machine')
+if ($currentPath -notlike "*$redisDir*") {
+    $newPath = "$currentPath;$redisDir"
+    [Environment]::SetEnvironmentVariable('Path',$newPath,'Machine')
+    Write-Host "Added $redisDir to system PATH."
+} else {
+    Write-Host "$redisDir already in system PATH."
+}
+# Update current session PATH so the user can use redis-cli immediately in this PowerShell
+if ($env:Path -notlike "*$redisDir*") { $env:Path = "$env:Path;$redisDir" }
+
+# Set REDIS_HOME
+$currentRedisHome = [Environment]::GetEnvironmentVariable('REDIS_HOME','Machine')
+if ($currentRedisHome -ne $redisDir) {
+    [Environment]::SetEnvironmentVariable('REDIS_HOME',$redisDir,'Machine')
+    Write-Host "Set REDIS_HOME=$redisDir"
+}
+# Set REDIS_CONF
+$currentRedisConf = [Environment]::GetEnvironmentVariable('REDIS_CONF','Machine')
+if ($currentRedisConf -ne $RedisConf) {
+    [Environment]::SetEnvironmentVariable('REDIS_CONF',$RedisConf,'Machine')
+    Write-Host "Set REDIS_CONF=$RedisConf"
+}
+# Record service name
+$currentSvcName = [Environment]::GetEnvironmentVariable('REDIS_SERVICE_NAME','Machine')
+if ($currentSvcName -ne 'Redis') {
+    [Environment]::SetEnvironmentVariable('REDIS_SERVICE_NAME','Redis','Machine')
+    Write-Host "Set REDIS_SERVICE_NAME=Redis"
+}
+
 Write-Host "Done. Redis should start automatically with Windows. If the service did not start, check the Application/System event log for errors (Event Viewer)."
+Write-Host "Note: PATH changes take effect for new processes; you may need to sign out and sign in for some apps to pick them up."
