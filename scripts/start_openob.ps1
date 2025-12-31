@@ -34,8 +34,19 @@ $ErrorActionPreference = 'Stop'
 Write-Host "Starting OpenOB (assumes Redis already running). Working directory: $(Get-Location)"
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+# Prefer runtime-bundled GStreamer if present in openob_runtime\gstreamer
+$runtimeGstRoot = Join-Path $repoRoot 'openob_runtime\gstreamer'
 $bundleGstBin = Join-Path $repoRoot 'dependencias\GTK3_Gvsbuild\bin'
 $bundleGstGir = Join-Path $repoRoot 'dependencias\GTK3_Gvsbuild\lib\girepository-1.0'
+if (Test-Path $runtimeGstRoot) {
+    # find a subdir that contains a 'bin' folder (msvc_x86_64 or similar)
+    $candidate = Get-ChildItem -Path $runtimeGstRoot -Recurse -Directory | Where-Object { Test-Path (Join-Path $_.FullName 'bin') } | Select-Object -First 1
+    if ($candidate) {
+        $bundleGstBin = Join-Path $candidate.FullName 'bin'
+        $bundleGstGir = Join-Path $candidate.FullName 'lib\girepository-1.0'
+        Write-Host "Using bundled runtime GStreamer: $candidate"
+    }
+}
 
 if (-not (Test-Path $GstBin) -and (Test-Path $bundleGstBin)) {
     Write-Host "System GStreamer bin not found. Using bundled runtime: $bundleGstBin"

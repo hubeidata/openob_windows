@@ -10,6 +10,13 @@ if ($Skip) {
     exit 0
 }
 
+# Prevent accidental bundling: only bundle Redis when explicitly allowed by env var.
+if (-not $env:ALLOW_BUNDLE_REDIS) {
+    Write-Host 'Redis bundling is disabled by default (external install).'
+    Write-Host 'To enable bundling for local/test builds set environment variable: $env:ALLOW_BUNDLE_REDIS=1'
+    exit 0
+}
+
 $repoRoot = Get-RepoRoot
 $srcRedis = Join-Path $repoRoot 'redis-server'
 if (-not (Test-Path (Join-Path $srcRedis 'redis-server.exe'))) {

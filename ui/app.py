@@ -39,18 +39,52 @@ def excepthook(type, value, tb):
 sys.excepthook = excepthook
 
 class StreamToLogger:
-    def __init__(self, logger, level):
+    def __init__(self, logger, level, is_stderr: bool = False):
         self.logger = logger
         self.level = level
         self.linebuf = ''
+        self.is_stderr = is_stderr
+        self._in_write = False
+        # Save original stream to avoid recursion when logging subsystem writes to stderr
+        self._orig_stream = sys.__stderr__ if is_stderr else sys.__stdout__
     def write(self, buf):
-        for line in buf.rstrip().splitlines():
-            self.logger.log(self.level, line.rstrip())
-    def flush(self):
-        pass
+        try:
+            # Ensure we have a str
+            if not isinstance(buf, str):
+                try:
+                    buf = buf.decode('utf-8', errors='replace')
+                except Exception:
+                    buf = str(buf)
 
-sys.stdout = StreamToLogger(logging.getLogger('STDOUT'), logging.INFO)
-sys.stderr = StreamToLogger(logging.getLogger('STDERR'), logging.ERROR)
+            # If we're already inside write, fallback to original stream to avoid recursion
+            if self._in_write:
+                try:
+                    self._orig_stream.write(buf)
+                except Exception:
+                    pass
+                return
+
+            self._in_write = True
+            for line in buf.rstrip('\n').splitlines():
+                # If the logging system itself emits a 'Logging error', write it directly
+                # to the original stderr to avoid infinite recursion.
+                if 'Logging error' in line:
+                    try:
+                        sys.__stderr__.write(line + os.linesep)
+                    except Exception:
+                        pass
+                else:
+                    self.logger.log(self.level, line.rstrip())
+        finally:
+            self._in_write = False
+    def flush(self):
+        try:
+            self._orig_stream.flush()
+        except Exception:
+            pass
+
+sys.stdout = StreamToLogger(logging.getLogger('STDOUT'), logging.INFO, is_stderr=False)
+sys.stderr = StreamToLogger(logging.getLogger('STDERR'), logging.ERROR, is_stderr=True)
 import os
 import tkinter as tk
 from pathlib import Path
@@ -100,8 +134,9 @@ def setup_environment() -> None:
         for k, v in values.items():
             os.environ[k] = v
 
-    gst_bin = Path(os.environ.get('GstBin', r'C:\Program Files\gstreamer\1.0\msvc_x86_64\bin'))
-    gst_gir = Path(os.environ.get('GI_TYPELIB_PATH', r'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0'))
+    # Resolve and set derived GStreamer env variables
+    gst_bin = _resolve_env_path(os.environ.get('GstBin', r'C:\Program Files\gstreamer\1.0\msvc_x86_64\bin'))
+    gst_gir = _resolve_env_path(os.environ.get('GI_TYPELIB_PATH', r'C:\Program Files\gstreamer\1.0\msvc_x86_64\lib\girepository-1.0'))
     gst_py_site = os.environ.get('GstPySitePackages', '')
 
     # Derive GstPySitePackages from GstBin if not provided
@@ -126,6 +161,15 @@ def setup_environment() -> None:
                 os.environ['PYTHONPATH'] = str(gst_py_site_path) + os.pathsep + existing
             else:
                 os.environ['PYTHONPATH'] = str(gst_py_site_path)
+
+
+def _resolve_env_path(val: str) -> Path:
+    if not val:
+        return Path()
+    p = Path(val)
+    if not p.is_absolute():
+        p = REPO_ROOT / p
+    return p
 
 
 def create_config() -> AppConfig:

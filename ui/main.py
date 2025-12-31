@@ -1216,7 +1216,7 @@ class OpenOBGUI(tk.Tk):
         if self.redis_client and host_only == self.redis_host and port == self.redis_port:
             return self.redis_client
         try:
-            client = redis.StrictRedis(host=host_only, port=port, db=0, charset='utf-8', decode_responses=True)
+            client = redis.StrictRedis(host=host_only, port=port, db=0, encoding='utf-8', decode_responses=True)
             client.ping()
             self.redis_client = client
             self.redis_host = host_only

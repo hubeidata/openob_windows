@@ -19,8 +19,9 @@ Esto hace:
 
 - Descarga y extrae Python embebido en `openob-embedded-installer/packaging/openob_runtime/python/`.
 - **Incluye Tkinter** (Tcl/Tk + `tkinter`) dentro del runtime embebido descargando el instalador oficial de Python y copiando los archivos necesarios.
-- **Incluye PyGObject (`gi`)** dentro del runtime embebido descargando un `GTK3_Gvsbuild` compatible con la versión de Python del runtime (para Python 3.12 usa `cp312`).
+- **Incluye PyGObject (`gi`)** dentro del runtime embebido descargando un `GTK3_Gvsbuild` compatible con la versión de Python del runtime (recomendado: **Python 3.14 x64 — use `cp314`**).
 - Habilita `site-packages` en el embeddable (`*._pth` + `import site`).
+- Opcional: puedes incluir una distribución de GStreamer en `openob-embedded-installer\packaging\gstreamer-*`. El build detectará y copiará esa carpeta a `openob_runtime\gstreamer` y generará un `config/gstreamer.env` con rutas relativas para que la instalación sea relocatable.
 - Instala `pip`, dependencias runtime y el paquete `openob`.
 - Copia la carpeta `ui/` al runtime embebido (`openob_runtime/ui/`).
 - (Opcional) Copia `redis-server/` a `openob_runtime/redis/`.
@@ -42,10 +43,10 @@ Salida esperada:
 
 ## Notas sobre GStreamer
 
-El instalador **no incluye** GStreamer por defecto.
+El instalador **no incluye** GStreamer por defecto, pero puedes incluirlo en el runtime embebido añadiendo una carpeta `gstreamer-*` en `openob-embedded-installer\packaging` (por ejemplo `gstreamer-1.27.50`). El build copiará esa carpeta a `openob_runtime\gstreamer` y generará un `config/gstreamer.env` con rutas relativas para que la instalación sea relocatable.
 
-Configura las rutas en `openob_runtime/config/gstreamer.env` o instala GStreamer en:
+Si prefieres no bundlear, configura las rutas en `openob_runtime/config/gstreamer.env` o instala GStreamer en:
 
 - `C:\Program Files\gstreamer\1.0\msvc_x86_64`
 
-Nota: `gi` (PyGObject) debe coincidir con la versión ABI de Python usada por el runtime embebido. Si usas Python 3.12, necesitas binarios `cp312`.
+Nota: `gi` (PyGObject) debe coincidir con la versión ABI de Python usada por el runtime embebido (por ejemplo, para Python 3.14 usa `cp314`).

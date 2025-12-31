@@ -1467,3 +1467,278 @@ AttributeError: 'AppState' object has no attribute 'args'
 2025-12-27 08:01:48,709 [INFO] openob.ui - Stopped OBBroadcast
 2025-12-27 08:01:48,709 [INFO] openob.ui.main_window - Closing application
 2025-12-27 08:01:48,724 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-27 22:40:09,654 [INFO] openob.ui.__main__ - ============================================================
+2025-12-27 22:40:09,654 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-27 22:40:09,654 [INFO] openob.ui.__main__ - Python: 3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]
+2025-12-27 22:40:09,657 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-27 22:40:09,657 [INFO] openob.ui.__main__ - ============================================================
+2025-12-27 22:40:10,619 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=rx
+2025-12-27 22:40:14,656 [WARNING] openob.ui.main_window - Error loading center icon: maximum recursion depth exceeded
+2025-12-27 22:40:14,706 [INFO] openob.ui.redis - Connected to Redis at 192.168.1.15:6379
+2025-12-27 22:40:14,706 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-27 22:40:15,219 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-27 22:40:16,726 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-27 22:40:16,899 [INFO] openob.ui - Executing OpenOB with args: 192.168.1.15 recepteur transmission rx -a auto
+2025-12-27 22:40:16,899 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob.exe 192.168.1.15 recepteur transmission rx -a auto
+2025-12-27 22:40:17,049 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-27 22:40:17,049 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-27 22:40:22,856 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-27 22:40:22,857 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-27 22:40:22,857 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-27 22:40:22,857 [INFO] openob.ui.main_window - Closing application
+2025-12-27 22:40:22,867 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-28 05:57:10,890 [INFO] openob.ui.__main__ - ============================================================
+2025-12-28 05:57:10,890 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-28 05:57:10,890 [INFO] openob.ui.__main__ - Python: 3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]
+2025-12-28 05:57:10,890 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-28 05:57:10,890 [INFO] openob.ui.__main__ - ============================================================
+2025-12-28 05:57:12,361 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=tx
+2025-12-28 05:57:16,892 [WARNING] openob.ui.main_window - Error loading center icon: maximum recursion depth exceeded
+2025-12-28 05:57:16,940 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-28 05:57:17,466 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-28 05:57:18,974 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-28 05:57:19,140 [INFO] openob.ui - Executing OpenOB with args: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto
+2025-12-28 05:57:19,140 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob.exe 127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto
+2025-12-28 05:57:19,210 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-28 05:57:19,210 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-28 05:57:21,054 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-28 05:57:46,651 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-28 05:57:46,653 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-28 05:57:46,653 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-29 06:41:42,103 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 08:26:27,611 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 08:29:36,444 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 08:34:32,266 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 08:36:44,220 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 08:36:58,007 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 08:59:41,242 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 09:05:21,786 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 09:06:14,124 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 09:08:28,333 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 09:08:48,531 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 09:12:19,469 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 09:15:18,202 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 09:21:39,500 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:31:32,531 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 11:31:32,754 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:31:38,395 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:31:54,259 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:32:17,374 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:32:23,451 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:35:58,772 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:36:19,466 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:38:26,138 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:38:47,948 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:40:42,693 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:41:51,020 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:42:08,353 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:42:40,908 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:42:54,503 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:43:11,943 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:44:04,412 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:45:38,361 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:45:54,071 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:46:30,169 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:46:50,821 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:48:06,443 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:48:52,035 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:49:19,550 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:49:30,921 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:50:03,713 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:50:16,766 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:50:45,923 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:52:12,613 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:52:22,031 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:55:13,057 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:55:54,311 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:57:04,460 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:57:31,923 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 11:57:46,151 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:02:05,024 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:02:11,816 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:03:00,457 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:03:27,823 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:06:53,980 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:06:55,971 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:10:02,656 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:10:54,607 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:16:39,278 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:18:24,168 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:18:59,598 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:20:50,254 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:31:47,250 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:34:45,373 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:39:29,243 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:44:21,632 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 12:44:31,429 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:00:26,433 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:03:27,641 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:05:31,574 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:05:46,166 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:06:26,748 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:07:44,528 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:08:11,154 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:08:46,353 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:09:15,326 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:10:00,052 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:10:06,748 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:10:06,972 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:10:38,658 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:11:43,764 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:12:39,272 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:14:48,730 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:16:06,843 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:17:24,696 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:18:47,092 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:19:34,166 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:19:44,688 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:21:58,053 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:25:02,945 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:26:01,164 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:26:12,075 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:26:36,600 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:26:56,546 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:29:38,814 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:30:30,654 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:31:26,701 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:31:50,481 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:32:28,142 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:34:01,244 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:35:08,365 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:35:08,581 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:35:36,531 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:36:25,650 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:47:12,275 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 13:47:46,494 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:48:17,598 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 13:48:38,873 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 13:49:13,769 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:49:42,150 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:50:45,451 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:50:58,384 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:51:46,144 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:52:20,350 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:52:56,490 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:54:50,290 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 13:55:02,373 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 14:27:57,558 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 14:28:10,929 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 14:28:43,272 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 14:29:41,233 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 14:30:08,197 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 14:33:50,022 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 14:37:16,207 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 14:41:45,990 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 14:44:16,424 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 14:44:16,425 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 15:00:10,290 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 15:00:31,423 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 15:01:36,410 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 15:01:36,410 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 15:03:18,702 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 15:03:36,465 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 15:04:52,082 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 15:04:52,315 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 15:06:19,182 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 15:07:19,389 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 15:07:19,700 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 15:25:51,664 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 15:27:59,009 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 15:27:59,225 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:02:30,784 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 16:02:37,223 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:02:43,575 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 16:02:43,908 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:08:10,989 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:18:11,357 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:25:09,535 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:26:47,715 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-29 16:30:57,962 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:32:01,461 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:35:14,231 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:35:46,604 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:35:56,353 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:37:29,966 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:38:26,685 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:46:07,273 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 16:46:37,456 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 17:01:21,614 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-29 17:08:05,570 [INFO] openob.ui - REMOTE VU status: ok
+2025-12-30 09:03:06,931 [INFO] openob.ui.__main__ - ============================================================
+2025-12-30 09:03:06,931 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-30 09:03:06,931 [INFO] openob.ui.__main__ - Python: 3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]
+2025-12-30 09:03:06,931 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-30 09:03:06,931 [INFO] openob.ui.__main__ - ============================================================
+2025-12-30 09:03:07,942 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=tx
+2025-12-30 09:03:11,978 [WARNING] openob.ui.main_window - Error loading center icon: maximum recursion depth exceeded
+2025-12-30 09:03:12,021 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-30 09:03:12,526 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-30 09:03:14,030 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-30 09:03:14,204 [INFO] openob.ui - Executing OpenOB with args: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto
+2025-12-30 09:03:14,204 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob.exe 127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto
+2025-12-30 09:03:14,275 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-30 09:03:14,275 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-30 09:03:15,411 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-30 09:04:07,214 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-30 09:04:07,219 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-30 09:04:07,219 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-30 09:04:17,073 [INFO] openob.ui.main_window - Closing application
+2025-12-30 09:04:17,080 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-30 14:52:51,506 [INFO] openob.ui.__main__ - ============================================================
+2025-12-30 14:52:51,506 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-30 14:52:51,506 [INFO] openob.ui.__main__ - Python: 3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]
+2025-12-30 14:52:51,506 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-30 14:52:51,506 [INFO] openob.ui.__main__ - ============================================================
+2025-12-30 14:52:52,601 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=tx
+2025-12-30 14:52:56,554 [WARNING] openob.ui.main_window - Error loading center icon: maximum recursion depth exceeded
+2025-12-30 14:52:56,596 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-30 14:52:57,141 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-30 14:52:58,650 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-30 14:52:58,824 [INFO] openob.ui - Executing OpenOB with args: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto
+2025-12-30 14:52:58,824 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob.exe 127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto
+2025-12-30 14:52:58,912 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-30 14:52:58,912 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-30 14:53:01,652 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-30 14:53:51,142 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-30 14:53:51,142 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-30 14:53:51,142 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-30 14:53:52,537 [INFO] openob.ui.main_window - Closing application
+2025-12-30 14:53:52,569 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-30 21:53:15,142 [INFO] openob.ui.__main__ - ============================================================
+2025-12-30 21:53:15,142 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-30 21:53:15,143 [INFO] openob.ui.__main__ - Python: 3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]
+2025-12-30 21:53:15,143 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-30 21:53:15,143 [INFO] openob.ui.__main__ - ============================================================
+2025-12-30 21:53:15,946 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=tx
+2025-12-30 21:53:18,537 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-30 21:53:19,102 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-30 21:53:20,611 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-30 21:53:20,787 [INFO] openob.ui - Executing OpenOB with args: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto
+2025-12-30 21:53:20,788 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob.exe 127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto
+2025-12-30 21:53:20,870 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-30 21:53:20,870 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-30 21:53:34,310 [INFO] openob.ui - LOCAL VU status: ok
+2025-12-30 21:53:47,384 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-30 21:53:47,385 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-30 21:53:47,385 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-30 21:53:47,385 [INFO] openob.ui.main_window - Closing application
+2025-12-30 21:53:47,417 [INFO] openob.ui.__main__ - Application closed normally
+2025-12-31 07:42:50,906 [INFO] openob.ui.__main__ - ============================================================
+2025-12-31 07:42:50,907 [INFO] openob.ui.__main__ - OBBroadcast UI starting
+2025-12-31 07:42:50,907 [INFO] openob.ui.__main__ - Python: 3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]
+2025-12-31 07:42:50,907 [INFO] openob.ui.__main__ - Repo root: C:\Users\vamanuel\Documents\openob_windows
+2025-12-31 07:42:50,907 [INFO] openob.ui.__main__ - ============================================================
+2025-12-31 07:42:51,942 [INFO] openob.ui.config_storage - Loaded config from C:\Users\vamanuel\Documents\openob_windows\ui\app_settings.json: mode=tx
+2025-12-31 07:42:57,037 [WARNING] openob.ui.main_window - Error loading center icon: maximum recursion depth exceeded
+2025-12-31 07:42:57,078 [INFO] openob.ui.redis - Connected to Redis at 127.0.0.1:6379
+2025-12-31 07:42:57,550 [INFO] openob.ui.main_window - MainWindow initialized
+2025-12-31 07:42:59,051 [INFO] openob.ui.main_window - Auto-starting OBBroadcast
+2025-12-31 07:42:59,228 [INFO] openob.ui - Executing OpenOB with args: 127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto
+2025-12-31 07:42:59,229 [INFO] openob.ui.process - OpenOB command: C:\Users\vamanuel\Documents\openob_windows\.venv\Scripts\openob.exe 127.0.0.1 emetteur transmission tx 192.168.1.17 -e opus -b 48 -r 48000 -j 60 -a auto
+2025-12-31 07:42:59,332 [INFO] openob.ui.process - Started OpenOB (direct venv)
+2025-12-31 07:42:59,332 [INFO] openob.ui - Started OBBroadcast (Started OpenOB (direct venv))
+2025-12-31 07:43:06,165 [INFO] openob.ui.process - Sent terminate signal to OpenOB
+2025-12-31 07:43:06,167 [INFO] openob.ui.process - OpenOB terminated gracefully
+2025-12-31 07:43:06,167 [INFO] openob.ui - Stopped OBBroadcast
+2025-12-31 07:43:10,689 [INFO] openob.ui.main_window - Closing application
+2025-12-31 07:43:10,725 [INFO] openob.ui.__main__ - Application closed normally

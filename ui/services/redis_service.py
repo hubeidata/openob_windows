@@ -97,17 +97,38 @@ class RedisService:
                 return False
         
         try:
-            client = redis.StrictRedis(
-                host=host, 
-                port=port, 
-                db=0, 
-                charset='utf-8', 
+            # Build kwargs and attempt with modern 'encoding'; fall back to legacy 'charset' if needed.
+            kw = dict(
+                host=host,
+                port=port,
+                db=0,
                 decode_responses=True,
                 socket_timeout=self.SOCKET_TIMEOUT,
-                socket_connect_timeout=self.CONNECT_TIMEOUT
+                socket_connect_timeout=self.CONNECT_TIMEOUT,
             )
+
+            # Try a few construction variants to handle differing redis package APIs.
+            client = None
+            last_err = None
+            for variant in ('encoding', 'charset', 'none'):
+                try:
+                    if variant == 'encoding':
+                        client = redis.StrictRedis(**kw, encoding='utf-8')
+                    elif variant == 'charset':
+                        client = redis.StrictRedis(**kw, charset='utf-8')
+                    else:
+                        client = redis.StrictRedis(**kw)
+                    break
+                except TypeError as e:
+                    logger.debug(f"Redis client init with {variant} failed: {e}")
+                    last_err = e
+
+            if client is None:
+                # Re-raise the last error so it is logged by the outer exception handler
+                raise last_err
+
             client.ping()
-            
+
             self._client = client
             self._host = host
             self._port = port
@@ -152,12 +173,14 @@ class RedisService:
             return None
         
         if not data:
+            logger.debug(f"No data found in Redis key {key}")
             return None
         
         # Parse left/right values
         left, right = self._parse_vu_values(data)
         
         if left is None or right is None:
+            logger.warning(f"Failed to parse VU values from data: {data}")
             return None
         
         # Check timestamp for staleness
@@ -177,12 +200,15 @@ class RedisService:
     
     def _parse_vu_values(self, data: dict) -> Tuple[Optional[float], Optional[float]]:
         """Parse left/right dB values from Redis hash data."""
-        left = data.get('left_db') or data.get('left') or data.get('l')
-        right = data.get('right_db') or data.get('right') or data.get('r')
+        left = (data.get('left_db') or data.get('left') or data.get('l') or 
+                data.get('vu_left') or data.get('audio_left'))
+        right = (data.get('right_db') or data.get('right') or data.get('r') or 
+                 data.get('vu_right') or data.get('audio_right'))
         
         # Try combined field if individual not found
         if left is None and right is None:
-            combined = data.get('audio_level_db') or data.get('audio_level') or data.get('level')
+            combined = (data.get('audio_level_db') or data.get('audio_level') or data.get('level') or
+                       data.get('vu_level') or data.get('audio_vu'))
             if combined:
                 nums = re.findall(r'-?\d+(?:\.\d+)?', str(combined))
                 if len(nums) >= 2:
@@ -194,8 +220,11 @@ class RedisService:
         try:
             left_val = float(left) if left is not None else None
             right_val = float(right) if right is not None else left_val
+            if left_val is None:
+                logger.debug(f"No valid VU values found in data keys: {list(data.keys())}")
             return left_val, right_val
         except (ValueError, TypeError):
+            logger.warning(f"Failed to convert VU values to float: left={left}, right={right}")
             return None, None
     
     def _parse_timestamp(self, data: dict) -> Optional[float]:

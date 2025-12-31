@@ -63,6 +63,20 @@ if (-not (Test-Path $pyExe)) {
     throw "Embedded runtime missing (python.exe not found). Build the runtime first. Expected: $pyExe"
 }
 
+# Safety check: prevent building an installer that contains bundled GStreamer or Redis.
+$forbidden = @('gstreamer','redis')
+foreach ($d in $forbidden) {
+    $p = Join-Path $runtimeRoot $d
+    if (Test-Path $p) {
+        throw "Refusing to build installer: runtime contains forbidden folder '$d' at $p. Remove it and re-run the build (GStreamer and Redis must be installed externally)."
+    }
+}
+# Also prevent stale gstreamer config from causing implicit bundling
+$gstEnv = Join-Path $runtimeRoot 'config\gstreamer.env'
+if (Test-Path $gstEnv) {
+    throw "Refusing to build installer: found '$gstEnv' (GStreamer config). Remove it if you don't want GStreamer bundled and re-run the build."
+}
+
 Write-Host "Building installer with: $IsccPath"
 Write-Host "ISS: $IssPath"
 

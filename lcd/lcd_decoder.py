@@ -14,6 +14,7 @@ import logging
 import os
 import subprocess
 import time
+import math
 from dataclasses import dataclass
 from time import sleep
 from typing import Optional, Tuple
@@ -47,19 +48,45 @@ def _lcd_bar_char() -> str:
 
 
 def _setup_logging() -> logging.Logger:
-    """Return a disabled logger.
+    """Return a logger. Disabled by default unless OPENOB_LCD_DEBUG is set.
 
     The LCD runs in a tight loop; logging can create I/O overhead and fill
-    storage on embedded devices. This monitor runs with logging disabled.
+    storage on embedded devices. Enable debug with OPENOB_LCD_DEBUG=1.
     """
     logger = logging.getLogger("openob.lcd.decoder")
     try:
         logger.handlers.clear()
     except Exception:
         pass
-    logger.addHandler(logging.NullHandler())
+
+    debug = os.environ.get("OPENOB_LCD_DEBUG", "").lower() in {"1", "true", "yes", "on"}
+    log_file = os.environ.get("OPENOB_LCD_LOG_FILE", "").strip()
+
+    if debug:
+        logger.disabled = False
+        logger.setLevel(logging.DEBUG)
+        fmt = logging.Formatter("%(asctime)s %(levelname)s [%(name)s] %(message)s")
+        if log_file:
+            try:
+                fh = logging.FileHandler(log_file)
+                fh.setFormatter(fmt)
+                logger.addHandler(fh)
+            except Exception:
+                sh = logging.StreamHandler()
+                sh.setFormatter(fmt)
+                logger.addHandler(sh)
+                logger.exception("Failed to open log file %s; falling back to stderr", log_file)
+        else:
+            sh = logging.StreamHandler()
+            sh.setFormatter(fmt)
+            logger.addHandler(sh)
+        logger.info("LCD decoder logging enabled (debug mode)")
+    else:
+        logger.addHandler(logging.NullHandler())
+        logger.propagate = False
+        logger.disabled = True
+
     logger.propagate = False
-    logger.disabled = True
     return logger
 
 
@@ -149,29 +176,39 @@ class RedisVU:
 def _redis_client(host: str, port: int = 6379):
     if redis is None:
         return None
-    try:
-        return redis.StrictRedis(
-            host=host,
-            port=port,
-            db=0,
-            encoding="utf-8",
-            decode_responses=True,
-        )
-    except TypeError:
-        # Older redis-py
-        return redis.StrictRedis(
-            host=host,
-            port=port,
-            db=0,
-            charset="utf-8",
-            decode_responses=True,
-        )
-
-
-def _fetch_rx_vu(client, link_name: str, logger: Optional[logging.Logger] = None) -> Optional[RedisVU]:
+    kw = dict(host=host, port=port, db=0, decode_responses=True)
+    client = None
+    last_err = None
+    for variant in ('encoding', 'charset', 'none'):
+        try:
+            if variant == 'encoding':
+                client = redis.StrictRedis(**kw, encoding='utf-8')
+            elif variant == 'charset':
+                client = redis.StrictRedis(**kw, charset='utf-8')
+            else:
+                client = redis.StrictRedis(**kw)
+            break
+        except TypeError as e:
+            logging.getLogger('lcd').debug(f"Redis init with {variant} failed: {e}")
+            last_err = e
     if client is None:
         return None
-    key = f"openob:{link_name}:vu:rx"
+    return client
+
+
+def _fetch_rx_vu(client, link_name: str, direction: str = "rx", logger: Optional[logging.Logger] = None) -> Optional[RedisVU]:
+    if client is None:
+        return None
+
+    # Allow passing a full Redis key (starting with 'openob:') or a link name
+    if link_name and isinstance(link_name, str) and link_name.startswith("openob:") and ":vu:" in link_name:
+        key = link_name
+    else:
+        key = f"openob:{link_name}:vu:{direction}"
+
+    if logger and logger.isEnabledFor(logging.DEBUG):
+        logger.debug("Fetching VU from Redis key=%s", key)
+
     try:
         data = client.hgetall(key)
     except Exception:
@@ -194,30 +231,56 @@ def _fetch_rx_vu(client, link_name: str, logger: Optional[logging.Logger] = None
     ldb = _safe_float(left, default=-120.0)
     rdb = _safe_float(right, default=ldb)
     uts = _safe_float(updated_ts, default=0.0)
+
+    # If there's VU values but no updated_ts, assume the data is fresh and use current time.
+    if uts <= 0.0 and (left is not None or right is not None):
+        if logger:
+            try:
+                logger.debug("VU key %s missing updated_ts; assuming fresh (now=%.3f)", key, time.time())
+            except Exception:
+                pass
+        uts = time.time()
+
     return RedisVU(left_db=ldb, right_db=rdb, updated_ts=(uts if uts > 0 else None), source=source)
 
 
-def _discover_vu_link_name(client, logger: Optional[logging.Logger] = None) -> Optional[str]:
+def _discover_vu_link_name(client, direction: str = "rx", logger: Optional[logging.Logger] = None) -> Optional[str]:
     """Try to discover a link_name by scanning Redis keys.
 
-    Looks for keys like: openob:<link_name>:vu:rx
+    Looks for keys like: openob:<link_name>:vu:<direction>
     """
     if client is None:
         return None
     try:
-        # Prefer scan_iter to avoid blocking.
-        for key in client.scan_iter(match="openob:*:vu:rx", count=200):
+        # Prefer scan_iter to avoid blocking. First try preferred direction.
+        pattern = f"openob:*:vu:{direction}"
+        found = None
+        for key in client.scan_iter(match=pattern, count=200):
             try:
                 key_str = key.decode() if isinstance(key, (bytes, bytearray)) else str(key)
             except Exception:
                 key_str = str(key)
             parts = key_str.split(":")
-            if len(parts) >= 4 and parts[0] == "openob" and parts[-2] == "vu" and parts[-1] == "rx":
-                # openob:<link>:vu:rx
+            if len(parts) >= 4 and parts[0] == "openob" and parts[-2] == "vu" and parts[-1] == direction:
                 link = parts[1]
                 if logger:
-                    logger.info("Discovered VU key=%s (link_name=%s)", key_str, link)
+                    logger.info("Discovered VU key=%s (link_name=%s, dir=%s)", key_str, link, direction)
                 return link
+
+        # If none found and direction was 'rx', check for 'tx' keys and warn
+        if direction == "rx":
+            other_found = False
+            for key in client.scan_iter(match="openob:*:vu:tx", count=200):
+                other_found = True
+                try:
+                    key_str = key.decode() if isinstance(key, (bytes, bytearray)) else str(key)
+                except Exception:
+                    key_str = str(key)
+                if logger:
+                    logger.warning("Found only TX VU keys (%s) when configured for RX; consider setting OPENOB_LCD_VU_DIRECTION=tx or explicit OPENOB_LCD_VU_KEY", key_str)
+                break
+            if other_found:
+                return None
         return None
     except Exception:
         if logger:
@@ -295,6 +358,38 @@ def _ping_ms(ip: str, timeout_s: float = 1.0) -> Optional[int]:
         return None
 
 
+def _ping_ok(ip: str, timeout_s: float = 1.0) -> bool:
+    """Return True if a single ping succeeds (no output)."""
+    if not ip:
+        return False
+    try:
+        proc = subprocess.run(
+            ["ping", "-c", "1", "-W", str(int(max(1, round(timeout_s)))), ip],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=timeout_s + 0.5,
+        )
+        return proc.returncode == 0
+    except Exception:
+        return False
+
+
+def check_consecutive_pings(host: str, count: int = 3, timeout_s: float = 1.0, logger: Optional[logging.Logger] = None) -> bool:
+    """Return True if host responds to `count` consecutive pings.
+
+    Uses _ping_ok and returns quickly on first failure.
+    """
+    if not host or count <= 0:
+        return False
+    for i in range(count):
+        ok = _ping_ok(host, timeout_s=timeout_s)
+        if logger and logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Ping check %d/%d to %s -> %s", i + 1, count, host, ok)
+        if not ok:
+            return False
+    return True
+
+
 def _ping_text(label: str, ip: str, timeout_s: float = 1.0) -> str:
     ms = _ping_ms(ip, timeout_s=timeout_s)
     if ms is None:
@@ -304,14 +399,64 @@ def _ping_text(label: str, ip: str, timeout_s: float = 1.0) -> str:
     return f"{label} {ms}ms"
 
 
+def get_default_gateway() -> Optional[str]:
+    try:
+        out = subprocess.check_output(["ip", "route"], text=True)
+        for line in out.splitlines():
+            if line.startswith("default"):
+                parts = line.split()
+                # default via <gateway> dev <dev>
+                if "via" in parts:
+                    return parts[parts.index("via") + 1]
+        return None
+    except Exception:
+        return None
+
+
+def check_hosts_status(encoder_ip: str, redis_host: str, gateway_ip: Optional[str], timeout_s: float = 0.6, logger: Optional[logging.Logger] = None) -> Tuple[bool, str]:
+    """Ping encoder, redis host and gateway, return (all_ok, message)
+
+    Message is short and fits 16 chars (for LCD top line alerts).
+    """
+    statuses = {}
+    try:
+        statuses['ENC'] = _ping_ok(encoder_ip, timeout_s=timeout_s)
+    except Exception:
+        statuses['ENC'] = False
+    try:
+        statuses['RED'] = _ping_ok(redis_host, timeout_s=timeout_s)
+    except Exception:
+        statuses['RED'] = False
+    try:
+        if gateway_ip:
+            statuses['GW'] = _ping_ok(gateway_ip, timeout_s=timeout_s)
+        else:
+            statuses['GW'] = False
+    except Exception:
+        statuses['GW'] = False
+
+    # Build message: list failing components
+    failing = [k for k, v in statuses.items() if not v]
+    if not failing:
+        return True, "OK"
+    # Compact message, e.g., "ENC OFF" or "ENC,RED OFF"
+    msg = ",".join(failing) + " OFF"
+    # Fit 16 chars
+    if len(msg) > 16:
+        msg = msg[:16]
+    if logger and logger.isEnabledFor(logging.DEBUG):
+        logger.debug("Host statuses: %s -> %s", statuses, msg)
+    return False, msg
+
+
 def main() -> int:
     logger = _setup_logging()
     display = lcddriver.lcd()
     display.lcd_clear()
 
-    antena_rx_ip = os.environ.get("OPENOB_ANTENA_RX_IP", "192.168.1.21")
-    antena_tx_ip = os.environ.get("OPENOB_ANTENA_TX_IP", "192.168.1.20")
-    encoder_ip = os.environ.get("OPENOB_ENCODER_IP", "192.168.1.15")
+    antena_rx_ip = os.environ.get("OPENOB_ANTENA_RX_IP", "192.168.1.1")
+    antena_tx_ip = os.environ.get("OPENOB_ANTENA_TX_IP", "10.13.14.1")
+    encoder_ip = os.environ.get("OPENOB_ENCODER_IP", "10.13.14.2")
 
     # Redis host defaults to the encoder IP because OpenOB publishes VU to the config-host.
     redis_host = os.environ.get("OPENOB_REDIS_HOST", encoder_ip)
@@ -319,12 +464,50 @@ def main() -> int:
     link_name = os.environ.get("OPENOB_LINK_NAME", "transmission")
     vu_link_name = link_name
 
+    # Which direction to read VU from: 'rx' (default) or 'tx'
+    vu_direction = os.environ.get("OPENOB_LCD_VU_DIRECTION", "rx").lower()
+    if vu_direction not in {"rx", "tx"}:
+        vu_direction = "rx"
+
+    # Optional: override full Redis key (e.g. 'openob:myLink:vu:rx')
+    vu_key_override = os.environ.get("OPENOB_LCD_VU_KEY", "").strip()
+    if vu_key_override:
+        if logger and logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Using explicit VU key override: %s", vu_key_override)
+    else:
+        if logger and logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Using link_name=%s and direction=%s for VU", vu_link_name, vu_direction)
+
     client = _redis_client(redis_host, redis_port)
-    try:
-        if client is not None:
+    if client is None:
+        logger.info("Redis client unavailable (redis module missing or failed to construct)")
+    else:
+        try:
             client.ping()
+        except Exception:
+            logger.warning("Redis ping failed to %s:%d - disabling Redis client", redis_host, redis_port)
+            client = None
+
+    # --- GPIO startup & ping-based control ---
+    gpio_pin = int(os.environ.get("OPENOB_GPIO_PIN", "4"))
+    gpio_init = int(os.environ.get("OPENOB_GPIO_INIT", "1"))
+    gpio_check_s = float(os.environ.get("OPENOB_GPIO_CHECK_S", "1.0"))
+    gpio_ping_count = int(os.environ.get("OPENOB_GPIO_PING_COUNT", "3"))
+
+    last_gpio_check = 0.0
+    current_gpio_state: Optional[int] = None
+
+    # Initialize GPIO pin mode and set initial state
+    try:
+        subprocess.run(["gpio", "-g", "mode", str(gpio_pin), "output"], check=True)
+        subprocess.run(["gpio", "-g", "write", str(gpio_pin), str(gpio_init)], check=True)
+        current_gpio_state = gpio_init
+        if logger and logger.isEnabledFor(logging.DEBUG):
+            logger.info("GPIO pin %d initialized output and set to %d", gpio_pin, gpio_init)
     except Exception:
-        client = None
+        if logger:
+            logger.exception("Failed to initialize GPIO pin %d (gpio command may be missing or require root)", gpio_pin)
+        current_gpio_state = None
 
     # Splash
     display.lcd_display_string(_fit_lcd("LINK DE AUDIO"), 1)
@@ -339,17 +522,26 @@ def main() -> int:
     next_discover = 0.0
 
     # Refresh rate for the LCD loop (audio bar)
-    refresh_s = float(os.environ.get("OPENOB_LCD_REFRESH_S", "0.08"))
+    refresh_s = float(os.environ.get("OPENOB_LCD_REFRESH_S", "0.04"))
     refresh_s = max(0.02, min(1.0, refresh_s))
+
+    # Host health check interval and alert behavior
+    host_check_s = float(os.environ.get("OPENOB_LCD_HOST_CHECK_S", "2.0"))
+    next_host_check = 0.0
+    host_alert = False
+    host_alert_msg = ""
+
+    # Determine gateway IP (auto-detect or use env override)
+    gateway_ip = os.environ.get("OPENOB_GATEWAY_IP", get_default_gateway() or "")
 
     # Ping timeout: keep small so pings don't freeze LCD updates
     ping_timeout_s = float(os.environ.get("OPENOB_LCD_PING_TIMEOUT_S", "0.35"))
     ping_timeout_s = max(0.1, min(2.0, ping_timeout_s))
 
     monitors = [
-        lambda: _ping_text("ANT RX", antena_rx_ip, timeout_s=ping_timeout_s),
-        lambda: _ping_text("ANT TX", antena_tx_ip, timeout_s=ping_timeout_s),
-        lambda: _ping_text("ENC", encoder_ip, timeout_s=ping_timeout_s),
+        lambda: _ping_text("GATEWAY", gateway_ip if gateway_ip else antena_rx_ip, timeout_s=ping_timeout_s),
+        lambda: _ping_text("SERVER", antena_tx_ip, timeout_s=ping_timeout_s),
+        lambda: _ping_text("ENCODER", encoder_ip, timeout_s=ping_timeout_s),
         _ip_text,
     ]
 
@@ -358,6 +550,33 @@ def main() -> int:
     vu_min_db = float(os.environ.get("OPENOB_LCD_VU_MIN_DB", "-30"))
     vu_gamma = float(os.environ.get("OPENOB_LCD_VU_GAMMA", "1.6"))
     vu_headroom_db = float(os.environ.get("OPENOB_LCD_VU_HEADROOM_DB", "1.0"))
+    # Redis polling & smoothing (tweak for responsive display without overloading Redis or LCD)
+    redis_poll_s = float(os.environ.get("OPENOB_LCD_REDIS_POLL_S", "0.1"))  # poll Redis at 10 Hz by default
+    last_vu_fetch = 0.0
+    disp_left = 0.0
+    disp_right = 0.0
+    target_left = 0.0
+    target_right = 0.0
+    # Smoothing & release/attack tuning
+    vu_smooth_tau = float(os.environ.get("OPENOB_LCD_VU_SMOOTH_TAU", "0.06"))  # default attack time (s)
+    vu_release_tau = float(os.environ.get("OPENOB_LCD_VU_RELEASE_TAU", "0.02"))  # faster release for quick drop (s)
+    vu_stale_drop_s = float(os.environ.get("OPENOB_LCD_VU_STALE_DROP_S", "0.5"))
+
+    # Silence detection: when both channels are below target threshold for N consecutive samples
+    vu_silence_target = float(os.environ.get("OPENOB_LCD_VU_SILENCE_TARGET", "0.04"))
+    vu_silence_samples = int(os.environ.get("OPENOB_LCD_VU_SILENCE_SAMPLES", "2"))
+    vu_silence_counter = 0
+
+    # Sensitivity multiplier to make low dB more visible (use >1 to increase movement)
+    vu_sensitivity = float(os.environ.get("OPENOB_LCD_VU_SENSITIVITY", "1.0"))
+
+    # Snap-to-zero behaviour: when target == 0, optionally snap immediately to zero
+    vu_snap_to_zero = os.environ.get("OPENOB_LCD_VU_SNAP_TO_ZERO", "1").lower() in {"1", "true", "yes", "on"}
+    vu_snap_threshold = float(os.environ.get("OPENOB_LCD_VU_SNAP_THRESHOLD", "0.02"))
+
+    last_bottom = ""
+    last_bottom_update_ts = 0.0
+    vu_timeout_s = float(os.environ.get("OPENOB_LCD_VU_TIMEOUT_S", "5.0"))
 
     try:
         while True:
@@ -372,34 +591,195 @@ def main() -> int:
                 current_top = monitors[monitor_i]()
             top = current_top
 
-            vu = _fetch_rx_vu(client, vu_link_name, logger=logger)
-            if vu is None:
-                # no data: center marker only
-                bottom = render_rx_bar(0.0, 0.0)
+            # Periodic host health checks — update host_alert and host_alert_msg if issues seen
+            if now >= next_host_check:
+                next_host_check = now + host_check_s
+                try:
+                    ok, msg = check_hosts_status(encoder_ip, redis_host, gateway_ip if gateway_ip else None, timeout_s=ping_timeout_s, logger=logger)
+                except Exception:
+                    ok, msg = False, "HOSTS OFF"
+                prev_alert = host_alert
+                host_alert = not ok
+                host_alert_msg = msg if host_alert else ""
+                if logger and logger.isEnabledFor(logging.DEBUG) and host_alert != prev_alert:
+                    logger.debug("Host alert changed: %s -> %s (%s)", prev_alert, host_alert, host_alert_msg)
 
-                # If VU is missing, try to discover correct link_name in Redis
-                if client is not None and now >= next_discover:
-                    discovered = _discover_vu_link_name(client, logger=None)
-                    if discovered and discovered != vu_link_name:
-                        vu_link_name = discovered
-                    next_discover = now + max(1.0, discover_every_s)
+            # If any host alert is active, override the top line to show the alert
+            if host_alert:
+                top = host_alert_msg
+
+            # Periodic GPIO ping check (controls external indicator) — check less frequently than VU poll if desired
+            if now >= last_gpio_check + gpio_check_s:
+                last_gpio_check = now
+                try:
+                    ping_ok = check_consecutive_pings(encoder_ip, count=gpio_ping_count, timeout_s=ping_timeout_s, logger=logger)
+                except Exception:
+                    ping_ok = False
+                # Only cut the relay (set to 0) when the encoder is unreachable. Do not auto-set it to 1 when reachable;
+                # preserve whatever state is currently set (initial state remains as configured at startup).
+                if not ping_ok:
+                    desired_state = 0
+                    if current_gpio_state is None or desired_state != current_gpio_state:
+                        try:
+                            subprocess.run(["gpio", "-g", "write", str(gpio_pin), "0"], check=True)
+                            current_gpio_state = 0
+                            if logger:
+                                logger.info("Cut GPIO %d to 0 (encoder unreachable)", gpio_pin)
+                        except Exception:
+                            if logger:
+                                logger.exception("Failed to write GPIO pin %d", gpio_pin)
+                else:
+                    # Encoder reachable — do not change the relay state; just log the observation.
+                    if logger and logger.isEnabledFor(logging.DEBUG):
+                        logger.debug("GPIO ping check to %s -> %s (encoder reachable); preserving state=%s", encoder_ip, ping_ok, current_gpio_state)
+
+            # Poll Redis at a controlled rate to avoid hammering the server
+            if client is not None and now >= last_vu_fetch + redis_poll_s:
+                last_vu_fetch = now
+                # Allow explicit key override like 'openob:transmission:vu:rx'
+                fetch_key = vu_key_override if vu_key_override else vu_link_name
+                vu = _fetch_rx_vu(client, fetch_key, direction=vu_direction, logger=logger)
+                if logger and logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("Fetched VU raw object: %r", vu)
+
+                if vu is None:
+                    target_left = 0.0
+                    target_right = 0.0
+                    if logger and logger.isEnabledFor(logging.DEBUG):
+                        logger.debug("No VU data found -> targets set to 0.0")
+
+                    # If VU is missing, try to discover correct link_name in Redis
+                    if client is not None and now >= next_discover:
+                        discovered = _discover_vu_link_name(client, logger=None)
+                        if discovered and discovered != vu_link_name:
+                            vu_link_name = discovered
+                            if logger and logger.isEnabledFor(logging.DEBUG):
+                                logger.debug("Discovered alternate VU key, switching link_name to %s", vu_link_name)
+                        next_discover = now + max(1.0, discover_every_s)
+                else:
+                    # Log raw values from Redis for diagnosis
+                    if logger and logger.isEnabledFor(logging.DEBUG):
+                        logger.debug(
+                            "Raw Redis values: left_db=%.3f right_db=%.3f updated_ts=%r source=%s",
+                            vu.left_db,
+                            vu.right_db,
+                            vu.updated_ts,
+                            vu.source,
+                        )
+
+                    # If the VU data is very stale, drop quickly to zero for a responsive display
+                    if vu.updated_ts is None or (now - vu.updated_ts > vu_stale_drop_s):
+                        target_left = 0.0
+                        target_right = 0.0
+                        if logger and logger.isEnabledFor(logging.DEBUG):
+                            logger.debug("VU data stale (updated_ts=%r, now=%.3f) -> targets set to 0.0", vu.updated_ts, now)
+                    else:
+                        target_left = _db_to_norm_scaled(
+                            vu.left_db,
+                            min_db=vu_min_db,
+                            gamma=vu_gamma,
+                            headroom_db=vu_headroom_db,
+                        )
+                        target_right = _db_to_norm_scaled(
+                            vu.right_db,
+                            min_db=vu_min_db,
+                            gamma=vu_gamma,
+                            headroom_db=vu_headroom_db,
+                        )
+
+                        # Apply sensitivity multiplier and clamp to [0,1]
+                        target_left = max(0.0, min(1.0, target_left * vu_sensitivity))
+                        target_right = max(0.0, min(1.0, target_right * vu_sensitivity))
+
+                        if logger and logger.isEnabledFor(logging.DEBUG):
+                            segs_l = int(target_left * 7)
+                            segs_r = int(target_right * 7)
+                            logger.debug(
+                                "Computed targets from Redis: target_left=%.4f target_right=%.4f (from left_db=%.3f right_db=%.3f, sens=%.2f) -> segments=(%d,%d)",
+                                target_left,
+                                target_right,
+                                vu.left_db,
+                                vu.right_db,
+                                vu_sensitivity,
+                                segs_l,
+                                segs_r,
+                            )
+
+                        # Silence detection: if both targets are below threshold for N consecutive polls,
+                        # treat as silence and force targets to zero to avoid showing low noise as activity.
+                        if target_left <= vu_silence_target and target_right <= vu_silence_target:
+                            vu_silence_counter += 1
+                            if logger and logger.isEnabledFor(logging.DEBUG):
+                                logger.debug("Low-level VU detected (%.4f, %.4f) -> silence_counter=%d", target_left, target_right, vu_silence_counter)
+                        else:
+                            if vu_silence_counter > 0:
+                                if logger and logger.isEnabledFor(logging.DEBUG):
+                                    logger.debug("VU above silence threshold, resetting silence_counter (was=%d)", vu_silence_counter)
+                            vu_silence_counter = 0
+
+                        if vu_silence_counter >= vu_silence_samples:
+                            if logger and logger.isEnabledFor(logging.DEBUG):
+                                logger.debug("Silence detected (counter=%d >= %d) -> forcing targets to 0", vu_silence_counter, vu_silence_samples)
+                            target_left = 0.0
+                            target_right = 0.0
+                            vu_silence_counter = vu_silence_samples  # clamp
+
+            # Smooth toward the target to make motion look natural and avoid flicker
+            # Using asymmetric attack/release: faster release (drop) than attack (rise)
+            try:
+                alpha_attack = 1.0 - math.exp(-refresh_s / max(1e-6, vu_smooth_tau))
+                alpha_release = 1.0 - math.exp(-refresh_s / max(1e-6, vu_release_tau))
+            except Exception:
+                alpha_attack = alpha_release = 1.0
+
+            old_disp_left = disp_left
+            old_disp_right = disp_right
+
+            # Snap to zero if enabled and target is zero (makes pause appear immediate)
+            if vu_snap_to_zero:
+                if target_left == 0.0 and disp_left > vu_snap_threshold:
+                    if logger and logger.isEnabledFor(logging.DEBUG):
+                        logger.debug("Snapping left display from %.4f to 0.0 (snap_to_zero)", disp_left)
+                    disp_left = 0.0
+                if target_right == 0.0 and disp_right > vu_snap_threshold:
+                    if logger and logger.isEnabledFor(logging.DEBUG):
+                        logger.debug("Snapping right display from %.4f to 0.0 (snap_to_zero)", disp_right)
+                    disp_right = 0.0
+
+            # Otherwise apply asymmetric smoothing per channel
+            if target_left > disp_left:
+                disp_left += (target_left - disp_left) * alpha_attack
             else:
-                left_norm = _db_to_norm_scaled(
-                    vu.left_db,
-                    min_db=vu_min_db,
-                    gamma=vu_gamma,
-                    headroom_db=vu_headroom_db,
-                )
-                right_norm = _db_to_norm_scaled(
-                    vu.right_db,
-                    min_db=vu_min_db,
-                    gamma=vu_gamma,
-                    headroom_db=vu_headroom_db,
-                )
-                bottom = render_rx_bar(left_norm, right_norm)
+                disp_left += (target_left - disp_left) * alpha_release
 
+            if target_right > disp_right:
+                disp_right += (target_right - disp_right) * alpha_attack
+            else:
+                disp_right += (target_right - disp_right) * alpha_release
+
+            if logger and logger.isEnabledFor(logging.DEBUG):
+                logger.debug(
+                    "alpha_a=%.4f alpha_r=%.4f old_disp=(%.4f,%.4f) target=(%.4f,%.4f) new_disp=(%.4f,%.4f)",
+                    alpha_attack,
+                    alpha_release,
+                    old_disp_left,
+                    old_disp_right,
+                    target_left,
+                    target_right,
+                    disp_left,
+                    disp_right,
+                )
+            # Render and update LCD only when changed (reduces writes) but keep fast responsiveness
+            bottom = render_rx_bar(disp_left, disp_right)
+            if bottom != last_bottom:
+                if logger and logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("Bottom changed, updating LCD bottom=%r", bottom)
+                display.lcd_display_string(_fit_lcd(bottom), 2)
+                last_bottom = bottom
+                last_bottom_update_ts = now
+
+            # Update top line always, bottom line only when changed
             display.lcd_display_string(_fit_lcd(top), 1)
-            display.lcd_display_string(_fit_lcd(bottom), 2)
             sleep(refresh_s)
 
     except KeyboardInterrupt:
